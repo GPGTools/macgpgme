@@ -61,19 +61,25 @@ typedef enum {
  * Checks that the version of the library is at minimum the requested one
  * and returns the version string; returns nil if the condition is not
  * met. If requiredVersion is nil, no check is done and
- * the version string is simply returned. It is a pretty good idea to
- * run this function as soon as possible, because it also initializes
- * some subsystems. In a multithreaded environment if should be called
- * before the first thread is created.
+ * the version string is simply returned.
  *
- * NOTE: it starts a dummy NSThread to insure that Cocoa is ready
- *       for multithreading.
+ * It is a pretty good idea to run this function (or #GPGCheckEngine() or
+ * #GPGEngineInfoAsXMLString()) as soon as possible, because it also initializes
+ * some subsystems. In a multithreaded environment if should be called
+ * before the first thread is created. Note that it starts a dummy
+ * NSThread to insure that Cocoa is ready for multithreading.
 "*/
 GPG_EXPORT NSString	*GPGCheckVersion(NSString *requiredVersion);
 
 /*"
  * Checks whether the installed crypto engine matches the requirement of
  * GPGME.
+ *
+ * It is a pretty good idea to run this function (or #GPGCheckVersion() or
+ * #GPGEngineInfoAsXMLString()) as soon as possible, because it also initializes
+ * some subsystems. In a multithreaded environment if should be called
+ * before the first thread is created. Note that it starts a dummy
+ * NSThread to insure that Cocoa is ready for multithreading.
 "*/
 GPG_EXPORT GPGError	GPGCheckEngine();
 
@@ -100,10 +106,16 @@ GPG_EXPORT GPGError	GPGCheckEngine();
  *   <path>aString</path> (optional)
  *  </engine>
  * </GnupgInfo>}
+ *
+ * It is a pretty good idea to run this function (or #GPGCheckVersion() or
+ * #GPGCheckEngine()) as soon as possible, because it also initializes
+ * some subsystems. In a multithreaded environment if should be called
+ * before the first thread is created. Note that it starts a dummy
+ * NSThread to insure that Cocoa is ready for multithreading.
 "*/
-GPG_EXPORT NSString	*GPGEngineInfo();
+GPG_EXPORT NSString	*GPGEngineInfoAsXMLString();
 
 /*"
- * Messages are currently not localized.
+ * Messages are not yet localized, but they will be.
 "*/
 GPG_EXPORT NSString	*GPGErrorDescription(GPGError error);

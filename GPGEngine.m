@@ -28,18 +28,28 @@
 #import <gpgme.h>
 
 
+static void initializeGPGME(void)
+{
+    static BOOL	initialized = NO;
+    
+    if(!initialized){
+        NSObject	*aThreadStarter = [[NSObject alloc] init];	
+    
+        // gpgme library uses pthreads; to avoid any problems with
+        // Foundation's NSThreads, we must ensure that that at least
+        // one NSThread has been created, that's why we create a dummy
+        // thread before doing anything with gpgme.
+        [NSThread detachNewThreadSelector:@selector(release) toTarget:aThreadStarter withObject:nil];
+        initialized = YES;
+    }
+}
+
 NSString *GPGCheckVersion(NSString *requiredVersion)
 {
     const char	*aCString;
     NSString	*aString = nil;
-    NSObject	*aThreadStarter = [[NSObject alloc] init];	
 
-    // gpgme library uses pthreads; to avoid any problems with
-    // Foundation's NSThreads, we must ensure that that at least
-    // one NSThread has been created, that's why we create a dummy
-    // thread before doing anything with gpgme.
-    [NSThread detachNewThreadSelector:@selector(release) toTarget:aThreadStarter withObject:nil];
-
+    initializeGPGME();
     aCString = gpgme_check_version(requiredVersion == nil ? NULL:[requiredVersion UTF8String]);
 
     if(aCString != NULL)
@@ -50,15 +60,19 @@ NSString *GPGCheckVersion(NSString *requiredVersion)
 
 GPGError GPGCheckEngine()
 {
+    initializeGPGME();
+
     return gpgme_check_engine();
 }
 
-NSString *GPGEngineInfo()
+NSString *GPGEngineInfoAsXMLString()
 {
 #warning Return a NSDictionary instead of XML
-    const char	*aCString = gpgme_get_engine_info();
+    const char	*aCString;
     NSString	*aString = nil;
 
+    initializeGPGME();
+    aCString = gpgme_get_engine_info();
     if(aCString != NULL)
         aString = [NSString stringWithUTF8String:aCString];
     
