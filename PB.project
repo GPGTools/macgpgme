@@ -1,0 +1,68 @@
+{
+    CURRENTLY_ACTIVE_VERSION = YES; 
+    DEPLOY_WITH_VERSION_NAME = 0.2.2; 
+    DYNAMIC_CODE_GEN = YES; 
+    FILESTABLE = {
+        CLASSES = (
+            GPGContext.m, 
+            GPGData.m, 
+            GPGEngine.m, 
+            GPGExceptions.m, 
+            GPGKey.m, 
+            GPGObject.m, 
+            GPGRecipients.m, 
+            GPGTrustItem.m
+        ); 
+        FRAMEWORKS = (Foundation.framework); 
+        HEADERSEARCH = (/usr/local/include); 
+        H_FILES = (
+            GPG.h, 
+            GPGContext.h, 
+            GPGData.h, 
+            GPGDefines.h, 
+            GPGEngine.h, 
+            GPGExceptions.h, 
+            GPGInternals.h, 
+            GPGKey.h, 
+            GPGObject.h, 
+            GPGRecipients.h, 
+            GPGTrustItem.h
+        ); 
+        LIBRARYSEARCH = (/usr/local/lib); 
+        OTHER_LIBS = (gpgme); 
+        OTHER_SOURCES = (h.template, m.template, Makefile, Makefile.postamble, Makefile.preamble); 
+        PRECOMPILED_HEADERS = (); 
+        PROJECT_HEADERS = (); 
+        PUBLIC_HEADERS = (
+            GPG.h, 
+            GPGContext.h, 
+            GPGDefines.h, 
+            GPGExceptions.h, 
+            GPGKey.h, 
+            GPGObject.h, 
+            GPGRecipients.h, 
+            GPGTrustItem.h, 
+            GPGEngine.h, 
+            GPGData.h
+        ); 
+    }; 
+    LANGUAGE = English; 
+    MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
+    NEXTSTEP_BUILDDIR = "$(LOCAL_DEVELOPER_DIR)/Builds/$(USER)/$(NAME)"; 
+    NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_INSTALLDIR = /Library/Frameworks; 
+    NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
+    NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc; 
+    PDO_UNIX_BUILDTOOL = $NEXT_ROOT/Developer/bin/make; 
+    PDO_UNIX_INSTALLDIR = /Library/Frameworks; 
+    PDO_UNIX_JAVA_COMPILER = "$(JDKBINDIR)/javac"; 
+    PDO_UNIX_OBJCPLUS_COMPILER = "$(NEXTDEV_BIN)/gcc"; 
+    PROJECTNAME = GPGME; 
+    PROJECTTYPE = Framework; 
+    PROJECTVERSION = 2.8; 
+    TARGETS = ("install-debug", "build-public-documentation"); 
+    WINDOWS_BUILDTOOL = $NEXT_ROOT/Developer/Executables/make; 
+    WINDOWS_INSTALLDIR = /Library/Frameworks; 
+    WINDOWS_JAVA_COMPILER = "$(JDKBINDIR)/javac.exe"; 
+    WINDOWS_OBJCPLUS_COMPILER = "$(DEVDIR)/gcc"; 
+}
