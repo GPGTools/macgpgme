@@ -25,7 +25,8 @@
 //
 
 #import "Controller.h"
-#import <GPGME/GPG.h>
+#import <GPGME/GPGME.h>
+#import <GPGME/GPGEngine.h>
 
 
 @implementation Controller
@@ -36,7 +37,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(idle:) name:GPGIdleNotification object:nil];
     idleImages = [[NSArray alloc] initWithObjects:[NSImage imageNamed:@"idle1"], [NSImage imageNamed:@"idle2"], [NSImage imageNamed:@"idle3"], [NSImage imageNamed:@"idle4"], nil];
-    aString = [NSString stringWithFormat:@"Testing engine...\n%@\nEngine info:\n%@", GPGErrorDescription(GPGCheckEngine()), GPGEngineInfo()];
+    aString = [NSString stringWithFormat:@"Testing engine...\n%@\nEngine info:\n%@", GPGErrorDescription(GPGCheckEngine()), GPGEngineInfoAsXMLString()];
     [xmlTextView setString:aString];
 }
 

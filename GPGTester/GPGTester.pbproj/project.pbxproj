@@ -191,7 +191,7 @@
 //104
 		1058C7A0FEA54F0111CA2CBB = {
 			children = (
-				F553D234012E17F701000001,
+				F592931A01B3A6C90130DCEA,
 				1058C7A1FEA54F0111CA2CBB,
 			);
 			isa = PBXGroup;
@@ -342,7 +342,7 @@
 				043355C9FE30361CC02AAC07,
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "/Users/isa/Library/Frameworks /Users/redbird/Library/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = /Users/cohen/Library/Frameworks;
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
@@ -432,7 +432,7 @@
 			files = (
 				0BD178FE012990BF7F000001,
 				0BD178FF012990BF7F000001,
-				F553D235012E17F701000001,
+				F592931B01B3A6C90130DCEA,
 			);
 			isa = PBXFrameworksBuildPhase;
 			name = "Frameworks & Libraries";
@@ -476,14 +476,14 @@
 //F52
 //F53
 //F54
-		F553D234012E17F701000001 = {
+		F592931A01B3A6C90130DCEA = {
 			isa = PBXFrameworkReference;
 			name = GPGME.framework;
-			path = /Users/redbird/Library/Frameworks/GPGME.framework;
+			path = /Users/cohen/Library/Frameworks/GPGME.framework;
 			refType = 0;
 		};
-		F553D235012E17F701000001 = {
-			fileRef = F553D234012E17F701000001;
+		F592931B01B3A6C90130DCEA = {
+			fileRef = F592931A01B3A6C90130DCEA;
 			isa = PBXBuildFile;
 			settings = {
 			};
