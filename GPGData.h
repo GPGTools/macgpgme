@@ -54,7 +54,9 @@ typedef enum {
  * This encoding is useful to give the backend a hint on the type of data.
  * The following data types are available:
  * _{GPGDataEncodingNone    This specifies that the encoding is not known.
- *                          This is the default for a new data object.}
+ *                          This is the default for a new data object.
+ *                          The backend will try its best to detect the
+ *                          encoding automatically.}
  * _{GPGDataEncodingBinary  This specifies that the data is encoding in binary form;
  *                          i.e. there is no special encoding.}
  * _{GPGDataEncodingBase64  This specifies that the data is encoded using the Base-64
@@ -80,6 +82,7 @@ typedef enum {
 - (id) init;
 - (id) initWithData:(NSData *)someData;
 - (id) initWithDataNoCopy:(NSMutableData *)someData;
+- (id) initWithString:(NSString *)string;
 - (id) initWithDataSource:(id)dataSource;
 - (id) initWithContentsOfFile:(NSString *)filename;
 //- (id) initWithContentsOfFileNoCopy:(NSString *)filename;
@@ -87,6 +90,7 @@ typedef enum {
 
 /*"Attributes"*/
 - (NSData *) data;
+- (NSString *) string;
 - (unsigned long long) length;
 - (NSData *) availableData;
 - (unsigned long long) availableDataLength;
@@ -105,6 +109,7 @@ typedef enum {
 - (void) writeData:(NSData *)data;
 
 @end
+
 
 @interface NSObject(GPGDataSource)
 - (NSData *) data:(GPGData *)data readLength:(unsigned int)maxLength;
