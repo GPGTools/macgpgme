@@ -235,15 +235,42 @@ static void progressCallback(void *object, const char *description, int type, in
     return gpgme_get_textmode(_context) != 0;
 }
 
-- (void) setFastKeyListMode:(BOOL)fastMode
+- (void) setKeyListMode:(int)mask
 /*"
  * Changes the default behaviour of the key listing methods.
- * %{Fast listing} doesn't give information about key validity.
+ * The value in mask is a bitwise-or combination of one or multiple bit values
+ * like #GPGKeyListModeLocal and #GPGKeyListModeExtern.
  *
- * Default value is NO.
+ * At least #GPGKeyListModeLocal or #GPGKeyListModeExtern must be specified.
+ * For future binary compatibility, you should get the current mode with #{-keyListMode}
+ * and modify it by setting or clearing the appropriate bits, and then using
+ * that calculated value in #{-setKeyListMode:}. This will leave all other bits
+ * in the mode value intact (in particular those that are not used in the
+ * current version of the library).
+ *
+ * Raises a #GPGException with name #GPGErrorInvalidValue in case mask is not a valid mode.
 "*/
 {
-    gpgme_set_keylist_mode(_context, !!fastMode);
+    GpgmeError	anError = gpgme_set_keylist_mode(_context, mask);
+
+    if(anError != GPGME_No_Error)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+}
+
+- (int) keyListMode
+/*"
+ * Returns the current key listing mode of the context.
+ * This value can then be modified and used in a subsequent #setKeyListMode: invocation
+ * to only affect the desired bits (and leave all others intact).
+ *
+ * #GPGKeyListModeLocal is the default mode.
+"*/
+{
+    int	mask = gpgme_get_keylist_mode(_context);
+
+    NSAssert(mask != 0, @"_context is not a valid pointer");
+
+    return mask;
 }
 
 - (void) setProtocol:(GPGProtocol)protocol
@@ -306,7 +333,7 @@ static void progressCallback(void *object, const char *description, int type, in
         return nil;
 }
 
-static const char *passphraseCallback(void *object, const char *description, void *r_hd)
+static const char *passphraseCallback(void *object, const char *description, void **r_hd)
 {
 #if 1
     NSString	*aDescription;
@@ -315,17 +342,17 @@ static const char *passphraseCallback(void *object, const char *description, voi
     NSCAssert(r_hd != NULL, @"### passphraseCallback's r_hd is NULL?!");
     if(description == NULL){
         // We can now release resources associated with returned value
-        if(*((void **)r_hd) != NULL){
+        if(*r_hd != NULL){
             [(*((NSMutableDictionary **)r_hd)) release];
-            *((void **)r_hd) = NULL;
+            *r_hd = NULL;
         }
         
         return NULL;
     }
     aDescription = [NSString stringWithUTF8String:description];
 
-    if(*((void **)r_hd) == NULL)
-        *((void **)r_hd) = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSMutableDictionary dictionary], @"userInfo", nil];
+    if(*r_hd == NULL)
+        *r_hd = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSMutableDictionary dictionary], @"userInfo", nil];
 
     aPassphrase = [((GPGContext *)object)->_passphraseDelegate context:((GPGContext *)object) passphraseForDescription:aDescription userInfo:[(*((NSMutableDictionary **)r_hd)) objectForKey:@"userInfo"]];
 
@@ -504,14 +531,24 @@ static void progressCallback(void *object, const char *description, int type, in
  * Returns the context of the finished request or nil if hang is NO
  * and no request has finished.
  *
- * #Caution: not yet working
+ * Can raise a #GPGException which reflects the termination status
+ * of the operation (in case of error). The exception userInfo dictionary contains
+ * the context (under #GPGContextKey key) which terminated with the error.
 "*/
 {
-    GpgmeCtx	returnedCtx = gpgme_wait(NULL, hang);
+    GpgmeError	anError = GPGME_No_Error;
+    GpgmeCtx	returnedCtx = gpgme_wait(NULL, &anError, hang);
+    GPGContext	*newContext;
+
+    if(anError != GPGME_No_Error){
+        // Returns an existing context
+        newContext = [[GPGContext alloc] initWithInternalRepresentation:returnedCtx];
+        [[NSException exceptionWithGPGError:anError userInfo:[NSDictionary dictionaryWithObject:[newContext autorelease] forKey:GPGContextKey]] raise];
+    }
 
     if(returnedCtx != NULL){
         // Returns an existing context
-        GPGContext	*newContext = [[GPGContext alloc] initWithInternalRepresentation:returnedCtx];
+        newContext = [[GPGContext alloc] initWithInternalRepresentation:returnedCtx];
 
         return [newContext autorelease];
     }
@@ -535,11 +572,16 @@ static void progressCallback(void *object, const char *description, int type, in
  * Returns YES if there is a finished request for context or NO if hang is NO
  * and no request (for context) has finished.
  *
- * #Caution: does not work yet.
+ * Can raise a #GPGException which reflects the termination status
+ * of the operation, in case of error.
 "*/
 {
-    GpgmeCtx	returnedCtx = gpgme_wait(_context, hang);
+    GpgmeError	anError = GPGME_No_Error;
+    GpgmeCtx	returnedCtx = gpgme_wait(_context, &anError, hang);
 
+    if(anError != GPGME_No_Error)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    
     if(returnedCtx == _context)
         return YES;
     else
@@ -834,7 +876,6 @@ static void progressCallback(void *object, const char *description, int type, in
  * by the context. The format of keydata content can be %{ASCII armored},
  * for example, but the details are specific to the crypto engine.
  * More information about the import is available with #{-statusAsXMLString}.
- * #Caution: not yet working.
  * 
  * Can raise a #GPGException:
  * _{GPGErrorNoData  keydata is an empty buffer.}
@@ -855,11 +896,18 @@ static void progressCallback(void *object, const char *description, int type, in
 //- (void) generateKeyFromDictionary:(NSDictionary *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
 /*"
  * Generates a new key pair and puts it into the standard key ring if
- * both publicKeyPtr and secretKeyPtr are NULL.
- * Method returns immediately after starting the operation, and does not wait for
- * it to complete. publicKeyPtr and secretKeyPtr are reserved for later use and should be NULL.
- * The method should return the public and secret keys in publicKeyPtr and secretKeyPtr,
- * but this is not implemented yet.
+ * both publicKeyPtr and secretKeyPtr are NULL. In this case
+ * method returns immediately after starting the operation, and does not wait for
+ * it to complete. If publicKeyPtr is not NULL, the newly created data object,
+ * upon successful completion, will contain the public key. If secretKeyPtr
+ * is not NULL, the newly created data object, upon successful completion,
+ * will contain the secret key.
+ *
+ * Note that not all crypto engines support this interface equally.
+ * GnuPG does not support publicKey and secretKeyPtr, they should be both NULL,
+ * and the key pair will be added to the standard key ring.
+ * GpgSM does only support publicKeyPtr, the secret key will be
+ * stored by gpg-agent. GpgSM expects publicKeyPtr being not NULL.
  *
  * The params string specifies parameters for the key in XML format.
  * The details about the format of params are specific to the crypto engine
@@ -874,6 +922,13 @@ static void progressCallback(void *object, const char *description, int type, in
  *   Name-Email: joe@foo.bar
  *   Expire-Date: 0
  *   Passphrase: abc
+ * </GnupgKeyParms>}
+ * Here's an example for GpgSM as the crypto engine:
+ * !{<GnupgKeyParms format="internal">
+ *   Key-Type: RSA
+ *   Key-Length: 1024
+ *   Name-DN: C=de,O=g10 code,OU=Testlab,CN=Joe 2 Tester
+ *   Name-Email: joe@@foo.bar
  * </GnupgKeyParms>}
  * Strings should be given in UTF-8 encoding. The format supportted for now
  * is "internal". The content of the !{<GnupgKeyParms>} container is passed
@@ -979,21 +1034,15 @@ static void progressCallback(void *object, const char *description, int type, in
  * other operation next. This is not an error to invoke that method
  * if there is no pending trustlist operation.
  *
- * #CAUTION: not yet working as of 0.3.0.
- *
  * Can raise a #GPGException.
 "*/
 {
-#if 0
     GpgmeError	anError = gpgme_op_trustlist_end(_context);
 
     // Let's ignore GPGME_No_Request which means that there is no
     // pending keylist operation.
     if(anError != GPGME_No_Error && anError != GPGME_No_Request)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
-#else
-    [[NSException exceptionWithGPGError:GPGErrorNotImplemented userInfo:nil] raise];
-#endif
 }
 
 @end
@@ -1138,7 +1187,7 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) dealloc
 {
-//    GpgmeError	anError = gpgme_op_trustlist_end([context gpgmeContext]);
+    GpgmeError	anError = gpgme_op_trustlist_end([context gpgmeContext]);
 
     [context release];
 
@@ -1146,8 +1195,8 @@ static void progressCallback(void *object, const char *description, int type, in
 
     // GPGME_No_Request error means that there was no pending request.
     // We can safely ignore this error here.
-//    if(anError != GPGME_No_Error && anError != GPGME_No_Request)
-//        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    if(anError != GPGME_No_Error && anError != GPGME_No_Request)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 }
 
 - (id) nextObject
@@ -1188,7 +1237,7 @@ static void progressCallback(void *object, const char *description, int type, in
  *
  * #CAUTION:
  * Method will change in the future to context:passphraseForKey:again:, but currently you cannot ask
- * for a key during passphrase callback (limitation due to gpgme, as of 0.3.0).
+ * for a key during passphrase callback (limitation due to gpgme, as of 0.3.3).
 "*/
 {
 }
