@@ -27,6 +27,7 @@
 #import "GPGData.h"
 #import "GPGKey.h"
 #import "GPGRecipients.h"
+#import "GPGDefines.h"
 #import <gpgme.h>
 
 
@@ -53,3 +54,5 @@
 @interface GPGSignature(GPGInternals)
 - (id) initWithContext:(GPGContext *)ctx index:(unsigned)index;
 @end
+
+GPG_EXPORT NSString *GPGStringFromChars(const char * chars);

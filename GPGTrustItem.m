@@ -25,6 +25,7 @@
 
 #import "GPGTrustItem.h"
 #import "GPGPrettyInfo.h"
+#import "GPGInternals.h"
 #import <Foundation/Foundation.h>
 #import <gpgme.h>
 
@@ -115,7 +116,7 @@
 
     NSAssert(aCString != NULL, @"### Invalid key.");
     if(aCString != NULL)
-        aString = [NSString stringWithUTF8String:aCString];
+        aString = GPGStringFromChars(aCString);
 
     return aString;
 }
