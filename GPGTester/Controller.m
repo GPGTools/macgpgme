@@ -133,8 +133,7 @@
         
         if(selectedRow >= 0){
             GPGKey	*selectedKey = [keys objectAtIndex:selectedRow];
-            //commented out rpw 12-09-01, GPGKey does not respond to expirationDate right now
-        //  NSLog(@"%d", [selectedKey expirationDate]);
+            NSLog(@"%@", [selectedKey expirationDate]);
     
             [xmlTextView setString:[selectedKey descriptionAsXMLString]];
     
@@ -291,6 +290,7 @@
     if([NSApp runModalForWindow:encryptionPanel] == NSOKButton){
         GPGContext	*aContext;
         GPGData		*inputData, *outputData;
+        volatile BOOL	allRecipientsAreValid;
 
         if([[encryptionInputFilenameTextField stringValue] length] == 0 || [[encryptionOutputFilenameTextField stringValue] length] == 0){
             NSRunAlertPanel(@"Error", @"You need to give a filename for input and output files.", nil, nil, nil);
@@ -299,11 +299,11 @@
 
         aContext = [[GPGContext alloc] init];
         [aContext setUsesArmor:[encryptionArmoredSwitch state]];
-//[aContext addSigner:[keys objectAtIndex:2]]; // encrypt+sign is not yet supported
+//[aContext addSigner:[keys objectAtIndex:2]]; // encrypt+sign is from now on supported
         inputData = [[GPGData alloc] initWithContentsOfFile:[encryptionInputFilenameTextField stringValue]];
 
         NS_DURING
-            outputData = [aContext encryptedData:inputData forRecipients:[self selectedRecipients]];
+            outputData = [aContext encryptedData:inputData forRecipients:[self selectedRecipients] allRecipientsAreValid:(BOOL *)&allRecipientsAreValid];
         NS_HANDLER
             outputData = nil;
             NSLog(@"Exception userInfo: %@", [localException userInfo]);
@@ -311,6 +311,8 @@
         NS_ENDHANDLER
 
         if(outputData != nil){
+            if(!allRecipientsAreValid)
+                NSRunAlertPanel(@"Warning", @"Some recipients are not valid, and they have not been used for encryption.\n\n%@", nil, nil, nil, [aContext statusAsXMLString]);
             [[outputData data] writeToFile:[encryptionOutputFilenameTextField stringValue] atomically:NO];
         }
         [inputData release];
