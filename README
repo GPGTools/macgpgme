@@ -63,8 +63,6 @@ On Mac OS X 10.1:
 	pbxbuild install -target GPGME DSTROOT=  //there is no typo here. It really is "DSTROOT="
 	cd ..
 
-If you want to use the functions in GPGPrettyInfo.h, you must copy the contents of GPGME's Localizable.strings files to your applications Localizable.strings files.  Otherwise it will not find the proper localization and display generic strings from the header file.  This will hopefully be corrected in the near future.
-
 	
 Documentation generation
 ========================
