@@ -1,19 +1,24 @@
 gpgme library
 =============
-In order to build this framework, you need gpgme 0.3.14 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
+In order to build this framework, you need gpgme 0.3.15 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.0). To download and install it, proceed like this:
 
 On MacOS X 10.2:
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.14.tar.gz
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.14.tar.gz.sig
-gpg --verify gpgme-0.3.14.tar.gz.sig
-gnutar xzf gpgme-0.3.14.tar.gz
-cd gpgme-0.3.14
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.15.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.15.tar.gz.sig
+gpg --verify gpgme-0.3.15.tar.gz.sig
+
+(It seems there is a bug in the package; rights will not be restored correctly if not unpackaged as root, that's why we use the 'sudo tcsh' command to perform all following commands as root)
+
+sudo tcsh
+gnutar xzf gpgme-0.3.15.tar.gz
+cd gpgme-0.3.15
 ./configure
 mv libtool libtool.original
 sed < libtool.original "s%-flat_namespace -undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
 make
-sudo make install
-sudo mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
+make install
+mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
+exit
 cd ..
 
 
