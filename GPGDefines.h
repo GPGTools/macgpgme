@@ -2,7 +2,7 @@
 //  GPGDefines.h
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,13 +20,12 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #if defined(__WIN32__)
     #undef GPG_EXPORT
-    #if defined(BUILDINGGPG)
+    #if defined(BUILDINGGPGME)
     #define GPG_EXPORT __declspec(dllexport) extern
     #else
     #define GPG_EXPORT __declspec(dllimport) extern
