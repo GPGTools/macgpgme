@@ -25,36 +25,16 @@
 
 #import <GPGME/GPGObject.h>
 #import <GPGME/GPGEngine.h>
+#import <GPGME/GPGSignature.h>
 
 
+@class NSArray;
 @class NSCalendarDate;
 @class NSEnumerator;
 @class NSMutableDictionary;
 @class GPGData;
 @class GPGKey;
 @class GPGRecipients;
-
-
-/*"
- * The #GPGSignatureStatus type holds the result of a signature check,
- * or the combined result of all signatures. The following results are possible:
- * _{GPGSignatureStatusNone         No status - should not happen.}
- * _{GPGSignatureStatusGood         The signature is valid.}
- * _{GPGSignatureStatusBad          The signature is not valid.}
- * _{GPGSignatureStatusNoKey        The signature could not be checked due to a missing key.}
- * _{GPGSignatureStatusNoSignature  This is not a signature.}
- * _{GPGSignatureStatusError        Due to some other error the check could not be done.}
- * _{GPGSignatureStatusDifferent    There is more than 1 signature and they have not the same status.}
-"*/
-typedef enum {
-    GPGSignatureStatusNone        = 0,
-    GPGSignatureStatusGood        = 1,
-    GPGSignatureStatusBad         = 2,
-    GPGSignatureStatusNoKey       = 3,
-    GPGSignatureStatusNoSignature = 4,
-    GPGSignatureStatusError       = 5,
-    GPGSignatureStatusDifferent   = 6
-} GPGSignatureStatus;
 
 
 /*"
@@ -94,7 +74,8 @@ typedef enum {
  * _{GPGNoCertificatesInclusion             Include no certificates.}
  * _{GPGOnlySenderCertificateInclusion      Include the sender's certificate only.}
  * _{n                                      Include the first n certificates of the certificates path,
- *                                          starting from the sender's certificate. The number n must be positive.}
+ *                                          starting from the sender's certificate.
+ *                                          The number n must be positive.}
 "*/
 typedef enum {
     GPGAllExceptRootCertificatesInclusion = -2,
@@ -176,13 +157,14 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 /*"
  * Key listing mode
 "*/
-- (void) setKeyListMode:(int)mask;
-- (int) keyListMode;
+- (void) setKeyListMode:(GPGKeyListMode)mask;
+- (GPGKeyListMode) keyListMode;
 
 /*"
  * Protocol selection
 "*/
 - (void) setProtocol:(GPGProtocol)protocol;
+- (GPGProtocol) protocol;
 
 /*"
  * Operation status
@@ -200,10 +182,6 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 "*/
 - (void) clearSignerKeys;
 - (void) addSignerKey:(GPGKey *)key;
-// BUG: valid only for signing operation, not for encryption
-//      => impossible to encrypt+sign
-// Does NOT retain key!
-// Can raise a GPGException
 - (NSEnumerator *) signerKeyEnumerator;
 
 /*"
@@ -240,6 +218,7 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 - (GPGSignatureStatus) verifySignedData:(GPGData *)signedData;
 - (GPGSignatureStatus) statusOfSignatureAtIndex:(int)index creationDate:(NSCalendarDate **)creationDatePtr fingerprint:(NSString **)fingerprint;
 - (GPGKey *) keyOfSignatureAtIndex:(int)index;
+- (NSArray *) signatures;
 /*"
  * Decrypt and verify
 "*/
@@ -257,6 +236,10 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 "*/
 - (GPGData *) encryptedSignedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients allRecipientsAreValid:(BOOL *)allRecipientsAreValidPtr;
 /*"
+ * Symmetric Encryption (no key needed)
+"*/
+- (GPGData *) encryptedData:(GPGData *)inputData;
+/*"
  * Managing keyring
 "*/
 - (GPGData *) exportedKeysForRecipients:(GPGRecipients *)recipients;
@@ -271,6 +254,7 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
  * Listing keys
 "*/
 - (NSEnumerator *) keyEnumeratorForSearchPattern:(NSString *)searchPattern secretKeysOnly:(BOOL)secretKeysOnly;
+- (NSEnumerator *) keyEnumeratorForSearchPatterns:(NSArray *)searchPatterns secretKeysOnly:(BOOL)secretKeysOnly;
 - (void) stopKeyEnumeration;
 /*"
  * Listing trust items

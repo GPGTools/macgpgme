@@ -29,6 +29,7 @@
 #import "GPGInternals.h"
 #import "GPGKey.h"
 #import "GPGRecipients.h"
+#import "GPGSignature.h"
 #import "GPGTrustItem.h"
 #import <Foundation/Foundation.h>
 #import <time.h> /* Needed for GNUstep */
@@ -65,7 +66,8 @@ NSString	* const GPGProgressNotification = @"GPGProgressNotification";
 }
 
 - (id) initForContext:(GPGContext *)context searchPattern:(NSString *)searchPattern secretKeysOnly:(BOOL)secretKeysOnly;
-// Designated initializer
+- (id) initForContext:(GPGContext *)context searchPatterns:(NSArray *)searchPatterns secretKeysOnly:(BOOL)secretKeysOnly;
+// Designated initializers
 // Can raise a GPGException; in this case, a release is sent to self
 
 @end
@@ -238,7 +240,7 @@ static void progressCallback(void *object, const char *description, int type, in
     return gpgme_get_textmode(_context) != 0;
 }
 
-- (void) setKeyListMode:(int)mask
+- (void) setKeyListMode:(GPGKeyListMode)mask
 /*"
  * Changes the default behaviour of the key listing methods.
  * The value in mask is a bitwise-or combination of one or multiple bit values
@@ -260,7 +262,7 @@ static void progressCallback(void *object, const char *description, int type, in
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 }
 
-- (int) keyListMode
+- (GPGKeyListMode) keyListMode
 /*"
  * Returns the current key listing mode of the context.
  * This value can then be modified and used in a subsequent #setKeyListMode: invocation
@@ -296,6 +298,16 @@ static void progressCallback(void *object, const char *description, int type, in
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 }
 
+- (GPGProtocol) protocol
+/*"
+ * Returns the protocol currently used by the context.
+"*/
+{
+    int	protocol = gpgme_get_protocol(_context);
+
+    return protocol;
+}
+
 - (NSString *) statusAsXMLString
 /*"
  * Returns information about the last operation, as an XML string.
@@ -317,7 +329,7 @@ static void progressCallback(void *object, const char *description, int type, in
  * </GnupgOperationInfo>}
  *
  * Currently the only operations that return additional information
- * are encrypt and sign.
+ * are encrypt, sign and import.
 "*/
 #warning See gpgme.c for more info on format
 // We should provide a class GPGContextStatus whose instances
@@ -779,6 +791,27 @@ static void progressCallback(void *object, const char *description, int type, in
     return [key autorelease];
 }
 
+- (NSArray *) signatures
+/*"
+ * Returns an array of #GPGSignatures after #{-verifySignedData:},
+ * #{-verifySignatureData:againstData:} or #{-decryptedData:signatureStatus:}
+ * has been called. A single detached signature can contain signatures
+ * by more than one key.
+"*/
+{
+    NSMutableArray	*signatures = [NSMutableArray arrayWithCapacity:3];
+    unsigned		anIndex = 0;
+
+    while(gpgme_get_sig_status(_context, anIndex, NULL, NULL)){
+        GPGSignature	*aSignature = [[GPGSignature allocWithZone:[self zone]] initWithGpgmeContext:_context index:anIndex++];
+
+        [signatures addObject:aSignature];
+        [aSignature release];
+    }
+    
+    return signatures;
+}
+
 - (GPGData *) decryptedData:(GPGData *)inputData signatureStatus:(GPGSignatureStatus *)statusPtr
 /*"
  * Decrypts the ciphertext in inputData and returns it as plain.
@@ -876,6 +909,8 @@ static void progressCallback(void *object, const char *description, int type, in
     GpgmeData	outputData;
     GpgmeError	anError;
 
+    NSParameterAssert(recipients != nil); // Would mean symmetric encryption
+    
     anError = gpgme_data_new(&outputData);
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
@@ -887,6 +922,38 @@ static void progressCallback(void *object, const char *description, int type, in
     }
     if(allRecipientsAreValidPtr != NULL)
         *allRecipientsAreValidPtr = (anError != GPGME_Invalid_Recipients);
+
+    return [[[GPGData alloc] initWithInternalRepresentation:outputData] autorelease];
+}
+
+- (GPGData *) encryptedData:(GPGData *)inputData
+/*"
+ * Encrypts the plaintext in inputData using symmetric encryption
+ * (rather than public key encryption) and
+ * returns the ciphertext. The type of the ciphertext created is determined
+ * by the %{ASCII armor} and %{text mode} attributes set for the context.
+ *
+ * Symmetrically encrypted cipher text can be
+ * deciphered with #{-decryptedData:}. Note that in this case the
+ * crypto backend needs to retrieve a passphrase from the user.
+ * Symmetric encryption is currently only supported for the OpenPGP
+ * crypto backend.
+ *
+ * Can raise a #GPGException.
+"*/
+{
+    GpgmeData	outputData;
+    GpgmeError	anError;
+
+    anError = gpgme_data_new(&outputData);
+    if(anError != GPGME_No_Error)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+
+    anError = gpgme_op_encrypt(_context, NULL, [inputData gpgmeData], outputData);
+    if(anError != GPGME_No_Error){
+        gpgme_data_release(outputData);
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    }
 
     return [[[GPGData alloc] initWithInternalRepresentation:outputData] autorelease];
 }
@@ -1149,6 +1216,27 @@ static void progressCallback(void *object, const char *description, int type, in
     return [[[GPGKeyEnumerator alloc] initForContext:self searchPattern:searchPattern secretKeysOnly:secretKeysOnly] autorelease];
 }
 
+- (NSEnumerator *) keyEnumeratorForSearchPatterns:(NSArray *)searchPatterns secretKeysOnly:(BOOL)secretKeysOnly
+/*"
+ * Returns an enumerator of #GPGKey instances. It starts a key listing operation inside the context;
+ * the context will be busy until either all keys are received, or #{-stopKeyEnumeration} is invoked,
+ * or the enumerator has been deallocated.
+ *
+ * searchPatterns is an array containing engine specific expressions that are used
+ * to limit the list to all keys matching the pattern. searchPatterns can be empty;
+ * in this case all keys are returned.
+ *
+ * If secretKeysOnly is YES, searches only for keys whose secret part is
+ * available.
+ *
+ * This call also resets any pending key listing operation.
+ *
+ * Can raise a #GPGException, even during enumeration.
+"*/
+{
+    return [[[GPGKeyEnumerator alloc] initForContext:self searchPatterns:searchPatterns secretKeysOnly:secretKeysOnly] autorelease];
+}
+
 - (void) stopKeyEnumeration
 /*"
  * Ends the key listing operation and allows to use the context for some
@@ -1275,6 +1363,35 @@ static void progressCallback(void *object, const char *description, int type, in
     return self;
 }
 
+- (id) initForContext:(GPGContext *)newContext searchPatterns:(NSArray *)searchPatterns secretKeysOnly:(BOOL)secretKeysOnly
+{
+    NSParameterAssert(searchPatterns != nil);
+    
+    if(self = [self init]){
+        GpgmeError	anError;
+        int			i, patternCount = [searchPatterns count];
+        const char	**patterns;
+
+        patterns = NSZoneMalloc(NSDefaultMallocZone(), (patternCount + 1) * sizeof(char *));
+        for(i = 0; i < patternCount; i++)
+            patterns[i] = [[searchPatterns objectAtIndex:i] UTF8String];
+        patterns[i] = NULL;
+
+        anError = gpgme_op_keylist_ext_start([newContext gpgmeContext], patterns, secretKeysOnly, 0);
+        NSZoneFree(NSDefaultMallocZone(), patterns);
+
+        if(anError != GPGME_No_Error){
+            [self release];
+            [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+        }
+        else
+            // We retain newContext, to avoid it to be released before we are finished
+            context = [newContext retain];
+    }
+
+    return self;
+}
+
 - (void) dealloc
 {
     GpgmeError	anError = GPGME_No_Error;
@@ -1343,9 +1460,14 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) dealloc
 {
-    GpgmeError	anError = gpgme_op_trustlist_end([context gpgmeContext]);
+    GpgmeError	anError;
 
-    [context release];
+    if(context != nil){
+        anError = gpgme_op_trustlist_end([context gpgmeContext]);
+        [context release];
+    }
+    else
+        anError = GPGME_No_Error;
 
     [super dealloc];
 
