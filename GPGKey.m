@@ -480,7 +480,7 @@
 {
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_NAME maxCount:[self secondaryUserIDsCount]];
 
-    [result insertObject:[self userID] atIndex:0];
+    [result insertObject:[self name] atIndex:0];
 
     return result;
 }
@@ -498,11 +498,9 @@
  * Returns primary userID email, followed by other userIDs emails.
 "*/
 {
-#warning Seems there is a bug: email contains full name PLUS email
-    // Compare with -email...
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_EMAIL maxCount:[self secondaryUserIDsCount]];
 
-    [result insertObject:[self userID] atIndex:0];
+    [result insertObject:[self email] atIndex:0];
 
     return result;
 }
@@ -522,7 +520,7 @@
 {
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_COMMENT maxCount:[self secondaryUserIDsCount]];
 
-    [result insertObject:[self userID] atIndex:0];
+    [result insertObject:[self comment] atIndex:0];
 
     return result;
 }
