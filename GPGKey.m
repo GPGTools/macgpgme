@@ -443,8 +443,19 @@
 {
     const char	*aCString = gpgme_key_get_string_attr(_key, identifier, NULL, 0);
 
-    if(aCString != NULL)
-        return [NSString stringWithUTF8String:aCString];
+    if(aCString != NULL)	{
+        //detects whether string is Latin-1 or UTF-8
+        char *s;
+        
+        for (s=aCString; *s && !(*s & 0x80); s++)
+            ;
+        if (*s && !strchr(aCString, 0xc3))	{
+            return [[[NSString alloc] initWithData: [NSData dataWithBytes: aCString length: strlen(aCString)]
+                                          encoding: NSISOLatin1StringEncoding] autorelease];
+        }
+        else
+            return [NSString stringWithUTF8String:aCString];    
+        }
     else
         return nil;
 }
