@@ -13,9 +13,10 @@
 					ActiveTab = 0;
 					Frame = "{{0, 23}, {1024, 607}}";
 					Split0 = {
+						ActiveTab = 2;
 						Frame = "{{225, 0}, {799, 607}}";
 						Split0 = {
-							Frame = "{{0, 25}, {799, 582}}";
+							Frame = "{{0, 217}, {799, 390}}";
 						};
 						SplitCount = 1;
 						Tab0 = {
@@ -88,5 +89,10 @@
 	};
 	0867D69CFE84028FC02AAC07 = {
 		activeExec = 0;
+	};
+	0BD178DA01298E177F000001 = {
+		uiCtxt = {
+			sepNavWindowFrame = "{{2, 224}, {750, 502}}";
+		};
 	};
 }

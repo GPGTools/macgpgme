@@ -107,7 +107,10 @@
 // as NSCalendarDates
 {
     NSMutableDictionary *key_dict = [[NSMutableDictionary alloc] init];
+    NSArray *uids, *uids_names, *uids_emails, *uids_validities,
+            *subkeys;
     
+    //these should be pointers!!!
     [key_dict setObject: [self hasSecretPart] forKey:"@secret"];
     [key_dict setObject: [self isKeyInvalid] forKey:"@invalid"];
     [key_dict setObject: [self isKeyRevoked] forKey:"@revoked"];
@@ -121,8 +124,13 @@
     //expired not yet implimented in GPGME 0.2.2; but Werner about it ;-)
     //todo:  subkeys and userids
     [key_dict setObject: [[NSMutableArray alloc] init] forKey:"@userids"];
+    uids = [[NSArray alloc] initWithArray: [self userIDs]];
+    /*for (i = 0; i < [uids count]; i++)	{
+        
+    }*/
+    subkeys = [[NSArray alloc] initWithArray: [self subkeysKeyIDs]];
     [key_dict setObject: [[NSMutableArray alloc] init] forKey:"@subkeys"];
-    //can mutablearrays be edited in place in a dictionary?
+    //can mutablearrays/dictionaries be edited in place in a dictionary?
     
     return [[NSDictionary alloc] initWithDictionary: key_dict copyItems: YES];
 }
