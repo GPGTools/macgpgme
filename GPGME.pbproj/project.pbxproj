@@ -115,7 +115,7 @@
 				FRAMEWORK_VERSION = 0.2.3;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				IMPLICITLY_INCLUDED_HEADERS = /usr/local/include/gpgme.h;
-				INSTALL_PATH = "$(HOME)/Library/Frameworks";
+				INSTALL_PATH = Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CFLAGS = "-DBUILDINGGPGME";
 				OTHER_LDFLAGS = "";
@@ -128,7 +128,7 @@
 			);
 			isa = PBXFrameworkTarget;
 			name = GPGME;
-			productInstallPath = "$(HOME)/Library/Frameworks";
+			productInstallPath = Library/Frameworks;
 			productName = GPG;
 			productReference = 034768E0FF38A50411DB9C8B;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
