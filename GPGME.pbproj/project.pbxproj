@@ -82,6 +82,7 @@
 		};
 		0867D69AFE84028FC02AAC07 = {
 			children = (
+				F5F45A490119BC4201000001,
 				1058C7B0FEA5585E11CA2CBB,
 				1058C7B2FEA5585E11CA2CBB,
 			);
@@ -110,7 +111,7 @@
 				FRAMEWORK_VERSION = A;
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /Users/redbird/Development/macgpgcvs/GPGME;
 				OPTIMIZATION_CFLAGS = "";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
@@ -159,6 +160,7 @@
 				F5F004E8011733AA01000001,
 				F5F004E9011733AA01000001,
 				F5F004EA011733AA01000001,
+				F5F45A4D0119C49101000001,
 			);
 			isa = PBXHeadersBuildPhase;
 			name = Headers;
@@ -176,6 +178,7 @@
 			files = (
 				F5F004EB011733AA01000001,
 				F5F004EC011733AA01000001,
+				F5F45A4E0119C49101000001,
 			);
 			isa = PBXSourcesBuildPhase;
 			name = Sources;
@@ -184,6 +187,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1058C7B3FEA5585E11CA2CBB,
+				F5F45A4A0119BC4201000001,
 			);
 			isa = PBXFrameworksBuildPhase;
 			name = "Frameworks & Libraries";
@@ -232,6 +236,8 @@
 		};
 		08FB77AEFE84172EC02AAC07 = {
 			children = (
+				F5F45A4B0119C49101000001,
+				F5F45A4C0119C49101000001,
 				F5F004E3011733AA01000001,
 				F5F004E4011733AA01000001,
 				F5F004E5011733AA01000001,
@@ -342,6 +348,40 @@
 		};
 		F5F004EC011733AA01000001 = {
 			fileRef = F5F004E6011733AA01000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5F45A490119BC4201000001 = {
+			isa = PBXFileReference;
+			name = libgpgme.a;
+			path = /usr/local/lib/libgpgme.a;
+			refType = 0;
+		};
+		F5F45A4A0119BC4201000001 = {
+			fileRef = F5F45A490119BC4201000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5F45A4B0119C49101000001 = {
+			isa = PBXFileReference;
+			path = gpg.h;
+			refType = 4;
+		};
+		F5F45A4C0119C49101000001 = {
+			isa = PBXFileReference;
+			path = gpg.m;
+			refType = 4;
+		};
+		F5F45A4D0119C49101000001 = {
+			fileRef = F5F45A4B0119C49101000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5F45A4E0119C49101000001 = {
+			fileRef = F5F45A4C0119C49101000001;
 			isa = PBXBuildFile;
 			settings = {
 			};
