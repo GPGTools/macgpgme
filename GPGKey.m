@@ -108,8 +108,8 @@
 {
     NSMutableDictionary *key_dict = [[NSMutableDictionary alloc] init];
     NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
-            *subkeys, *sks_secret_sts, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
-                *sks_disabled_sts, *sks_keyids, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
+            *subkeys, /**sks_secret_sts,*/ *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
+                *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
     int i;
     
     //these should be pointers!!!
@@ -147,11 +147,42 @@
         [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
             [uids_comments objectAtIndex:i] forKey:@"comment"];
     }
-    subkeys = [[NSArray alloc] initWithArray: [self subkeysKeyIDs]];
+    
     [key_dict setObject: [[NSMutableArray alloc] init] forKey:@"subkeys"];
+    subkeys = [[NSArray alloc] initWithArray: [self subkeysKeyIDs]];  //keyids
+    //sks_secret_sts = [[NSArray alloc] initWithArray: nothing here yet];
+    sks_invalid_sts = [[NSArray alloc] initWithArray: [self subkeysValidityStatuses]];
+    sks_revoked_sts = [[NSArray alloc] initWithArray: [self subkeysRevocationStatuses]];
+    sks_expired_sts = [[NSArray alloc] initWithArray: [self subkeysExpirationStatuses]];
+    sks_disabled_sts = [[NSArray alloc] initWithArray: [self subkeysActivityStatuses]];
+    sks_fprs = [[NSArray alloc] initWithArray: [self subkeysFingerprints]];
+    sks_algos = [[NSArray alloc] initWithArray: [self subkeysAlgorithms]];
+    sks_lens = [[NSArray alloc] initWithArray: [self subkeysLengths]];
+    sks_cre_dates = [[NSArray alloc] initWithArray: [self subkeysCreationDates]];
+    for (i = 0; i < [subkeys count]; i++)	{
+        [[key_dict objectForKey:@"subkeys"] addObject: [[NSMutableDictionary alloc] init]];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_invalid_sts objectAtIndex:i] forKey:@"invalid"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_revoked_sts objectAtIndex:i] forKey:@"revoked"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_expired_sts objectAtIndex:i] forKey:@"expired"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_disabled_sts objectAtIndex:i] forKey:@"disabled"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [subkeys objectAtIndex:i] forKey:@"keyid"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_fprs objectAtIndex:i] forKey:@"frp"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_algos objectAtIndex:i] forKey:@"algo"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_lens objectAtIndex:i] forKey:@"len"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_cre_dates objectAtIndex:i] forKey:@"created"];
+    }
     //can mutablearrays/dictionaries be edited in place in a dictionary?
     
-    return [[NSDictionary alloc] initWithDictionary: key_dict copyItems: YES];
+    return key_dict;
 }
 
 - (NSString *) mainStringAttributeWithIdentifier:(GpgmeAttr)identifier
