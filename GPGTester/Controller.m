@@ -253,7 +253,7 @@
         }
 
         aContext = [[GPGContext alloc] init];
-        [aContext setArmor:[encryptionArmoredSwitch state]];
+        [aContext setUsesArmor:[encryptionArmoredSwitch state]];
 [aContext addSigner:[keys objectAtIndex:2]];
         inputData = [[GPGData alloc] initWithContentsOfFile:[encryptionInputFilenameTextField stringValue]];
 
@@ -316,7 +316,7 @@
         GPGData		*exportedData;
 
         aContext = [[GPGContext alloc] init];
-        [aContext setArmor:YES];
+        [aContext setUsesArmor:YES];
         exportedData = [aContext exportedKeysForRecipients:[self selectedRecipients]];
         
         savePanel = [NSSavePanel savePanel];
@@ -401,7 +401,7 @@
         aContext = [[GPGContext alloc] init];
         [aContext setPassphraseDelegate:self];
         [aContext setProgressDelegate:self];
-        [aContext setArmor:[signingArmoredSwitch state]];
+        [aContext setUsesArmor:[signingArmoredSwitch state]];
         inputData = [[GPGData alloc] initWithContentsOfFile:[signingInputFilenameTextField stringValue]];
 
         NS_DURING
