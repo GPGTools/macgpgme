@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001 Mac GPG Project.
+//  Copyright (C) 2001-2002 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -35,17 +35,36 @@
 @class GPGRecipients;
 
 
+/*"
+ * The #GPGSignatureStatus type holds the result of a signature check,
+ * or the combined result of all signatures. The following results are possible:
+ * _{GPGSignatureStatusNone         No status - should not happen.}
+ * _{GPGSignatureStatusGood         The signature is valid.}
+ * _{GPGSignatureStatusBad          The signature is not valid.}
+ * _{GPGSignatureStatusNoKey        The signature could not be checked due to a missing key.}
+ * _{GPGSignatureStatusNoSignature  This is not a signature.}
+ * _{GPGSignatureStatusError        Due to some other error the check could not be done.}
+ * _{GPGSignatureStatusDifferent    There is more than 1 signature and they have not the same status.}
+"*/
 typedef enum {
-    GPGSignatureStatusNone        = 0,	/*"No status - should not happen"*/
-    GPGSignatureStatusGood        = 1,	/*"The signature is valid"*/
-    GPGSignatureStatusBad         = 2,	/*"The signature is not valid"*/
-    GPGSignatureStatusNoKey       = 3,	/*"The signature could not be checked due to a missing key"*/
-    GPGSignatureStatusNoSignature = 4,	/*"This is not a signature"*/
-    GPGSignatureStatusError       = 5,	/*"Due to some other error the check could not be done"*/
-    GPGSignatureStatusDifferent   = 6	/*"There is more than 1 signature and they have not the same status"*/
+    GPGSignatureStatusNone        = 0,
+    GPGSignatureStatusGood        = 1,
+    GPGSignatureStatusBad         = 2,
+    GPGSignatureStatusNoKey       = 3,
+    GPGSignatureStatusNoSignature = 4,
+    GPGSignatureStatusError       = 5,
+    GPGSignatureStatusDifferent   = 6
 } GPGSignatureStatus;
 
 
+/*"
+ * The #GPGSignatureMode type is used to specify the desired type of a signature.
+ * The following modes are available:
+ * _{GPGSignatureModeNormal  A normal signature is made, the output includes the plaintext and the signature.}
+ * _{GPGSignatureModeDetach  A detached signature is made.}
+ * _{GPGSignatureModeClear   A clear text signature is made.
+ *                           The %{ASCII armor} and %{text mode} settings of the context are ignored.}
+"*/
 typedef enum {
     GPGSignatureModeNormal = 0,
     GPGSignatureModeDetach = 1,
@@ -57,15 +76,47 @@ typedef enum {
  * Posted when a call to #{+waitOnAnyRequest:} or #{wait:} is done with argument
  * YES and there is a pending request.
  * 
- * Object is nil; no userInfo
+ * Object is nil; no userInfo.
 "*/
 GPG_EXPORT NSString	* const GPGIdleNotification;
 
 
+/*"
+ * Posted after a modification to a keyring has been done. For example,
+ * after an import or delete operation.
+ *
+ * Object is (currently) nil.
+ *
+ * UserInfo:
+ * _{GPGContextKey The #GPGContext instance in which the operation was executed.}
+ * 
+"*/
+GPG_EXPORT NSString	* const GPGKeyringChangedNotification;
+GPG_EXPORT NSString	* const GPGContextKey;
+
+
+/*"
+ * Posted when progress information about a cryptographic operation is available,
+ * for example during key generation.
+ *
+ * For details on the progress events, see the entry for the PROGRESS
+ * status in the file doc/DETAILS of the GnuPG distribution.
+ *
+ * Currently it is used only during key generation.
+ *
+ * UserInfo:
+ * _{description  String...}
+ * _{type         String containing the letter printed during key generation.}
+ * _{current      Amount done, as #NSNumber.}
+ * _{total        Amount to be done, as #NSNumber. 0 means that the total amount is not known.}
+ * current/total = 100/100 may be used to detect the end of operation.
+"*/
+GPG_EXPORT NSString	* const GPGProgressNotification;
+
+
 @interface GPGContext : GPGObject /*"NSObject"*/
 {
-    id	_passphraseDelegate;
-    id	_progressDelegate;
+    id	_passphraseDelegate; /*"Passphrase delegate, not retained."*/
 }
 
 /*"
@@ -74,97 +125,117 @@ GPG_EXPORT NSString	* const GPGIdleNotification;
 - (id) init;
 
 /*"
- * Methods to use for asynchronous operations
-"*/
-- (void) cancel;
-+ (GPGContext *) waitOnAnyRequest:(BOOL)hang;
-- (BOOL) wait:(BOOL)hang;
-
-/*"
  * Notations
 "*/
-- (NSString *) xmlNotation;
+- (NSString *) notationsAsXMLString;
 
 /*"
- * Attributes
+ * ASCII armor
 "*/
 - (void) setUsesArmor:(BOOL)armor;
 - (BOOL) usesArmor;
+
+/*"
+ * Text mode
+"*/
 - (void) setUsesTextMode:(BOOL)mode;
 - (BOOL) usesTextMode;
+
+/*"
+ * Key listing mode
+"*/
 - (void) setFastKeyListMode:(BOOL)fastMode;
+
+/*"
+ * Protocol selection
+"*/
+- (void) setProtocol:(GPGProtocol)protocol;
 
 /*"
  * Operation status
 "*/
-- (NSString *) xmlStatus;
+- (NSString *) statusAsXMLString;
 
 /*"
- * Callbacks
+ * Passphrase delegate
 "*/
 - (void) setPassphraseDelegate:(id)delegate;
-- (void) setProgressDelegate:(id)delegate;
+- (id) passphraseDelegate;
 
 /*"
- * Signers
+ * Selecting signers
 "*/
-- (void) clearSigners;
-- (void) addSigner:(GPGKey *)key;
+- (void) clearSignerKeys;
+- (void) addSignerKey:(GPGKey *)key;
 // BUG: valid only for signing operation, not for encryption
 //      => impossible to encrypt+sign
 // Does NOT retain key!
 // Can raise a GPGException
-- (NSEnumerator *) signerEnumerator;
-// Enumerated objects are GPGKey instances
-
-/*"
- * Authentication results
-"*/
-- (GPGSignatureStatus) statusOfSignatureAtIndex:(int)index creationDate:(NSCalendarDate **)creationDatePtr fingerprint:(NSString **)fingerprint;
-- (GPGKey *) keyOfSignatureAtIndex:(int)index;
-
+- (NSEnumerator *) signerKeyEnumerator;
 @end
 
 
-@interface GPGContext(GPGBasic)
+@interface GPGContext(GPGAsynchronousOperations)
+/*"
+ * Asynchronous operations (#{NOTE THAT ASYNCHRONOUS OPERATIONS DON'T WORK RIGHT NOW.})
+"*/
+- (void) cancelOperation;
++ (GPGContext *) waitOnAnyRequest:(BOOL)hang;
+- (BOOL) wait:(BOOL)hang;
 @end
 
 
-@interface GPGContext(GPGNormalUsage)
+@interface GPGContext(GPGSynchronousOperations)
 /*"
- * Normal usage
+ * Crypto operations
 "*/
-// All these methods can raise a GPGException
+/*"
+ * Decrypt
+"*/
+- (GPGData *) decryptedData:(GPGData *)inputData;
+/*"
+ * Verify
+"*/
 - (GPGSignatureStatus) verifySignatureData:(GPGData *)signatureData againstData:(GPGData *)inputData;
 - (GPGSignatureStatus) verifySignedData:(GPGData *)signedData;
+- (GPGSignatureStatus) statusOfSignatureAtIndex:(int)index creationDate:(NSCalendarDate **)creationDatePtr fingerprint:(NSString **)fingerprint;
+- (GPGKey *) keyOfSignatureAtIndex:(int)index;
+/*"
+ * Decrypt and verify
+"*/
+- (GPGData *) decryptedData:(GPGData *)inputData signatureStatus:(GPGSignatureStatus *)statusPtr;
+/*"
+ * Sign
+"*/
+- (GPGData *) signedData:(GPGData *)inputData signatureMode:(GPGSignatureMode)mode;
+/*"
+ * Encrypt
+"*/
+- (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients;
+/*"
+ * Managing keyring
+"*/
+- (GPGData *) exportedKeysForRecipients:(GPGRecipients *)recipients;
 - (void) importKeyData:(GPGData *)keyData;
 //- (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr;
 - (void) deleteKey:(GPGKey *)key evenIfSecretKey:(BOOL)allowSecret;
-// BUG: it seems it doesn't work yet...
-@end
-
-
-@interface GPGContext(GPGExtended)
-// These are synchronous forms of the methods defined in GPGBasic category
-/*"
- * Synchronous operations
-"*/
-- (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients;
-// BUG: does not raise any exception if no recipient is trusted! (but it encrypts nothing)
-- (GPGData *) decryptedData:(GPGData *)inputData;
-// BUG: does not raise any exception if no valid passphrase is given
-- (GPGData *) signedData:(GPGData *)inputData signatureMode:(GPGSignatureMode)mode;
-- (GPGData *) exportedKeysForRecipients:(GPGRecipients *)recipients;
 @end
 
 
 @interface GPGContext(GPGKeyManagement)
+/*"
+ * Listing keys
+"*/
 - (NSEnumerator *) keyEnumeratorForSearchPattern:(NSString *)searchPattern secretKeysOnly:(BOOL)secretKeysOnly;
-- (NSEnumerator *) trustListEnumeratorForSearchPattern:(NSString *)searchPattern maximumLevel:(int)maxLevel;
+- (void) stopKeyEnumeration;
+/*"
+ * Listing trust items
+"*/
+- (NSEnumerator *) trustItemEnumeratorForSearchPattern:(NSString *)searchPattern maximumLevel:(int)maxLevel;
+- (void) stopTrustItemEnumeration;
 @end
 
 
 @interface NSObject(GPGContextDelegate)
 - (NSString *) context:(GPGContext *)context passphraseForDescription:(NSString *)description userInfo:(NSMutableDictionary *)userInfo;
-- (void) context:(GPGContext *)context progressingWithDescription:(NSString *)what type:(int)type current:(int)current total:(int)total;
 @end
