@@ -58,7 +58,8 @@
             GPGObject.h, 
             GPGRecipients.h, 
             GPGTrustItem.h, 
-            GPGME.h
+            GPGME.h, 
+            GPGPrettyInfo.h
         ); 
     }; 
     LANGUAGE = English; 

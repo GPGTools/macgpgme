@@ -47,7 +47,7 @@ LIBRARY_PATHS = -L/usr/local/lib
 FRAMEWORKS = -framework Foundation
 PUBLIC_HEADERS = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
                  GPGExceptions.h GPGKey.h GPGObject.h GPGRecipients.h\
-                 GPGTrustItem.h GPGME.h
+                 GPGTrustItem.h GPGME.h GPGPrettyInfo.h
 
 
 
