@@ -37,6 +37,8 @@ id passphrase_callback_target;
         return nil;
     }
     else	{
+        gpgme_set_armor(context, 1);
+        gpgme_set_textmode(context, 1);
         return self;
     }
 }
@@ -85,11 +87,6 @@ id passphrase_callback_target;
     gpgme_set_passphrase_cb(context, _gpgPassphraseCB, self);
 }
 
-/*- (id)passphraseCBTarget
-{
-    return passphrase_callback_target;
-}*/
-
 - (NSString *)getUserKeyAsXML
 {
     return [[NSString alloc] initWithCString:gpgme_key_get_as_xml(user_key)];
@@ -101,17 +98,16 @@ id passphrase_callback_target;
 {
     GpgmeData indata, outdata;
     int err = gpgme_data_new (&indata);
-    if (err) return @"an error occured indata";
+    //if (err) return @"an error occured indata";
     err = gpgme_data_new (&outdata);
-    if (err) return @"an error occured outdata";
+    //if (err) return @"an error occured outdata";
     err = gpgme_data_write(indata, [data cString], [data cStringLength]);
-    if (err) return @"an error occured data_write";
-    context = gpgme_wait(context, 5);
-    err = gpgme_op_sign_start (context, indata, outdata, 2);
-    if (err) return [[NSString alloc] initWithFormat:@"error %d occured", err];
+    //if (err) return @"an error occured data_write";
+    err = gpgme_op_sign (context, indata, outdata, GPGME_SIG_MODE_CLEAR);
+    //if (err) return [[NSString alloc] initWithFormat:@"error %d occured", err];
     gpgme_data_release (indata);
     gpgme_data_release (outdata);
-    if (err) return @"an error occured";
+    //if (err) return @"an error occured";
     return [self readGpgmeData:outdata];
 }
 
