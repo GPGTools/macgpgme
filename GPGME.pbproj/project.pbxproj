@@ -105,6 +105,7 @@
 				0867D69FFE84028FC02AAC07,
 				0867D6A0FE84028FC02AAC07,
 				0867D6A2FE84028FC02AAC07,
+				F5330347012FC85C01000001,
 			);
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -115,7 +116,7 @@
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OPTIMIZATION_CFLAGS = "";
-				OTHER_CFLAGS = "-DBUILDINGGPG";
+				OTHER_CFLAGS = "-DBUILDINGGPGME";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = GPGME;
 				SECTORDER_FLAGS = "";
@@ -597,6 +598,19 @@
 //F52
 //F53
 //F54
+		F5330347012FC85C01000001 = {
+			buildActionMask = 8;
+			files = (
+			);
+			generatedFileNames = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			name = "Shell Script";
+			neededFileNames = (
+			);
+			shellPath = /bin/sh;
+			shellScript = "MKDIRS=\"mkdir -p\"\nAUTODOC=/usr/local/bin/autodoc\nAUTODOC_FLAGS=\"-copydocs -timestamp -allclasses\"\nAUTODOC_FORMAT=html\nAUTODOC_LANGUAGE=English\nexport AD_COPYRIGHT=\"Mac GPG Project\"\n\n# If autodoc is not installed, we quit without any error\ntest -x $AUTODOC || exit 0\n\nPUBLIC_DOC_INSTALLDIR=\"$SYMROOT/$PRODUCT_NAME.framework/Resources/$AUTODOC_LANGUAGE.lproj/Documentation\"\n\n# We need to write down file names here\nAUTODOC_FILES=\"GPGContext.h GPGData.h GPGEngine.h GPGExceptions.h GPGKey.h GPGObject.h GPGRecipients.h GPGTrustItem.h\"\nAUTODOC_DOCDIR=\"$PUBLIC_DOC_INSTALLDIR\"\n\nOTHER_AUTODOC_FLAGS=\"-typedirs -allclasses -combine -force -nosingles\"\n\nALL_AUTODOC_FLAGS=\"$AUTODOC_FLAGS $OTHER_AUTODOC_FLAGS\"\n\n$MKDIRS $PUBLIC_DOC_INSTALLDIR\n$AUTODOC $ALL_AUTODOC_FLAGS -format $AUTODOC_FORMAT -dest $AUTODOC_DOCDIR $AUTODOC_FILES\n";
+		};
 		F56F791B012E3F8001000001 = {
 			children = (
 				F56F791C012E3F8001000001,
