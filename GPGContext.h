@@ -54,16 +54,20 @@ typedef enum {
 
 /*"
  * The key listing mode is a combination of one or multiple of the following bit values:
- * _{GPGKeyListModeLocal   Specifies that the local %{key ring} should be searched
- *                         for keys in the key listing operation. This is the default.}
- * _{GPGKeyListModeExtern  Specifies that an external source should be searched for keys
- *                         in the key listing operation. The type of external source is
- *                         dependant on the crypto engine used. For example, it can be
- *                         a remote %{key server} or LDAP certificate server.}
+ * _{GPGKeyListModeLocal       Specifies that the local %{key ring} should be searched
+ *                             for keys in the key listing operation.
+ *                             This is the default.}
+ * _{GPGKeyListModeExtern      Specifies that an external source should be searched for
+ *                             keys in the key listing operation. The type of external
+ *                             source is dependant on the crypto engine used.
+ *                             For example, it can be a remote %{key server} or LDAP
+ *                             certificate server.}
+ * _{GPGKeyListModeSignatures  .}
 "*/
 typedef enum {
-    GPGKeyListModeLocal  = 1 << 0,
-    GPGKeyListModeExtern = 1 << 1
+    GPGKeyListModeLocal      = 1 << 0,
+    GPGKeyListModeExtern     = 1 << 1,
+    GPGKeyListModeSignatures = 1 << 2
 }GPGKeyListMode;
 
 
@@ -265,5 +269,5 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 
 
 @interface NSObject(GPGContextDelegate)
-- (NSString *) context:(GPGContext *)context passphraseForDescription:(NSString *)description userInfo:(NSMutableDictionary *)userInfo;
+- (NSString *) context:(GPGContext *)context passphraseForKey:(GPGKey *)key again:(BOOL)again;
 @end

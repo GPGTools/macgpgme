@@ -350,58 +350,18 @@ static void progressCallback(void *object, const char *description, int type, in
 
 static const char *passphraseCallback(void *object, const char *description, void **r_hd)
 {
-#if 1
-    NSString	*aDescription;
-    NSString	*aPassphrase;
-
-    NSCAssert(r_hd != NULL, @"### passphraseCallback's r_hd is NULL?!");
-    if(description == NULL){
-        // We can now release resources associated with returned value
-        if(*r_hd != NULL){
-            [(*((NSMutableDictionary **)r_hd)) release];
-            *r_hd = NULL;
-        }
-        
-        return NULL;
-    }
-    aDescription = [NSString stringWithUTF8String:description];
-
-    if(*r_hd == NULL)
-        *r_hd = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSMutableDictionary dictionary], @"userInfo", nil];
-
-    aPassphrase = [((GPGContext *)object)->_passphraseDelegate context:((GPGContext *)object) passphraseForDescription:aDescription userInfo:[(*((NSMutableDictionary **)r_hd)) objectForKey:@"userInfo"]];
-
-    if(aPassphrase == nil)
-        return NULL;
-    else{
-        // We cannot simply return [aPassphrase UTF8String], because
-        // the buffer is autoreleased, that's why we retain data.
-        // Nor can we just set passphraseAsData equal to aPassphrase
-        // as data.  A copy must be made, else passphraseAsData never
-        // gets to exist.
-        NSData	*passphraseAsData;
-        passphraseAsData = [NSData dataWithData: [aPassphrase dataUsingEncoding:NSUTF8StringEncoding]];
-
-        [(*((NSMutableDictionary **)r_hd)) setObject:passphraseAsData forKey:@"passphraseAsData"];
-
-        return [passphraseAsData bytes];
-    }
-#else
-    // Future implementation
-    // Currently it cannot work, because libgpgme doesn't support
-    // searching for a key  at this time, even in a new context.
     NSString	*aDescription, *aPattern;
     NSString	*aPassphrase;
-    NSArray		*keys;
-    BOOL		tryAgain;
+    NSArray		*keys = nil;
+    BOOL		tryAgain, needsAKey;
     GPGContext	*keySearchContext;
 
     NSCAssert(r_hd != NULL, @"### passphraseCallback's r_hd is NULL?!");
     if(description == NULL){
         // We can now release resources associated with returned value
-        if(*((void **)r_hd) != NULL){
+        if(*r_hd != NULL){
             [(*((id *)r_hd)) release];
-            *((void **)r_hd) = NULL;
+            *r_hd = NULL;
         }
         
         return NULL;
@@ -409,26 +369,37 @@ static const char *passphraseCallback(void *object, const char *description, voi
     aDescription = [NSString stringWithUTF8String:description];
     // Description format: currently on 3 lines
     // ENTER or TRY_AGAIN
-    // keyID userID
-    // keyID keyID algo
+    // keyID userID         OR    [User ID hint missing]
+    // keyID keyID algo     OR    [passphrase info missing]
     tryAgain = [aDescription hasPrefix:@"TRY_AGAIN"];
+    needsAKey = ![aDescription hasSuffix:@"\n[User ID hint missing]\n[passphrase info missing]"];
 
-    aPattern = [@"0x" stringByAppendingString:[[[[aDescription componentsSeparatedByString:@"\n"] objectAtIndex:1] componentsSeparatedByString:@" "] objectAtIndex:0]];
-    keySearchContext = [[GPGContext alloc] init];
-    keys = [[keySearchContext keyEnumeratorForSearchPattern:aPattern secretKeysOnly:YES] allObjects];
-    [keySearchContext release];
-    NSCAssert1([keys count] < 2, @"### More than one key for search pattern '%@'", aPattern);
+    if(needsAKey){
+        // In case of symmetric encryption, no key is needed
+        aPattern = [@"0x" stringByAppendingString:[[[[aDescription componentsSeparatedByString:@"\n"] objectAtIndex:1] componentsSeparatedByString:@" "] objectAtIndex:0]];
+        keySearchContext = [[GPGContext alloc] init];
+        keys = [[keySearchContext keyEnumeratorForSearchPattern:aPattern secretKeysOnly:YES] allObjects];
+        [keySearchContext release];
+        NSCAssert2([keys count] == 1, @"### No key or more than one key (%d) for search pattern '%@'", [keys count], aPattern);
+    }
 
     aPassphrase = [((GPGContext *)object)->_passphraseDelegate context:((GPGContext *)object) passphraseForKey:[keys lastObject] again:tryAgain];
 
-    if(aPassphrase == nil)
-        return NULL;
-    else{
-        // We cannot simply pass [aPassphrase UTF8String], because
-        // the buffer is autoreleased!!!
-        NSData	*passphraseAsData = [[aPassphrase dataUsingEncoding:NSUTF8StringEncoding] retain];
+    if(aPassphrase == nil){
+        // Cancel operation
+        [(GPGContext *)object cancelOperation];
 
-        if(*((void **)r_hd) == NULL)
+        return NULL;
+    }
+    else{
+        // We cannot simply return [aPassphrase UTF8String], because
+        // the buffer is autoreleased, that's why we retain data.
+        // Nor can we just set passphraseAsData equal to aPassphrase
+        // as data.  A copy must be made, else passphraseAsData never
+        // gets to exist.
+        NSData	*passphraseAsData = [[NSData alloc] initWithData: [aPassphrase dataUsingEncoding:NSUTF8StringEncoding]];
+
+        if(*r_hd == NULL)
             (*((id *)r_hd)) = passphraseAsData;
         else{
             [(*((id *)r_hd)) release];
@@ -437,7 +408,6 @@ static const char *passphraseCallback(void *object, const char *description, voi
 
         return [passphraseAsData bytes];
     }
-#endif
 }
 
 static void progressCallback(void *object, const char *description, int type, int current, int total)
@@ -463,14 +433,14 @@ static void progressCallback(void *object, const char *description, int type, in
  * It is better if the engine retrieves the passphrase from a trusted agent (a daemon process),
  * rather than having each user to implement their own passphrase query.
  *
- * Delegate must respond to #context:passphraseForDescription:userInfo:.
+ * Delegate must respond to #context:passphraseForKey:again:.
  * Delegate is not retained.
  *
  * The user can disable the use of a passphrase callback by calling
  * #{-setPassphraseDelegate:} with nil as argument.
 "*/
 {
-    NSParameterAssert(delegate == nil || [delegate respondsToSelector:@selector(context:passphraseForDescription:userInfo:)]);
+    NSParameterAssert(delegate == nil || [delegate respondsToSelector:@selector(context:passphraseForKey:again:)]);
     _passphraseDelegate = delegate; // We don't retain delegate
     if(delegate == nil)
         gpgme_set_passphrase_cb(_context, NULL, NULL);
@@ -563,7 +533,7 @@ static void progressCallback(void *object, const char *description, int type, in
 /*"
  * Tries to cancel the pending operation.
  * A running synchronous operation in the context or the
- * method #{-wait} sent to this context might notice the
+ * method -wait sent to this context might notice the
  * cancellation flag and return.
  * It is not guaranteed that it will work under
  * under all circumstances. Its current primary purpose is to prevent
@@ -572,6 +542,8 @@ static void progressCallback(void *object, const char *description, int type, in
 {
     gpgme_cancel(_context);
 }
+
+#warning Only one thread at a time can call gpgme_wait => protect usage with mutex!
 
 + (GPGContext *) waitOnAnyRequest:(BOOL)hang
 /*"
@@ -627,6 +599,21 @@ static void progressCallback(void *object, const char *description, int type, in
  * of the operation, in case of error.
 "*/
 {
+    /*
+     @code{gpgme_wait} can be used only in conjunction with any context
+    that has a pending operation initiated with one of the
+    @code{gpgme_op_*_start} functions except @code{gpgme_op_keylist_start}
+    and @code{gpgme_op_trustlist_start} (for which you should use the
+                                         corresponding @code{gpgme_op_*_next} functions).  If @var{ctx} is
+    @code{NULL}, all of such contexts are waited upon and possibly
+    returned.  Synchronous operations running in parallel, as well as key
+    and trust item list operations, do not affect @code{gpgme_wait}.
+
+    In a multi-threaded environment, only one thread should ever call
+    @code{gpgme_wait} at any time, irregardless if @var{ctx} is specified
+    or not.  This means that all calls to this function should be fully
+    synchronized by locking primitives.
+    */
     GpgmeError	anError = GPGME_No_Error;
     GpgmeCtx	returnedCtx = gpgme_wait(_context, &anError, hang);
 
@@ -1050,13 +1037,14 @@ static void progressCallback(void *object, const char *description, int type, in
  * Others exceptions could be raised too.
 "*/
 {
-    GpgmeError	anError = gpgme_op_import(_context, [keyData gpgmeData]);
+    int			nr;
+    GpgmeError	anError = gpgme_op_import_ext(_context, [keyData gpgmeData], &nr);
     // It would be nice if we could get imported keys in returned value...
 
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 #warning We should parse statusAsXMLString to give more info in notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:GPGContextKey]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, GPGContextKey, [NSNumber numberWithInt:nr], @"ImportedKeyCount", nil]];
 }
 
 #warning FIXME: gpgme_op_genkey() has no counterpart
@@ -1514,20 +1502,13 @@ static void progressCallback(void *object, const char *description, int type, in
 // just to force autodoc to take our comments in account!
 #ifdef FAKE_IMPLEMENTATION_FOR_AUTODOC
 @implementation NSObject(GPGContextDelegate)
-- (NSString *) context:(GPGContext *)context passphraseForDescription:(NSString *)description userInfo:(NSMutableDictionary *)userInfo
+- (NSString *) context:(GPGContext *)context passphraseForKey:(GPGKey *)key again:(BOOL)again
 /*"
- * Description can be used as a prompt text (BUG: not yet localized).
- * userInfo can be used to store contextual information. It is passed from one call to
- * another with the values you put into. By default it is empty.
+ * key is the secret key for which the user is asked a passphrase.
+ * key is nil only in case of symmetric encryption/decryption.
+ * again is set to YES if user type a wrong passphrase the previous time.
  *
- * Currently, description has the following format: it is a 3 lines string.
- * _{1  ENTER or TRY_AGAIN}
- * _{2  keyID userID}
- * _{3  keyID keyID algo}
- *
- * #CAUTION:
- * Method will change in the future to context:passphraseForKey:again:, but currently you cannot ask
- * for a key during passphrase callback (limitation due to gpgme, as of 0.3.3).
+ * If you return nil, it means that user cancelled passphrase request.
 "*/
 {
 }
