@@ -226,7 +226,8 @@
     [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
     [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
     [key_dict setObject: [self creationDate] forKey:@"created"];
-    [key_dict setObject: [self expirationDate] forKey:@"expire"];
+    if ([self expirationDate])
+        [key_dict setObject: [self expirationDate] forKey:@"expire"];
     [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
     uids = [self userIDs];
     uids_invalid_sts = [self userIDsValidityStatuses];
