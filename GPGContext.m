@@ -364,7 +364,8 @@ static const char *passphraseCallback(void *object, const char *description, voi
     else{
         // We cannot simply return [aPassphrase UTF8String], because
         // the buffer is autoreleased, that's why we retain data.
-        NSData	*passphraseAsData = [aPassphrase dataUsingEncoding:NSUTF8StringEncoding];
+        NSData	*passphraseAsData;
+        passphraseAsData = [NSData dataWithData: [aPassphrase dataUsingEncoding:NSUTF8StringEncoding]];
 
         [(*((NSMutableDictionary **)r_hd)) setObject:passphraseAsData forKey:@"passphraseAsData"];
 
