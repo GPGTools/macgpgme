@@ -3,13 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 32;
+	objectVersion = 34;
 	objects = {
 		014CEA440018CDF011CA2923 = {
 			buildRules = (
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				OPTIMIZATION_CFLAGS = "-O0";
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -116,7 +117,6 @@
 				IMPLICITLY_INCLUDED_HEADERS = /usr/local/include/gpgme.h;
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				OPTIMIZATION_CFLAGS = "";
 				OTHER_CFLAGS = "-DBUILDINGGPGME";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = GPGME;

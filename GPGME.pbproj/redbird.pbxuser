@@ -66,9 +66,15 @@
 						Frame = "{{0, 0}, {200, 607}}";
 					};
 					Tab1 = {
+						ClassesFrame = "{{0, 0}, {202, 56}}";
 						Frame = "{{0, 0}, {200, 100}}";
+						MembersFrame = "{{0, 65}, {202, 35}}";
+						OptionsSetName = "Hierarchy, all classes";
 					};
 					Tab2 = {
+						Frame = "{{0, 0}, {200, 100}}";
+					};
+					Tab3 = {
 						Frame = "{{0, 0}, {200, 100}}";
 						Split0 = {
 							Frame = "{{0, 0}, {200, 45}}";
@@ -78,14 +84,16 @@
 						};
 						SplitCount = 2;
 					};
-					Tab3 = {
+					Tab4 = {
 						Frame = "{{0, 0}, {250, 100}}";
 					};
-					TabCount = 4;
+					TabCount = 5;
 				};
 				WindowLocation = "{0, 10}";
 			};
 		};
+		wantsIndex = 1;
+		wantsSCM = -1;
 	};
 	0867D69CFE84028FC02AAC07 = {
 		activeExec = 0;
