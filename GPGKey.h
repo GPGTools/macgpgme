@@ -64,44 +64,44 @@ typedef enum {
 
 /*"
  * Symmetric key algorithms
- * _{GPG_NoAlgorithm           Unencrypted data.}
- * _{GPG_IDEAAlgorithm         .}
- * _{GPG_TripleDESAlgorithm    aka 3DES or DES-EDE - 168 bit key derived from 192.}
- * _{GPG_CAST5Algorithm        128 bit key.}
- * _{GPG_BlowfishAlgorithm     128 bit key, 16 rounds.}
- * _{GPG_SAFER_SK128Algorithm  13 rounds.}
+ * _{GPG_NoAlgorithm           Unencrypted data}
+ * _{GPG_IDEAAlgorithm         [IDEA]}
+ * _{GPG_TripleDESAlgorithm    [3DES] aka 3DES or DES-EDE - 168 bit key derived from 192}
+ * _{GPG_CAST5Algorithm        [CAST5] 128 bit key}
+ * _{GPG_BlowfishAlgorithm     [BLOWFISH] 128 bit key, 16 rounds}
+ * _{GPG_SAFER_SK128Algorithm  13 rounds}
  * _{GPG_DES_SKAlgorithm       .}
- * _{GPG_AES128Algorithm       aka Rijndael.}
- * _{GPG_AES192Algorithm       aka Rijndael 192.}
- * _{GPG_AES256Algorithm       aka Rijndael 256.}
- * _{GPG_TwoFishAlgorithm      twofish 256 bit.}
- * _{GPG_SkipjackAlgorithm     Experimental: skipjack.}
- * _{GPG_TwoFish_OldAlgorithm  Experimental: twofish 128 bit.}
- * _{GPG_DummyAlgorithm        No encryption at all.}
+ * _{GPG_AES128Algorithm       [AES] aka Rijndael}
+ * _{GPG_AES192Algorithm       aka Rijndael 192}
+ * _{GPG_AES256Algorithm       aka Rijndael 256}
+ * _{GPG_TwoFishAlgorithm      [TWOFISH] twofish 256 bit}
+ * _{GPG_SkipjackAlgorithm     Experimental: skipjack}
+ * _{GPG_TwoFish_OldAlgorithm  Experimental: twofish 128 bit}
+ * _{GPG_DummyAlgorithm        No encryption at all}
 "*/
 typedef enum {
-    GPG_NoAlgorithm          =   0, // Unencrypted data
+    GPG_NoAlgorithm          =   0,
     GPG_IDEAAlgorithm        =   1,
-    GPG_TripleDESAlgorithm   =   2, // aka 3DES or DES-EDE - 168 bit key derived from 192
-    GPG_CAST5Algorithm       =   3, // 128 bit key
-    GPG_BlowfishAlgorithm    =   4, // 128 bit key, 16 rounds
-    GPG_SAFER_SK128Algorithm =   5, // 13 rounds
+    GPG_TripleDESAlgorithm   =   2,
+    GPG_CAST5Algorithm       =   3,
+    GPG_BlowfishAlgorithm    =   4,
+    GPG_SAFER_SK128Algorithm =   5,
     GPG_DES_SKAlgorithm      =   6,
-    GPG_AES128Algorithm      =   7, // aka Rijndael
-    GPG_AES192Algorithm      =   8, // aka Rijndael 192
-    GPG_AES256Algorithm      =   9, // aka Rijndael 256
-    GPG_TwoFishAlgorithm     =  10, // twofish 256 bit
-    GPG_SkipjackAlgorithm    = 101, // Experimental: skipjack
-    GPG_TwoFish_OldAlgorithm = 102, // Experimental: twofish 128 bit
-    GPG_DummyAlgorithm       = 110  // No encryption at all
+    GPG_AES128Algorithm      =   7,
+    GPG_AES192Algorithm      =   8,
+    GPG_AES256Algorithm      =   9,
+    GPG_TwoFishAlgorithm     =  10,
+    GPG_SkipjackAlgorithm    = 101,
+    GPG_TwoFish_OldAlgorithm = 102,
+    GPG_DummyAlgorithm       = 110
 }GPGSymmetricKeyAlgorithm;
 
 
 /*"
  * Hash algorithms
  * _{GPG_MD5HashAlgorithm             .}
- * _{GPG_SHA_1HashAlgorithm           .}
- * _{GPG_RIPE_MD160HashAlgorithm      .}
+ * _{GPG_SHA_1HashAlgorithm           [SHA1].}
+ * _{GPG_RIPE_MD160HashAlgorithm      [RIPEMD160]}
  * _{GPG_DoubleWidthSHAHashAlgorithm  .}
  * _{GPG_MD2HashAlgorithm             .}
  * _{GPG_TIGER192HashAlgorithm        .}
@@ -116,6 +116,19 @@ typedef enum {
     GPG_TIGER192HashAlgorithm       = 6,
     GPG_HAVALHashAlgorithm          = 7  // 5 pass, 160 bit
 }GPGHashAlgorithm;
+
+
+/*"
+ * Compression algorithms
+ * _{GPG_NoCompressionAlgorithm    No compression}
+ * _{GPG_ZIPCompressionAlgorithm   [ZIP] Old zlib version (RFC1951) which is used by PGP}
+ * _{GPG_ZLIBCompressionAlgorithm  [ZLIB] Default algorithm (RFC1950)}
+"*/
+typedef enum {
+    GPG_NoCompressionAlgorithm   = 0,
+    GPG_ZIPCompressionAlgorithm  = 1,
+    GPG_ZLIBCompressionAlgorithm = 2
+}GPGCompressionAlgorithm;
 
 
 @interface GPGKey : GPGObject <NSCopying> /*"NSObject"*/
