@@ -31,6 +31,7 @@
 #import "GPGRecipients.h"
 #import "GPGTrustItem.h"
 #import <Foundation/Foundation.h>
+#import <time.h> /* Needed for GNUstep */
 #import <gpgme.h>
 
 
