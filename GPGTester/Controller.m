@@ -55,8 +55,9 @@
 
 - (void) idle:(NSNotification *)notification
 {
-    [idleImageView setImage:[idleImages objectAtIndex:(idleCounter++ % 4)]];
-    [idleImageView display];
+	//commented out rpw 12-9-01, was interfering with window redrawing, reszing, etc. Don't want to look at it now
+ //   [idleImageView setImage:[idleImages objectAtIndex:(idleCounter++ % 4)]];
+  //  [idleImageView display];
 }
 
 - (GPGRecipients *) selectedRecipients
@@ -117,7 +118,8 @@
 {
     if([notification object] == keyTableView){
         GPGKey	*selectedKey = [keys objectAtIndex:[keyTableView selectedRow]];
-        NSLog(@"%d", [selectedKey expirationDate]);
+		//commented out rpw 12-09-01, GPGContent does not respond to expirationDate right now
+      //  NSLog(@"%d", [selectedKey expirationDate]);
 
         [xmlTextView setString:[selectedKey xmlDescription]];
 
