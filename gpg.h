@@ -62,6 +62,6 @@
 //- (NSArray *)listKeys:(NSString *)pattern;
 //- (NSArray *)listSecretKeys:(NSString *)pattern;
 
-//private functions
+// class functions
 + (const char *)passphraseCB;
 @end
