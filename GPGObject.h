@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001 Mac GPG Project.
+//  Copyright (C) 2001-2002 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -30,6 +30,8 @@
 {
     void	*_internalRepresentation; /*"Pointer to the gpgme internal structure wrapped by this instance"*/
 }
+
++ (void) initialize;
 
 - (id) initWithInternalRepresentation:(void *)aPtr;
 
