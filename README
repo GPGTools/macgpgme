@@ -1,13 +1,13 @@
 gpgme library
 =============
-In order to build this framework, you need gpgme 0.3.12 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
+In order to build this framework, you need gpgme 0.3.14 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
 
 On MacOS X 10.2:
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.12.tar.gz
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.12.tar.gz.sig
-gpg --verify gpgme-0.3.12.tar.gz.sig
-gnutar xzf gpgme-0.3.12.tar.gz
-cd gpgme-0.3.12
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.14.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.14.tar.gz.sig
+gpg --verify gpgme-0.3.14.tar.gz.sig
+gnutar xzf gpgme-0.3.14.tar.gz
+cd gpgme-0.3.14
 ./configure
 mv libtool libtool.original
 sed < libtool.original "s%-flat_namespace -undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
