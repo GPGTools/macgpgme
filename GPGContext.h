@@ -28,6 +28,7 @@
 
 
 @class NSCalendarDate;
+@class NSEnumerator;
 @class NSMutableDictionary;
 @class GPGData;
 @class GPGKey;

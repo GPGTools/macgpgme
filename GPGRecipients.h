@@ -26,6 +26,9 @@
 #import <GPGME/GPGObject.h>
 
 
+@class NSEnumerator;
+
+
 typedef enum {
     GPGValidityUnknown   = 0,
     GPGValidityUndefined = 1, /*"No value assigned"*/

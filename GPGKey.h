@@ -30,6 +30,7 @@
 @class NSArray;
 @class NSCalendarDate;
 @class NSDictionary;
+@class NSEnumerator;
 @class NSString;
 
 
