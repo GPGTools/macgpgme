@@ -107,29 +107,48 @@
 // as NSCalendarDates
 {
     NSMutableDictionary *key_dict = [[NSMutableDictionary alloc] init];
-    NSArray *uids, *uids_names, *uids_emails, *uids_validities,
-            *subkeys;
+    NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
+            *subkeys, *sks_secret_sts, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
+                *sks_disabled_sts, *sks_keyids, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
+    int i;
     
     //these should be pointers!!!
-    [key_dict setObject: [self hasSecretPart] forKey:"@secret"];
-    [key_dict setObject: [self isKeyInvalid] forKey:"@invalid"];
-    [key_dict setObject: [self isKeyRevoked] forKey:"@revoked"];
-    [key_dict setObject: [self hasKeyExpired] forKey:"@expired"];
-    [key_dict setObject: [self isKeyDisabled] forKey:"@disabled"];
+    [key_dict setObject: [[NSNumber alloc] initWithInt:[self hasSecretPart]] forKey:@"secret"];
+    [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyInvalid]] forKey:@"invalid"];
+    [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyRevoked]] forKey:@"revoked"];
+    [key_dict setObject: [[NSNumber alloc] initWithInt:[self hasKeyExpired]] forKey:@"expired"];
+    [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyDisabled]] forKey:@"disabled"];
     [key_dict setObject: [self keyID] forKey: @"keyid"];
-    [key_dict setObject: [self fingerprint] forKey:"@fpr"];
-    [key_dict setObject: [self algorithm] forKey:"@algo"];
-    [key_dict setObject: [self length] forKey:"@len"];
-    [key_dict setObject: [self creationDate] forKey:"@created"];
+    [key_dict setObject: [self fingerprint] forKey:@"fpr"];
+    [key_dict setObject: [[NSNumber alloc] initWithInt:[self algorithm]] forKey:@"algo"];
+    [key_dict setObject: [[NSNumber alloc] initWithInt:[self length]] forKey:@"len"];
+    [key_dict setObject: [self creationDate] forKey:@"created"];
     //expired not yet implimented in GPGME 0.2.2; but Werner about it ;-)
     //todo:  subkeys and userids
-    [key_dict setObject: [[NSMutableArray alloc] init] forKey:"@userids"];
+    [key_dict setObject: [[NSMutableArray alloc] init] forKey:@"userids"];
     uids = [[NSArray alloc] initWithArray: [self userIDs]];
-    /*for (i = 0; i < [uids count]; i++)	{
-        
-    }*/
+    uids_invalid_sts = [[NSArray alloc] initWithArray: [self userIDsValidityStatuses]];
+    uids_revoked_sts = [[NSArray alloc] initWithArray: [self userIDsRevocationStatuses]];
+    uids_names = [[NSArray alloc] initWithArray: [self names]];
+    uids_emails = [[NSArray alloc] initWithArray: [self emails]];
+    uids_comments = [[NSArray alloc] initWithArray: [self comments]];
+    for (i = 0; i < [uids count]; i++)	{
+        [[key_dict objectForKey:@"userids"] addObject: [[NSMutableDictionary alloc] init]];
+        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+            [uids_invalid_sts objectAtIndex:i] forKey:@"invalid"];
+        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+            [uids_revoked_sts objectAtIndex:i] forKey:@"revoked"];
+        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+            [uids objectAtIndex:i] forKey:@"raw"];
+        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+            [uids_names objectAtIndex:i] forKey:@"name"];
+        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+            [uids_emails objectAtIndex:i] forKey:@"email"];
+        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+            [uids_comments objectAtIndex:i] forKey:@"comment"];
+    }
     subkeys = [[NSArray alloc] initWithArray: [self subkeysKeyIDs]];
-    [key_dict setObject: [[NSMutableArray alloc] init] forKey:"@subkeys"];
+    [key_dict setObject: [[NSMutableArray alloc] init] forKey:@"subkeys"];
     //can mutablearrays/dictionaries be edited in place in a dictionary?
     
     return [[NSDictionary alloc] initWithDictionary: key_dict copyItems: YES];
