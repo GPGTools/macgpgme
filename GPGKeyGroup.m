@@ -28,6 +28,7 @@
 #include "GPGKeyGroup.h"
 #include "GPGContext.h"
 #include "GPGOptions.h"
+#include "GPGInternals.h"
 
 
 @implementation GPGKeyGroup
@@ -40,7 +41,8 @@
  * be expanded to their contained keys.
  *
  * Key groups are only for PGP keys. To obtain key groups, invoke 
- * -[GPGContext keyGroups]
+ * -[GPGContext keyGroups]. If you want to create a new key group, invoke
+ * +[GPGKeyGroup createKeyGroupNamed:withKeys:].
 "*/
 
 - (void) dealloc
@@ -70,6 +72,61 @@
 - (NSString *) debugDescription
 {
     return [NSString stringWithFormat:@"<%@: %p> name = %@, keys = %@", NSStringFromClass([self class]), self, [self name], [self keys]];
+}
+
++ (id) createKeyGroupNamed:(NSString *)name withKeys:(NSArray *)keys
+/*"
+ * Creates a new key group in gpg configuration file, overwriting any existing 
+ * group with the same name. Group names can't be empty nor contain the equal
+ * sign (=) or an end-of-line character (\n), and the starting and ending space 
+ * characters are trimmed out; groups may have no key. Returns the newly created
+ * key group.
+"*/
+{
+    GPGOptions      *options;
+    NSArray         *optionNames;
+    NSArray         *optionValues;
+    NSCharacterSet  *forbiddenChars = [NSCharacterSet characterSetWithCharactersInString:@"=\n"];
+    NSString        *newGroupDefValue;
+    GPGKeyGroup     *newGroup;
+    unsigned        i, aCount;
+    BOOL            foundGroup = NO;
+    
+    name = [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSParameterAssert(name != nil && [name length] > 0 && [name rangeOfCharacterFromSet:forbiddenChars].location == NSNotFound);
+    
+    newGroupDefValue = [NSString stringWithFormat:@"%@=%@", name, [[keys valueForKey:@"keyID"] componentsJoinedByString:@" "]];
+    
+    options = [[GPGOptions alloc] init];
+    optionNames = [options optionNames];
+    optionValues = [options optionValues];
+    aCount = [optionNames count];
+    for(i = 0; i < aCount; i++){
+        if([[optionNames objectAtIndex:i] isEqualToString:@"group"]){
+            NSDictionary    *aDict = [GPGContext parsedGroupDefinitionLine:[optionValues objectAtIndex:i]];
+        
+            if([[aDict objectForKey:@"name"] isEqualToString:name]){
+                if(!foundGroup){
+                    [options setOptionValue:newGroupDefValue atIndex:i];
+                    foundGroup = YES;
+                }
+                else{
+                    [options removeOptionAtIndex:i];
+                    aCount--;
+                    i--;
+                }
+            }
+        }
+    }
+
+    if(!foundGroup)
+        [options addOptionNamed:@"group" value:newGroupDefValue state:YES];
+
+    [options saveOptions];
+    [options release];
+    newGroup = [[GPGKeyGroup alloc] initWithName:name keys:keys];
+    
+    return [newGroup autorelease];
 }
 
 @end

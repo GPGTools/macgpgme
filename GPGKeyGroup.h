@@ -44,6 +44,8 @@ extern "C" {
     NSArray     *_keys;
 }
 
++ (id) createKeyGroupNamed:(NSString *)name withKeys:(NSArray *)keys;
+
 - (NSString *) name;
 - (NSArray *) keys;
 
