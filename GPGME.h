@@ -33,5 +33,6 @@
 #import <GPGME/GPGKey.h>
 #import <GPGME/GPGObject.h>
 #import <GPGME/GPGRecipients.h>
+#import <GPGME/GPGSignature.h>
 #import <GPGME/GPGTrustItem.h>
 #import <GPGME/GPGPrettyInfo.h>
