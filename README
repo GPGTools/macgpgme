@@ -1,18 +1,13 @@
 gpgme library
 =============
-In order to build this framework, you need gpgme 0.3.8 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
+In order to build this framework, you need gpgme 0.3.12 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
 
-On MacOS X 10.1:
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz.sig
-gpg --verify gpgme-0.3.8.tar.gz.sig
-gnutar xzf gpgme-0.3.8.tar.gz
-cd gpgme-0.3.8
-
-We need to apply a patch, as well as adding a new file, missing from the original distribution
-cp -pR path/to/GPGME/vasprintf.c gpgme/
-patch -p1 < path/to/GPGME/gpgme.patch
-
+On MacOS X 10.2:
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.12.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.12.tar.gz.sig
+gpg --verify gpgme-0.3.12.tar.gz.sig
+gnutar xzf gpgme-0.3.12.tar.gz
+cd gpgme-0.3.12
 ./configure
 mv libtool libtool.original
 sed < libtool.original "s%-flat_namespace -undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
@@ -21,27 +16,6 @@ sudo make install
 sudo mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
 cd ..
 
-On MacOS X Server 1.x (Rhapsody):
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz.sig
-gpg --verify gpgme-0.3.8.tar.gz.sig
-gnutar xzf gpgme-0.3.8.tar.gz
-cd gpgme-0.3.8
-
-We need to apply a patch, as well as adding a new file, missing from the original distribution
-cp -pR path/to/GPGME/vasprintf.c gpgme/
-patch -p1 < path/to/GPGME/gpgme.patch
-
-./configure
-mv tests/gpg/mkdemodirs tests/gpg/mkdemodirs.original
-sed < tests/gpg/mkdemodirs.original 's%rm -r $name%rm -r $name || true%' > tests/gpg/mkdemodirs
-chmod a+x tests/gpg/mkdemodirs
-make
-su root
-  make install
-  mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
-  exit
-cd ..
 
 Note that now the dynamic library libgpgme.dylib is renamed to avoid it's use! If you link GPGME against the dylib (if there are both a static and dynamic version of the same library, the linker uses the dynamic one), then you must install the dylib on user's computer. To avoid this, it's preferrable to rename it to avoid its use, and link against the static version.
 
@@ -56,9 +30,9 @@ If you prefer to have a standalone installed version of GPGME.framework (why wou
 /Library/Frameworks is the default install location.
 (Why? It's really hard to create a portable access path to ~/Library/Frameworks. Very easy to create one to /Library/Frameworks)
 
-However, ProjectBuilder (as of ProjectBuilder 1.1.1) does not provide yet the -install- feature, you must use Terminal
+However, ProjectBuilder (as of ProjectBuilder 2.0.1) does not provide yet the -install- feature, you must use Terminal
 
-On Mac OS X 10.1:
+On Mac OS X 10.2:
 	(from within the GPGME directory)
 	pbxbuild install -target GPGME DSTROOT=  //there is no typo here. It really is "DSTROOT="
 	cd ..
@@ -69,7 +43,7 @@ Documentation generation
 HTML documentation can be generated automatically from code. For this you need to have installed autodoc in /usr/local/bin/, and its templates in one of the searched locations (see AutoDoc documentation).
 To install AutoDoc, type the following commands in a terminal:
 
-On MacOS X 10.1:
+On MacOS X 10.2:
 curl -O ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-P-b.tar.gz
 gnutar xzf AutoDoc-2.0b8-P-b.tar.gz
 sudo mkdir -p /usr/local/bin
@@ -83,10 +57,3 @@ To generate and install the documentation, choose target GPGME Documentation, an
 Note that if you use the Deployment Build Style for GPGME.framework, documentation will also be copied in GPGME.framework on install.
 Tip: To view documentation within ProjectBuilder, open the files using File/Open..., and bookmark them with Navigation/Add to Bookmarks.
 
-
-On MacOS X Server 1.x (Rhapsody):
-wget ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-OSXS-P-b.tar.gz
-gnutar xzf AutoDoc-2.0b8-OSXS-P-b.tar.gz
-Then install Makefiles following instructions in contrib/Makefiles/README
-
-To generate and install the documentation, choose target "build-public-documentation"
