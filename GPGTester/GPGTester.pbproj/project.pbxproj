@@ -84,18 +84,6 @@
 			settings = {
 			};
 		};
-		0BD178FE012990BF7F000001 = {
-			fileRef = 29B97325FDCFA39411CA2CEA;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		0BD178FF012990BF7F000001 = {
-			fileRef = 29B97324FDCFA39411CA2CEA;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		0BD179010129910F7F000001 = {
 			isa = PBXFileReference;
 			path = CheckMark.tiff;
@@ -124,7 +112,6 @@
 		0BD179060129910F7F000001 = {
 			children = (
 				0BD179070129910F7F000001,
-				0BD179080129910F7F000001,
 			);
 			isa = PBXVariantGroup;
 			name = GPGTester.nib;
@@ -135,12 +122,6 @@
 			isa = PBXFileReference;
 			name = English;
 			path = English.lproj/GPGTester.nib;
-			refType = 4;
-		};
-		0BD179080129910F7F000001 = {
-			isa = PBXFileReference;
-			name = "English - macos";
-			path = "English.lproj/GPGTester-macos.nib";
 			refType = 4;
 		};
 		0BD179090129910F7F000001 = {
@@ -342,7 +323,7 @@
 				043355C9FE30361CC02AAC07,
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = /Users/cohen/Library/Frameworks;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks/;
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
@@ -405,7 +386,6 @@
 				0BD1790C0129910F7F000001,
 				0BD1790D0129910F7F000001,
 				0BD1790E0129910F7F000001,
-				F5FA2FB0017BD35501AA2D97,
 			);
 			isa = PBXResourcesBuildPhase;
 			name = "Bundle Resources";
@@ -430,9 +410,9 @@
 		29B9732DFDCFA39411CA2CEA = {
 			buildActionMask = 2147483647;
 			files = (
-				0BD178FE012990BF7F000001,
-				0BD178FF012990BF7F000001,
 				F592931B01B3A6C90130DCEA,
+				F538A19F01C33D3601158B65,
+				F538A1A001C33D3601158B65,
 			);
 			isa = PBXFrameworksBuildPhase;
 			name = "Frameworks & Libraries";
@@ -476,10 +456,22 @@
 //F52
 //F53
 //F54
+		F538A19F01C33D3601158B65 = {
+			fileRef = 29B97325FDCFA39411CA2CEA;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F538A1A001C33D3601158B65 = {
+			fileRef = 29B97324FDCFA39411CA2CEA;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F592931A01B3A6C90130DCEA = {
 			isa = PBXFrameworkReference;
 			name = GPGME.framework;
-			path = /Users/cohen/Library/Frameworks/GPGME.framework;
+			path = /Library/Frameworks/GPGME.framework;
 			refType = 0;
 		};
 		F592931B01B3A6C90130DCEA = {
@@ -500,12 +492,6 @@
 			isa = PBXFileReference;
 			path = NOTES;
 			refType = 4;
-		};
-		F5FA2FB0017BD35501AA2D97 = {
-			fileRef = F5FA2FAF017BD35501AA2D97;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 	};
 	rootObject = 29B97313FDCFA39411CA2CEA;
