@@ -29,11 +29,12 @@ mv gpgme/util.h gpgme/util.h.original
 sed < gpgme/util.h.original "s%coid%void%" > gpgme/util.h
 mv tests/gpg/mkdemodirs tests/gpg/mkdemodirs.original
 sed < tests/gpg/mkdemodirs.original 's%rm -r $name%rm -r $name || true%' > tests/gpg/mkdemodirs
+chmod a+x tests/gpg/mkdemodirs
 make
 su root
   make install
   mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
-exit
+  exit
 cd ..
 
 Note that now the dynamic library libgpgme.dylib is renamed to avoid it's use! If you link GPGME against the dylib (if there are both a static and dynamic version of the same library, the linker uses the dynamic one), then you must install the dylib on user's computer. To avoid this, it's preferrable to rename it to avoid its use, and link against the static version.
@@ -84,4 +85,4 @@ wget ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-OSXS-P-b.tar.gz
 gnutar xzf AutoDoc-2.0b8-OSXS-P-b.tar.gz
 Then install Makefiles following instructions in contrib/Makefiles/README
 
-To generate and install the documentation, choose target 
+To generate and install the documentation, choose target "build-public-documentation"
