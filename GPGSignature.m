@@ -82,6 +82,7 @@
  * Can raise a #GPGException (except a #GPGErrorEOF).
 "*/
 {
+    //NSLog(@"%d", _index);
     return [_context keyOfSignatureAtIndex:_index];
 }
 

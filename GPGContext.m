@@ -776,6 +776,8 @@ static void progressCallback(void *object, const char *description, int type, in
     GpgmeKey	aGpgmeKey;
     GpgmeError	anError = gpgme_get_sig_key(_context, index, &aGpgmeKey);
     GPGKey		*key;
+
+    //NSLog(@"keyOfSignatureAtIndex: %d", index);
     
     if(anError == GPGME_EOF)
         return nil;
