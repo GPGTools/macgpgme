@@ -100,19 +100,13 @@
 }
 
 - (NSDictionary *) dictionaryRepresentation
-// Uses the same keys as in XML representation, but places
-// subkeys in an array keyed by "subkeys", and userIDs
-// in an array keyed by "userids". Optional/boolean values are
-// represented as NSNumbers. Time values are represented
-// as NSCalendarDates
 {
     NSMutableDictionary *key_dict = [[NSMutableDictionary alloc] init];
     NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
-            *subkeys, /**sks_secret_sts,*/ *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
+            *subkeys, *sks_secret_sts, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
                 *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
     int i;
     
-    //these should be pointers!!!
     [key_dict setObject: [[NSNumber alloc] initWithInt:[self hasSecretPart]] forKey:@"secret"];
     [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyInvalid]] forKey:@"invalid"];
     [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyRevoked]] forKey:@"revoked"];
@@ -123,8 +117,7 @@
     [key_dict setObject: [[NSNumber alloc] initWithInt:[self algorithm]] forKey:@"algo"];
     [key_dict setObject: [[NSNumber alloc] initWithInt:[self length]] forKey:@"len"];
     [key_dict setObject: [self creationDate] forKey:@"created"];
-    //expired not yet implimented in GPGME 0.2.2; but Werner about it ;-)
-    //todo:  subkeys and userids
+    //expired date not yet implimented in GPGME 0.2.2; bug Werner about it ;-)
     [key_dict setObject: [[NSMutableArray alloc] init] forKey:@"userids"];
     uids = [[NSArray alloc] initWithArray: [self userIDs]];
     uids_invalid_sts = [[NSArray alloc] initWithArray: [self userIDsValidityStatuses]];
@@ -150,7 +143,7 @@
     
     [key_dict setObject: [[NSMutableArray alloc] init] forKey:@"subkeys"];
     subkeys = [[NSArray alloc] initWithArray: [self subkeysKeyIDs]];  //keyids
-    //sks_secret_sts = [[NSArray alloc] initWithArray: nothing here yet];
+    sks_secret_sts = [[NSArray alloc] initWithArray: [self subkeysSecretnessStatuses]];
     sks_invalid_sts = [[NSArray alloc] initWithArray: [self subkeysValidityStatuses]];
     sks_revoked_sts = [[NSArray alloc] initWithArray: [self subkeysRevocationStatuses]];
     sks_expired_sts = [[NSArray alloc] initWithArray: [self subkeysExpirationStatuses]];
@@ -162,6 +155,8 @@
     for (i = 0; i < [subkeys count]; i++)	{
         [[key_dict objectForKey:@"subkeys"] addObject: [[NSMutableDictionary alloc] init]];
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+            [sks_secret_sts objectAtIndex:i] forKey:@"secret"];
+        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
             [sks_invalid_sts objectAtIndex:i] forKey:@"invalid"];
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
             [sks_revoked_sts objectAtIndex:i] forKey:@"revoked"];
@@ -172,7 +167,7 @@
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
             [subkeys objectAtIndex:i] forKey:@"keyid"];
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_fprs objectAtIndex:i] forKey:@"frp"];
+            [sks_fprs objectAtIndex:i] forKey:@"fpr"];
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
             [sks_algos objectAtIndex:i] forKey:@"algo"];
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
@@ -180,8 +175,7 @@
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
             [sks_cre_dates objectAtIndex:i] forKey:@"created"];
     }
-    //can mutablearrays/dictionaries be edited in place in a dictionary?
-    
+        
     return key_dict;
 }
 
@@ -628,7 +622,26 @@
 
     return (!!result);
 }
-#warning We miss a function to get hasSecretPart from subkeys...
+
+- (NSArray *) subkeysSecretnessStatuses
+/*"
+ * Returns an array of #NSNumber instances. First value is for primary userID.
+"*/
+{
+    int				i = 0;
+    unsigned long	aValue;
+    unsigned		maxCount = [self secondaryUserIDsCount];
+    NSMutableArray	*attributes = [NSMutableArray array];
+
+    for(i = 0; i <= maxCount; i++){
+        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_IS_SECRET, NULL, i);
+        [attributes addObject:[NSNumber numberWithBool:!!aValue]];
+    }
+
+    return attributes;
+}
+
+//#warning We miss a function to get hasSecretPart from subkeys...
 
 - (BOOL) canEncrypt
 /*"

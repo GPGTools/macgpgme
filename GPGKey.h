@@ -159,6 +159,7 @@ enum {
 - (NSArray *) userIDsValidityStatuses;
 
 - (BOOL) hasSecretPart;
+- (NSArray *) subkeysSecretnessStatuses;
 
 - (BOOL) canEncrypt;
 - (BOOL) mainKeyCanEncrypt;
