@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001 Mac GPG Project.
+//  Copyright (C) 2001-2002 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -39,34 +39,43 @@
 "*/
 /*"
  * Public key algorithms
+ * _{GPG_RSAAlgorithm                 Encrypt or Sign.}
+ * _{GPG_RSAEncryptOnlyAlgorithm      aka RSA-E.}
+ * _{GPG_RSASignOnlyAlgorithm         aka RSA-S.}
+ * _{GPG_ElgamalEncryptOnlyAlgorithm  aka Elgamal-E.}
+ * _{GPG_DSAAlgorithm                 Digital Signature Standard.}
+ * _{GPG_EllipticCurveAlgorithm       .}
+ * _{GPG_ECDSAAlgorithm               .}
+ * _{GPG_ElgamalAlgorithm             .}
+ * _{GPG_DiffieHellmanAlgorithm       Encrypt or Sign.}
 "*/
-enum {
-    GPG_RSAAlgorithm                = 1,  // Encrypt or Sign
-    GPG_RSAEncryptOnlyAlgorithm     = 2,  // aka RSA-E
-    GPG_RSASignOnlyAlgorithm        = 3,  // aka RSA-S
-    GPG_ElgamalEncryptOnlyAlgorithm = 16, // aka Elgamal-E
-    GPG_DSAAlgorithm                = 17, // Digital Signature Standard
+typedef enum {
+    GPG_RSAAlgorithm                =  1,
+    GPG_RSAEncryptOnlyAlgorithm     =  2,
+    GPG_RSASignOnlyAlgorithm        =  3,
+    GPG_ElgamalEncryptOnlyAlgorithm = 16,
+    GPG_DSAAlgorithm                = 17,
     GPG_EllipticCurveAlgorithm      = 18,
     GPG_ECDSAAlgorithm              = 19,
     GPG_ElgamalAlgorithm            = 20,
-    GPG_DiffieHellmanAlgorithm      = 21  // Encrypt or Sign
-};
+    GPG_DiffieHellmanAlgorithm      = 21
+}GPGPublicKeyAlgorithm;
 
 /*"
  * Symetric key algorithms
 "*/
 enum {
-    GPG_NoAlgorithm          = 0,   // Unencrypted data
-    GPG_IDEAAlgorithm        = 1,
-    GPG_TripleDESAlgorithm   = 2,   // aka 3DES or DES-EDE - 168 bit key derived from 192
-    GPG_CAST5Algorithm       = 3,   // 128 bit key
-    GPG_BlowfishAlgorithm    = 4,   // 128 bit key, 16 rounds
-    GPG_SAFER_SK128Algorithm = 5,   // 13 rounds
-    GPG_DES_SKAlgorithm      = 6,
-    GPG_AES128Algorithm      = 7,   // aka Rijndael
-    GPG_AES192Algorithm      = 8,   // aka Rijndael 192
-    GPG_AES256Algorithm      = 9,   // aka Rijndael 256
-    GPG_TwoFishAlgorithm     = 10,  // twofish 256 bit
+    GPG_NoAlgorithm          =   0, // Unencrypted data
+    GPG_IDEAAlgorithm        =   1,
+    GPG_TripleDESAlgorithm   =   2, // aka 3DES or DES-EDE - 168 bit key derived from 192
+    GPG_CAST5Algorithm       =   3, // 128 bit key
+    GPG_BlowfishAlgorithm    =   4, // 128 bit key, 16 rounds
+    GPG_SAFER_SK128Algorithm =   5, // 13 rounds
+    GPG_DES_SKAlgorithm      =   6,
+    GPG_AES128Algorithm      =   7, // aka Rijndael
+    GPG_AES192Algorithm      =   8, // aka Rijndael 192
+    GPG_AES256Algorithm      =   9, // aka Rijndael 256
+    GPG_TwoFishAlgorithm     =  10, // twofish 256 bit
     GPG_SkipjackAlgorithm    = 101, // Experimental: skipjack
     GPG_TwoFish_OldAlgorithm = 102, // Experimental: twofish 128 bit
     GPG_DummyAlgorithm       = 110  // No encryption at all
@@ -93,87 +102,86 @@ enum {
 - (unsigned) hash;
 - (BOOL) isEqual:(id)anObject;
 
-- (NSString *) xmlDescription;
+/*"
+ * Description
+"*/
+- (NSString *) descriptionAsXMLString;
 - (NSDictionary *) dictionaryRepresentation;
-// Uses the same keys as in XML representation, but places
-// subkeys in an array keyed by "subkeys", and userIDs
-// in an array keyed by "userids". Optional/boolean values are
-// represented as NSNumbers. Time values are represented
-// as NSCalendarDates
 
+/*"
+ * Global key capabilities
+"*/
+- (BOOL) canEncrypt;
+- (BOOL) canSign;
+- (BOOL) canCertify;
+
+/*"
+ * Main key
+"*/
 - (NSString *) keyID;
-- (NSArray *) subkeysKeyIDs;
-
 - (NSString *) fingerprint;
-- (NSArray *) subkeysFingerprints;
-
-- (unsigned int) algorithm;
-- (NSArray *) subkeysAlgorithms;
-
+- (GPGPublicKeyAlgorithm) algorithm;
 - (unsigned int) length;
-- (NSArray *) subkeysLengths;
-
 - (NSCalendarDate *) creationDate;
-- (NSArray *) subkeysCreationDates;
+- (BOOL) isKeyRevoked;
+- (BOOL) isKeyInvalid;
+- (BOOL) hasKeyExpired;
+- (BOOL) isKeyDisabled;
+- (BOOL) hasSecretPart;
+- (BOOL) mainKeyCanEncrypt;
+- (BOOL) mainKeyCanSign;
+- (BOOL) mainKeyCanCertify;
 
-// not yet implemented in GPGME as of 0.2.3
-// don't work on them, there's no way to get this info
+/*"
+ * Sub keys
+"*/
+- (NSArray *) subkeysKeyIDs;
+- (NSArray *) subkeysFingerprints;
+- (NSArray *) subkeysAlgorithms;
+- (NSArray *) subkeysLengths;
+- (NSArray *) subkeysCreationDates;
+- (NSArray *) subkeysRevocationStatuses;
+- (NSArray *) subkeysValidityStatuses;
+- (NSArray *) subkeysExpirationStatuses;
+- (NSArray *) subkeysActivityStatuses;
+- (NSArray *) subkeysEncryptionCapabilities;
+- (NSArray *) subkeysSigningCapabilities;
+- (NSArray *) subkeysCertificationCapabilities;
+
+// Not yet implemented in GPGME as of 0.3.0
+// Don't work on them, there's no way to get this info
 //- (NSCalendarDate *) expirationDate;
 //- (NSArray *) subkeysExpirationDates;
 
-// not yet implemented in GPGME as of 0.2.3
-// don't work on them, there's no way to get this info
+// Not yet implemented in GPGME as of 0.3.0
+// Don't work on them, there's no way to get this info
 //- (unsigned long) ownerTrust;
 
+/*"
+ * Primary user ID
+"*/
 - (NSString *) userID;
-- (NSArray *) userIDs;
-
 - (NSString *) name;
-- (NSArray *) names;
-
 - (NSString *) email;
-- (NSArray *) emails;
-
 - (NSString *) comment;
-- (NSArray *) comments;
-
 - (GPGValidity) validity;
-- (NSArray *) validities;
-
-// not yet implemented in GPGME as of 0.2.3
-// don't work on them, there's no way to get this info
-//- (unsigned int) type;
-
-- (BOOL) isKeyRevoked;
-- (NSArray *) subkeysRevocationStatuses;
-
-- (BOOL) isKeyInvalid;
-- (NSArray *) subkeysValidityStatuses;
-
-- (BOOL) hasKeyExpired;
-- (NSArray *) subkeysExpirationStatuses;
-
-- (BOOL) isKeyDisabled;
-- (NSArray *) subkeysActivityStatuses;
-
 - (BOOL) isPrimaryUserIDRevoked;
-- (NSArray *) userIDsRevocationStatuses;
-
 - (BOOL) isPrimaryUserIDInvalid;
+
+/*"
+ * All user IDs
+"*/
+- (NSArray *) userIDs;
+- (NSArray *) names;
+- (NSArray *) emails;
+- (NSArray *) comments;
+- (NSArray *) validities;
+- (NSArray *) userIDsRevocationStatuses;
 - (NSArray *) userIDsValidityStatuses;
 
-- (BOOL) hasSecretPart;
 
-- (BOOL) canEncrypt;
-- (BOOL) mainKeyCanEncrypt;
-- (NSArray *) subkeysEncryptionCapabilities;
-
-- (BOOL) canSign;
-- (BOOL) mainKeyCanSign;
-- (NSArray *) subkeysSigningCapabilities;
-
-- (BOOL) canCertify;
-- (BOOL) mainKeyCanCertify;
-- (NSArray *) subkeysCertificationCapabilities;
+// Not yet implemented in GPGME as of 0.3.0
+// Don't work on them, there's no way to get this info
+//- (unsigned int) type;
 
 @end

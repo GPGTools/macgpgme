@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001 Mac GPG Project.
+//  Copyright (C) 2001-2002 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -33,10 +33,17 @@
 
 @implementation GPGKey
 /*"
- * You should never need to instantiate objects of that class. #GPGContext does
- * it for you.
+ * Some of the cryptographic operations require that %recipients or %signers are specified.
+ * This is always done by specifying the respective %keys that should be used for the operation.
+ * GPGKey instances represent %public or %secret %keys.
  *
- * Two #GPGKey instances are considered equal if they have the same %fingerprint.
+ * A %key can contain several %{user IDs} and %{sub keys}.
+ *
+ * #GPGKey instances are returned by #{-[GPGContext keyEnumeratorForSearchPattern:secretKeysOnly:]},
+ * #{-[GPGContext keyOfSignatureAtIndex:]};
+ * you should never need to instantiate objects of that class.
+ *
+ * Two #GPGKey instances are considered equal (in GPGME) if they have the same %fingerprint.
  * #GPGKey instances are (currently) immutable.
 "*/
 
@@ -54,8 +61,10 @@
  * Returns hash value based on %fingerprint.
 "*/
 {
-    if([self fingerprint] != nil)
-        return [[self fingerprint] hash];
+    NSString	*fingerprint = [self fingerprint];
+    
+    if(fingerprint != nil)
+        return [fingerprint hash];
     return [super hash];
 }
 
@@ -64,8 +73,16 @@
  * Returns YES if both the receiver and anObject have the same %fingerprint.
 "*/
 {
-    if(anObject != nil && [anObject isKindOfClass:[GPGKey class]] && [self fingerprint] != nil && [anObject fingerprint] != nil && [[anObject fingerprint] isEqualToString:[self fingerprint]])
-        return YES;
+    if(anObject != nil && [anObject isKindOfClass:[GPGKey class]]){
+        NSString	*fingerprint = [self fingerprint];
+    
+        if(fingerprint != nil){
+            NSString	*otherFingerprint = [anObject fingerprint];
+        
+            if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint])
+                return YES;
+        }
+    }
     return NO;
 }
 
@@ -74,13 +91,13 @@
  * Returns the same instance, retained. #GPGKey instances are (currently) immutable.
 "*/
 {
-    // Implementation is useful to allow use of GPGKeys as keys in NSMutableDictionaries.
+    // Implementation is useful to allow use of GPGKey instances as keys in NSMutableDictionary instances.
     return [self retain];
 }
 
-- (NSString *) xmlDescription
+- (NSString *) descriptionAsXMLString
 /*"
- * Can return nil if it is unable to make an XML description, for some reason.
+ * Returns a string in XML format describing the key. It never returns nil.
  * 
  * !{<GnupgKeyblock>
  *   <mainkey>
@@ -121,20 +138,19 @@
 "*/
 {
     char		*aBuffer = gpgme_key_get_as_xml(_key);
-    NSString	*aString = nil;
+    NSString	*aString;
 
-    if(aBuffer != NULL){
-        aString = [NSString stringWithUTF8String:aBuffer];
-        free(aBuffer);
-    }
+    NSAssert(aBuffer != NULL, @"### Unable to make an XML description.");
+    aString = [NSString stringWithUTF8String:aBuffer];
+    free(aBuffer);
     
     return aString;
 }
 
 - (NSDictionary *) dictionaryRepresentation
 /*"
- * A word of warning:  if the user changes libgpgme.a out from under GPGME.framework
- * then this will not return the same as -xmlDescription.
+ * #Caution:  if the user changes libgpgme.a out from under GPGME.framework
+ * then this will not return the same as #{-descriptionAsXMLString}.
  *
  * Returns a dictionary that looks something like this:
  *
@@ -197,17 +213,17 @@
                 *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
     int i;
     
-    [key_dict setObject: [NSNumber numberWithInt:[self hasSecretPart]] forKey:@"secret"];
-    [key_dict setObject: [NSNumber numberWithInt:[self isKeyInvalid]] forKey:@"invalid"];
-    [key_dict setObject: [NSNumber numberWithInt:[self isKeyRevoked]] forKey:@"revoked"];
-    [key_dict setObject: [NSNumber numberWithInt:[self hasKeyExpired]] forKey:@"expired"];
-    [key_dict setObject: [NSNumber numberWithInt:[self isKeyDisabled]] forKey:@"disabled"];
+    [key_dict setObject: [NSNumber numberWithBool:[self hasSecretPart]] forKey:@"secret"];
+    [key_dict setObject: [NSNumber numberWithBool:[self isKeyInvalid]] forKey:@"invalid"];
+    [key_dict setObject: [NSNumber numberWithBool:[self isKeyRevoked]] forKey:@"revoked"];
+    [key_dict setObject: [NSNumber numberWithBool:[self hasKeyExpired]] forKey:@"expired"];
+    [key_dict setObject: [NSNumber numberWithBool:[self isKeyDisabled]] forKey:@"disabled"];
     [key_dict setObject: [self keyID] forKey: @"keyid"];
     [key_dict setObject: [self fingerprint] forKey:@"fpr"];
     [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
     [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
     [key_dict setObject: [self creationDate] forKey:@"created"];
-    //expired date not yet implimented in GPGME 0.2.2; bug Werner about it ;-)
+    // Expiration date not yet implemented in GPGME 0.3.0; bug Werner about it ;-)
     [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
     uids = [self userIDs];
     uids_invalid_sts = [self userIDsValidityStatuses];
@@ -328,7 +344,7 @@
 
 - (NSString *) keyID
 /*"
- * Returns main key keyID.
+ * Returns %{main key key ID}.
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_KEYID];
@@ -344,7 +360,7 @@
 
 - (NSString *) fingerprint
 /*"
- * Returns main key fingerprint.
+ * Returns %{main key fingerprint}.
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_FPR];
@@ -353,18 +369,21 @@
 - (NSArray *) subkeysFingerprints
 /*"
  * Returns an array of #NSString instances.
+ *
+ * #Caution: it does not work currently.
 "*/
 {
-#warning BUG: no fingerprint for subkeys!
+    // BUG: no fingerprint for subkeys! Reported to Werner.
     return [self subStringAttributesWithIdentifier:GPGME_ATTR_FPR maxCount:[self subkeysCount]];
 }
 
-- (unsigned int) algorithm
+- (GPGPublicKeyAlgorithm) algorithm
 /*"
- * Returns main key algorithm.
+ * Returns %{main key algorithm}. The algorithm is the crypto algorithm for which the key can be used.
+ * The value corresponds to the #GPGPublicKeyAlgorithm enum values.
 "*/
 {
-    return (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_ALGO, NULL, 0);
+    return (GPGPublicKeyAlgorithm)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_ALGO, NULL, 0);
 }
 
 - (NSArray *) subkeysAlgorithms
@@ -386,7 +405,7 @@
 
 - (unsigned int) length
 /*"
- * Returns main key length.
+ * Returns %{main key} length, in bits.
 "*/
 {
     return (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_LEN, NULL, 0);
@@ -411,7 +430,7 @@
 
 - (NSCalendarDate *) creationDate
 /*"
- * Returns main key creation date. Returns nil when not available or invalid.
+ * Returns %{main key} creation date. Returns nil when not available or invalid.
 "*/
 {
     unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CREATED, NULL, 0);
@@ -445,9 +464,86 @@
     return attributes;
 }
 
+- (NSCalendarDate *) expirationDate
+/*"
+ * Returns %{main key} expiration date. Returns nil when not available or invalid.
+ *
+ * #Caution: this does not work currently.
+"*/
+{
+    unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_EXPIRE, NULL, 0);
+
+    if(aValue == 0L)
+        return nil;
+    else
+        return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
+}
+
+- (NSArray *) subkeysExpirationDates
+/*"
+ * Returns an array of #NSCalendarDate instances. Array values can be
+ * #{+[NSValue valueWithPointer:nil]} when corresponding creation date is not
+ * available or invalid.
+ *
+ * #Caution: this does not work currently.
+"*/
+{
+    int				i = 1;
+    unsigned long	aValue;
+    unsigned		maxCount = [self subkeysCount];
+    NSMutableArray	*attributes = [NSMutableArray array];
+
+    for(i = 1; i <= maxCount; i++){
+        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_EXPIRE, NULL, i);
+        if(aValue == 0L)
+            [attributes addObject:[NSValue valueWithPointer:nil]];
+        else
+            [attributes addObject:[NSCalendarDate dateWithTimeIntervalSince1970:aValue]];
+    }
+
+    return attributes;
+}
+
+- (GPGValidity) ownerTrust
+/*"
+ * #CAUTION: not yet working.
+"*/
+{
+#if 0
+    const char	*aCString = gpgme_key_get_string_attr(_key, GPGME_ATTR_OTRUST, NULL, 0);
+
+    NSAssert(aCString != NULL, @"### Invalid key.");
+    if(aCString != NULL){
+        NSAssert1(strlen(aCString) == 1, @"### We cannot decode this ownerTrust value: %s", aCString);
+
+        return [self validityFromCharacter:aCString[0]];
+    }
+#endif
+    return GPGValidityUnknown;
+}
+
+- (NSArray *) subkeysOwnerTrusts
+/*"
+ * Returns an array of #NSNumber instances.
+ *
+ * #CAUTION: not yet working.
+"*/
+{
+    int				i = 1;
+    unsigned int	aValue, maxCount = [self subkeysCount];
+    NSMutableArray	*attributes = [NSMutableArray array];
+
+    for(i = 1; i <= maxCount; i++){
+        aValue = (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_OTRUST, NULL, i);
+        [attributes addObject:[NSNumber numberWithUnsignedInt:aValue]];
+    }
+
+    return attributes;
+}
+
 - (NSString *) userID
 /*"
- * Returns primary userID.
+ * Returns the %{primary user ID}.
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_USERID];
@@ -455,7 +551,7 @@
 
 - (NSArray *) userIDs
 /*"
- * Returns primary userID, followed by other userIDs.
+ * Returns the %{primary user ID}, followed by other %{user IDs}.
 "*/
 {
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_USERID maxCount:[self secondaryUserIDsCount]];
@@ -467,7 +563,7 @@
 
 - (NSString *) name
 /*"
- * Returns primary userID name.
+ * Returns the %{primary user ID} name.
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_NAME];
@@ -475,7 +571,7 @@
 
 - (NSArray *) names
 /*"
- * Returns primary userID name, followed by other userIDs names.
+ * Returns the %{primary user ID} name, followed by other %{user IDs} names.
 "*/
 {
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_NAME maxCount:[self secondaryUserIDsCount]];
@@ -487,7 +583,7 @@
 
 - (NSString *) email
 /*"
- * Returns primary userID email.
+ * Returns the %{primary user ID} email address.
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_EMAIL];
@@ -495,7 +591,7 @@
 
 - (NSArray *) emails
 /*"
- * Returns primary userID email, followed by other userIDs emails.
+ * Returns the %{primary user ID} email address, followed by other %{user IDs} email addresses.
 "*/
 {
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_EMAIL maxCount:[self secondaryUserIDsCount]];
@@ -507,7 +603,7 @@
 
 - (NSString *) comment
 /*"
- * Returns primary userID comment.
+ * Returns the %{primary user ID} comment.
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_COMMENT];
@@ -515,7 +611,7 @@
 
 - (NSArray *) comments
 /*"
- * Returns primary userID comment, followed by other userIDs comments.
+ * Returns the %{primary user ID} comment, followed by other %{user IDs} comments.
 "*/
 {
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_COMMENT maxCount:[self secondaryUserIDsCount]];
@@ -527,7 +623,7 @@
 
 - (GPGValidity) validity
 /*"
- * Returns primary userID validity.
+ * Returns the %{primary user ID} validity.
 "*/
 {
     return gpgme_key_get_ulong_attr(_key, GPGME_ATTR_VALIDITY, NULL, 0);
@@ -535,7 +631,7 @@
 
 - (NSArray *) validities
 /*"
- * Returns primary userID validity, followed by other userIDs validities.
+ * Returns the %{primary user ID} validity, followed by other %{user IDs} validities, as #NSNumber instances.
 "*/
 {
     int				i = 0;
@@ -553,7 +649,7 @@
 
 - (BOOL) isKeyRevoked
 /*"
- * Returns whether main key has been revoked.
+ * Returns whether %{main key} is revoked.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_REVOKED, NULL, 0);
@@ -581,7 +677,7 @@
 
 - (BOOL) isKeyInvalid
 /*"
- * Returns whether main key is invalid (e.g. due to a missing self-signature).
+ * Returns whether %{main key} is invalid (e.g. due to a missing self-signature).
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_INVALID, NULL, 0);
@@ -609,7 +705,7 @@
 
 - (BOOL) hasKeyExpired
 /*"
- * Returns whether main key has expired.
+ * Returns whether %{main key} is expired.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_EXPIRED, NULL, 0);
@@ -637,7 +733,7 @@
 
 - (BOOL) isKeyDisabled
 /*"
- * Returns whether main key is disabled.
+ * Returns whether %{main key} is disabled.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_DISABLED, NULL, 0);
@@ -647,7 +743,7 @@
 
 - (NSArray *) subkeysActivityStatuses
 /*"
- * Returns an array of #NSNumber instances.
+ * Returns an array of #NSNumber instances, specifying whether corresponding %{sub key} is disabled.
 "*/
 {
     int				i = 1;
@@ -665,7 +761,7 @@
 
 - (BOOL) isPrimaryUserIDRevoked
 /*"
- * Returns whether primary userID has been revoked.
+ * Returns whether %{primary user ID} is revoked.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_UID_REVOKED, NULL, 0);
@@ -675,7 +771,8 @@
 
 - (NSArray *) userIDsRevocationStatuses
 /*"
- * Returns an array of #NSNumber instances. First value is for primary userID.
+ * Returns the %{primary user ID} revocation status (revoked or not),
+ * followed by other %{user IDs} revocation statuses, as #NSNumber instances.
 "*/
 {
     int				i = 0;
@@ -693,7 +790,7 @@
 
 - (BOOL) isPrimaryUserIDInvalid
 /*"
- * Returns whether primary userID is invalid.
+ * Returns whether %{primary user ID} is invalid.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_UID_INVALID, NULL, 0);
@@ -703,7 +800,8 @@
 
 - (NSArray *) userIDsValidityStatuses
 /*"
- * Returns an array of #NSNumber instances. First value is for primary userID.
+ * Returns the %{primary user ID} validity status (#{invalid or not}),
+ * followed by other %{user IDs} validity statuses, as #NSNumber instances.
 "*/
 {
     int				i = 0;
@@ -721,9 +819,9 @@
 
 - (BOOL) hasSecretPart
 /*"
- * If a key has a secret part, than all subkeys are password-protected (i.e. have a secret part too),
- * but password can be different for each subkey.
- * A subkey cannot have a secret part if the key hasn't.
+ * If a key has a secret part, than all %{sub keys} are password-protected (i.e. have a secret part too),
+ * but password can be different for each %{sub key}.
+ * A %{sub key} cannot have a secret part if the key has none.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_IS_SECRET, NULL, 0);
@@ -733,7 +831,7 @@
 
 - (BOOL) canEncrypt
 /*"
- * Returns global encryption capability of the key.
+ * Returns whether the %key can be used for encryption.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CAN_ENCRYPT, NULL, 0);
@@ -743,7 +841,7 @@
 
 - (BOOL) mainKeyCanEncrypt
 /*"
- * Returns whether main key can be used for encyption.
+ * Returns whether %{main key} can be used for encryption.
 "*/
 {
     return strchr(gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, 0), 'e') != NULL;
@@ -769,7 +867,7 @@
 
 - (BOOL) canSign
 /*"
- * Returns global signature capability of the key.
+ * Returns whether the key can be used for signatures.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CAN_SIGN, NULL, 0);
@@ -779,7 +877,7 @@
 
 - (BOOL) mainKeyCanSign
 /*"
- * Returns whether main key can be used for signing.
+ * Returns whether %{main key} can be used for signatures.
 "*/
 {
     return strchr(gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, 0), 's') != NULL;
@@ -805,7 +903,7 @@
 
 - (BOOL) canCertify
 /*"
- * Returns global certification capability of the key.
+ * Returns whether the key can be used for certifications.
 "*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CAN_CERTIFY, NULL, 0);
@@ -815,7 +913,7 @@
 
 - (BOOL) mainKeyCanCertify
 /*"
- * Returns whether main key can be used for certification.
+ * Returns whether %{main key} can be used for certification.
 "*/
 {
     return strchr(gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, 0), 'c') != NULL;
