@@ -73,6 +73,7 @@
 				French,
 				German,
 				Spanish,
+				Swedish,
 			);
 			mainGroup = 0867D691FE84028FC02AAC07;
 			productRefGroup = 034768DFFF38A50411DB9C8B;
@@ -259,6 +260,9 @@
 			children = (
 				089C1667FE841158C02AAC07,
 				F5AD059502F2E74B0128824A,
+				F5A699FB0306A54D01000104,
+				F5A699FC0306A54D01000104,
+				F5A699FD0306A54D01000104,
 			);
 			isa = PBXVariantGroup;
 			name = InfoPlist.strings;
@@ -1076,6 +1080,9 @@
 			children = (
 				F55CD03902D65F6201C07EFC,
 				F5AD059602F2E74B0128824A,
+				F5A699FE0306A54D01000104,
+				F5A699FF0306A54D01000104,
+				F5A69A000306A54D01000104,
 			);
 			isa = PBXVariantGroup;
 			name = Localizable.strings;
@@ -1133,6 +1140,42 @@
 		F56F791C012E3F8001000001 = {
 			isa = PBXFileReference;
 			path = README;
+			refType = 4;
+		};
+		F5A699FB0306A54D01000104 = {
+			isa = PBXFileReference;
+			name = French;
+			path = French.lproj/InfoPlist.strings;
+			refType = 4;
+		};
+		F5A699FC0306A54D01000104 = {
+			isa = PBXFileReference;
+			name = German;
+			path = German.lproj/InfoPlist.strings;
+			refType = 4;
+		};
+		F5A699FD0306A54D01000104 = {
+			isa = PBXFileReference;
+			name = Swedish;
+			path = Swedish.lproj/InfoPlist.strings;
+			refType = 4;
+		};
+		F5A699FE0306A54D01000104 = {
+			isa = PBXFileReference;
+			name = French;
+			path = French.lproj/Localizable.strings;
+			refType = 4;
+		};
+		F5A699FF0306A54D01000104 = {
+			isa = PBXFileReference;
+			name = German;
+			path = German.lproj/Localizable.strings;
+			refType = 4;
+		};
+		F5A69A000306A54D01000104 = {
+			isa = PBXFileReference;
+			name = Swedish;
+			path = Swedish.lproj/Localizable.strings;
 			refType = 4;
 		};
 		F5AD059502F2E74B0128824A = {
