@@ -67,6 +67,7 @@
 				014CEA440018CDF011CA2923,
 				014CEA450018CDF011CA2923,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -176,7 +177,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 1;
 		};
 		0867D69DFE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
@@ -325,96 +325,115 @@
 //0B3
 //0B4
 		0BD178CF01298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGME.h;
 			refType = 4;
 		};
 		0BD178D001298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGContext.h;
 			refType = 4;
 		};
 		0BD178D101298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGContext.m;
 			refType = 4;
 		};
 		0BD178D201298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGData.h;
 			refType = 4;
 		};
 		0BD178D301298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGData.m;
 			refType = 4;
 		};
 		0BD178D401298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGDefines.h;
 			refType = 4;
 		};
 		0BD178D501298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGEngine.h;
 			refType = 4;
 		};
 		0BD178D601298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGEngine.m;
 			refType = 4;
 		};
 		0BD178D701298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGExceptions.h;
 			refType = 4;
 		};
 		0BD178D801298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGExceptions.m;
 			refType = 4;
 		};
 		0BD178D901298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGInternals.h;
 			refType = 4;
 		};
 		0BD178DA01298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGKey.h;
 			refType = 4;
 		};
 		0BD178DB01298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGKey.m;
 			refType = 4;
 		};
 		0BD178DC01298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGObject.h;
 			refType = 4;
 		};
 		0BD178DD01298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGObject.m;
 			refType = 4;
 		};
 		0BD178DE01298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGRecipients.h;
 			refType = 4;
 		};
 		0BD178DF01298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGRecipients.m;
 			refType = 4;
 		};
 		0BD178E001298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGTrustItem.h;
 			refType = 4;
 		};
 		0BD178E101298E177F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGTrustItem.m;
 			refType = 4;
@@ -585,6 +604,7 @@
 			};
 		};
 		0BD1790F012998187F000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = gpgme.h;
 			path = /usr/local/include/gpgme.h;
@@ -653,16 +673,19 @@
 			};
 		};
 		F53E87DC0202125E01A80016 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = IntroGPGME.html;
 			refType = 4;
 		};
 		F549FD5602BFA3AB0128824A = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGPrettyInfo.h;
 			refType = 4;
 		};
 		F549FD5702BFA3AB0128824A = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGPrettyInfo.m;
 			refType = 4;
@@ -747,7 +770,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		F550BC410201F10201A80016 = {
 			isa = PBXTargetDependency;
@@ -854,12 +876,14 @@
 			refType = 4;
 		};
 		F550BC4D0201F2BB01A80016 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = Controller.h;
 			path = GPGTester/Controller.h;
 			refType = 4;
 		};
 		F550BC4E0201F2BB01A80016 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = Controller.m;
 			path = GPGTester/Controller.m;
@@ -942,6 +966,7 @@
 			refType = 4;
 		};
 		F550BC590201F2BB01A80016 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = English;
 			path = GPGTester/English.lproj/InfoPlist.strings;
@@ -1010,6 +1035,7 @@
 			refType = 4;
 		};
 		F550BC640201F30B01A80016 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = NOTES;
 			path = GPGTester/NOTES;
@@ -1038,6 +1064,7 @@
 			};
 		};
 		F550BC680201F49001A80016 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = GPGTester_main.m;
 			path = GPGTester/GPGTester_main.m;
@@ -1067,13 +1094,14 @@
 			);
 			isa = PBXLegacyTarget;
 			name = "GPGME Documentation";
+			passBuildSettingsInEnvironment = 1;
 			productName = "GPGME Documentation";
 			settingsToExpand = 6;
 			settingsToPassInEnvironment = 25;
 			settingsToPassOnCommandLine = 280;
-			shouldUseHeadermap = 0;
 		};
 		F550BC6B0201F8D201A80016 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = "make-documentation.sh";
 			refType = 4;
@@ -1105,11 +1133,13 @@
 			};
 		};
 		F55CD03B02D65F9C01C07EFC = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = LocalizableStrings.h;
 			refType = 4;
 		};
 		F55CD03C02D65F9C01C07EFC = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = LocalizableStrings.m;
 			refType = 4;
@@ -1140,23 +1170,27 @@
 			refType = 4;
 		};
 		F56F791C012E3F8001000001 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = README;
 			refType = 4;
 		};
 		F5A699FB0306A54D01000104 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = French;
 			path = French.lproj/InfoPlist.strings;
 			refType = 4;
 		};
 		F5A699FC0306A54D01000104 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = German;
 			path = German.lproj/InfoPlist.strings;
 			refType = 4;
 		};
 		F5A699FD0306A54D01000104 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = Swedish;
 			path = Swedish.lproj/InfoPlist.strings;
@@ -1184,6 +1218,7 @@
 			refType = 4;
 		};
 		F5AD059502F2E74B0128824A = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = Spanish;
 			path = Spanish.lproj/InfoPlist.strings;
@@ -1197,11 +1232,13 @@
 			refType = 4;
 		};
 		F5F6E05602E18E8B01000002 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGSignature.h;
 			refType = 4;
 		};
 		F5F6E05702E18E8B01000002 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			path = GPGSignature.m;
 			refType = 4;

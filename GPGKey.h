@@ -61,7 +61,7 @@ typedef enum {
  * _{GPG_DiffieHellmanAlgorithm       Encrypt or Sign.}
 "*/
 typedef enum {
-    GPG_RSAAlgorithm                =  0,
+    GPG_RSAAlgorithm                =  1,
     GPG_RSAEncryptOnlyAlgorithm     =  2,
     GPG_RSASignOnlyAlgorithm        =  3,
     GPG_ElgamalEncryptOnlyAlgorithm = 16,

@@ -14,25 +14,45 @@
 			F524982B020C67A001717871,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 58680736;
+			PBXPerProjectTemplateStateSaveDate = 62351885;
 			PBXWorkspaceContents = (
 				{
 					LeftSlideOut = {
 						Split0 = {
 							Split0 = {
 								NavContent0 = {
-									bookmark = F5ACB0CB035A1C36012884B0;
+									bookmark = F55C3B1603A3D7130100011D;
 									history = (
-										F5ACB0C8035A1C36012884B0,
-										F5ACB0C9035A1C36012884B0,
+										F52FB229037F6F66012884B0,
+										F52FB22A037F6F66012884B0,
+										F52FB22C037F6F66012884B0,
+										F52FB22D037F6F66012884B0,
+										F52FB22E037F6F66012884B0,
+										F52FB22F037F6F66012884B0,
+										F52FB230037F6F66012884B0,
+										F55C3B1003A3D7130100011D,
+										F55C3B1103A3D7130100011D,
+										F55C3B1203A3D7130100011D,
 									);
 									prevStack = (
 										F5ACB0CA035A1C36012884B0,
+										F52FB233037F6F66012884B0,
+										F52FB234037F6F66012884B0,
+										F52FB235037F6F66012884B0,
+										F52FB236037F6F66012884B0,
+										F52FB237037F6F66012884B0,
+										F52FB238037F6F66012884B0,
+										F52FB239037F6F66012884B0,
+										F52FB23A037F6F66012884B0,
+										F52FB23B037F6F66012884B0,
+										F55C3B1303A3D7130100011D,
+										F55C3B1403A3D7130100011D,
+										F55C3B1503A3D7130100011D,
 									);
 								};
 								NavCount = 1;
 								NavGeometry0 = {
-									Frame = "{{0, 0}, {740, 372}}";
+									Frame = "{{0, 0}, {740, 510}}";
 									NavBarVisible = YES;
 								};
 							};
@@ -70,11 +90,11 @@
 						Collapsed = NO;
 						Frame = "{{0, 23}, {1024, 661}}";
 						Split0 = {
-							ActiveTab = 3;
+							ActiveTab = 2;
 							Collapsed = NO;
 							Frame = "{{284, 0}, {740, 661}}";
 							Split0 = {
-								Frame = "{{0, 289}, {740, 372}}";
+								Frame = "{{0, 151}, {740, 510}}";
 							};
 							SplitCount = 1;
 							Tab0 = {
@@ -120,9 +140,9 @@
 								};
 							};
 							Tab2 = {
-								BuildMessageFrame = "{{0, 0}, {574, 120}}";
-								BuildTranscriptFrame = "{{0, 129}, {574, 0}}";
-								Frame = "{{0, 0}, {572, 127}}";
+								BuildMessageFrame = "{{0, 0}, {742, 120}}";
+								BuildTranscriptFrame = "{{0, 129}, {742, 0}}";
+								Frame = "{{0, 0}, {740, 127}}";
 							};
 							Tab3 = {
 								Frame = "{{0, 0}, {740, 265}}";
@@ -187,13 +207,33 @@
 					WindowLocation = "{0, 0}";
 				},
 			);
-			PBXWorkspaceStateSaveDate = 58680736;
+			PBXWorkspaceStateSaveDate = 62351885;
 		};
 		perUserProjectItems = {
-			F5ACB0C8035A1C36012884B0 = F5ACB0C8035A1C36012884B0;
-			F5ACB0C9035A1C36012884B0 = F5ACB0C9035A1C36012884B0;
+			F52FB229037F6F66012884B0 = F52FB229037F6F66012884B0;
+			F52FB22A037F6F66012884B0 = F52FB22A037F6F66012884B0;
+			F52FB22C037F6F66012884B0 = F52FB22C037F6F66012884B0;
+			F52FB22D037F6F66012884B0 = F52FB22D037F6F66012884B0;
+			F52FB22E037F6F66012884B0 = F52FB22E037F6F66012884B0;
+			F52FB22F037F6F66012884B0 = F52FB22F037F6F66012884B0;
+			F52FB230037F6F66012884B0 = F52FB230037F6F66012884B0;
+			F52FB233037F6F66012884B0 = F52FB233037F6F66012884B0;
+			F52FB234037F6F66012884B0 = F52FB234037F6F66012884B0;
+			F52FB235037F6F66012884B0 = F52FB235037F6F66012884B0;
+			F52FB236037F6F66012884B0 = F52FB236037F6F66012884B0;
+			F52FB237037F6F66012884B0 = F52FB237037F6F66012884B0;
+			F52FB238037F6F66012884B0 = F52FB238037F6F66012884B0;
+			F52FB239037F6F66012884B0 = F52FB239037F6F66012884B0;
+			F52FB23A037F6F66012884B0 = F52FB23A037F6F66012884B0;
+			F52FB23B037F6F66012884B0 = F52FB23B037F6F66012884B0;
+			F55C3B1003A3D7130100011D = F55C3B1003A3D7130100011D;
+			F55C3B1103A3D7130100011D = F55C3B1103A3D7130100011D;
+			F55C3B1203A3D7130100011D = F55C3B1203A3D7130100011D;
+			F55C3B1303A3D7130100011D = F55C3B1303A3D7130100011D;
+			F55C3B1403A3D7130100011D = F55C3B1403A3D7130100011D;
+			F55C3B1503A3D7130100011D = F55C3B1503A3D7130100011D;
+			F55C3B1603A3D7130100011D = F55C3B1603A3D7130100011D;
 			F5ACB0CA035A1C36012884B0 = F5ACB0CA035A1C36012884B0;
-			F5ACB0CB035A1C36012884B0 = F5ACB0CB035A1C36012884B0;
 		};
 		projectwideBuildSettings = {
 		};
@@ -210,8 +250,12 @@
 	};
 	F524982B020C67A001717871 = {
 		activeArgIndex = 2147483647;
+		activeArgIndices = (
+		);
 		argumentStrings = (
 		);
+		configStateDict = {
+		};
 		debuggerPlugin = GDBDebugging;
 		dylibVariantSuffix = "";
 		enableDebugStr = 1;
@@ -223,6 +267,166 @@
 		);
 		sourceDirectories = (
 		);
+	};
+	F52FB229037F6F66012884B0 = {
+		fRef = F53E87DC0202125E01A80016;
+		isa = PBXTextBookmark;
+		name = "IntroGPGME.html: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1332;
+		vrLoc = 0;
+	};
+	F52FB22A037F6F66012884B0 = {
+		fRef = F550BC6B0201F8D201A80016;
+		isa = PBXTextBookmark;
+		name = "make-documentation.sh: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 742;
+		vrLoc = 0;
+	};
+	F52FB22C037F6F66012884B0 = {
+		fRef = 0BD178D301298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGData.m: initWithDataNoCopy:";
+		rLen = 58;
+		rLoc = 2875;
+		rType = 0;
+		vrLen = 1271;
+		vrLoc = 2401;
+	};
+	F52FB22D037F6F66012884B0 = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGKey.m: subkeysExpirationDates";
+		rLen = 80;
+		rLoc = 25855;
+		rType = 0;
+		vrLen = 1054;
+		vrLoc = 25397;
+	};
+	F52FB22E037F6F66012884B0 = {
+		fRef = 0BD178DF01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGRecipients.m: 134";
+		rLen = 14;
+		rLoc = 3712;
+		rType = 0;
+		vrLen = 1011;
+		vrLoc = 3241;
+	};
+	F52FB22F037F6F66012884B0 = {
+		fRef = 0BD178E101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGTrustItem.m: 174";
+		rLen = 14;
+		rLoc = 4632;
+		rType = 0;
+		vrLen = 731;
+		vrLoc = 4286;
+	};
+	F52FB230037F6F66012884B0 = {
+		fRef = F5F6E05702E18E8B01000002;
+		isa = PBXTextBookmark;
+		name = "GPGSignature.m: errorToken";
+		rLen = 25;
+		rLoc = 2355;
+		rType = 0;
+		vrLen = 827;
+		vrLoc = 2181;
+	};
+	F52FB233037F6F66012884B0 = {
+		fRef = F53E87DC0202125E01A80016;
+		isa = PBXTextBookmark;
+		name = "IntroGPGME.html: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1332;
+		vrLoc = 0;
+	};
+	F52FB234037F6F66012884B0 = {
+		fRef = F550BC6B0201F8D201A80016;
+		isa = PBXTextBookmark;
+		name = "make-documentation.sh: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 742;
+		vrLoc = 0;
+	};
+	F52FB235037F6F66012884B0 = {
+		fRef = F56F791C012E3F8001000001;
+		isa = PBXTextBookmark;
+		name = "README: 13";
+		rLen = 0;
+		rLoc = 648;
+		rType = 0;
+		vrLen = 1704;
+		vrLoc = 0;
+	};
+	F52FB236037F6F66012884B0 = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.m: deleteKey:evenIfSecretKey:";
+		rLen = 0;
+		rLoc = 43911;
+		rType = 0;
+		vrLen = 1435;
+		vrLoc = 43263;
+	};
+	F52FB237037F6F66012884B0 = {
+		fRef = 0BD178D301298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGData.m: initWithDataNoCopy:";
+		rLen = 58;
+		rLoc = 2875;
+		rType = 0;
+		vrLen = 1271;
+		vrLoc = 2401;
+	};
+	F52FB238037F6F66012884B0 = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGKey.m: subkeysExpirationDates";
+		rLen = 80;
+		rLoc = 25855;
+		rType = 0;
+		vrLen = 1054;
+		vrLoc = 25397;
+	};
+	F52FB239037F6F66012884B0 = {
+		fRef = 0BD178DF01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGRecipients.m: 134";
+		rLen = 14;
+		rLoc = 3712;
+		rType = 0;
+		vrLen = 1011;
+		vrLoc = 3241;
+	};
+	F52FB23A037F6F66012884B0 = {
+		fRef = 0BD178E101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGTrustItem.m: 174";
+		rLen = 14;
+		rLoc = 4632;
+		rType = 0;
+		vrLen = 731;
+		vrLoc = 4286;
+	};
+	F52FB23B037F6F66012884B0 = {
+		fRef = F5F6E05702E18E8B01000002;
+		isa = PBXTextBookmark;
+		name = "GPGSignature.m: errorToken";
+		rLen = 25;
+		rLoc = 2355;
+		rType = 0;
+		vrLen = 827;
+		vrLoc = 2181;
 	};
 	F549FD5702BFA3AB0128824A = {
 		uiCtxt = {
@@ -238,22 +442,72 @@
 	F550BC6A0201F88D01A80016 = {
 		activeExec = 0;
 	};
-	F5ACB0C8035A1C36012884B0 = {
+	F55C3B1003A3D7130100011D = {
 		fRef = 0BD1790F012998187F000001;
 		isa = PBXTextBookmark;
 		name = "gpgme.h: 1";
 		rLen = 0;
 		rLoc = 0;
 		rType = 0;
-		vrLen = 931;
+		vrLen = 1090;
 		vrLoc = 0;
 	};
-	F5ACB0C9035A1C36012884B0 = {
-		fRef = F5ACB0CC035A1C36012884B0;
+	F55C3B1103A3D7130100011D = {
+		fRef = F56F791C012E3F8001000001;
 		isa = PBXTextBookmark;
-		rLen = 11;
-		rLoc = 6805;
+		name = "README: 37";
+		rLen = 0;
+		rLoc = 2342;
 		rType = 0;
+		vrLen = 1781;
+		vrLoc = 637;
+	};
+	F55C3B1203A3D7130100011D = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXTextBookmark;
+		rLen = 1;
+		rLoc = 743;
+		rType = 1;
+	};
+	F55C3B1303A3D7130100011D = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.m: deleteKey:evenIfSecretKey:";
+		rLen = 0;
+		rLoc = 43911;
+		rType = 0;
+		vrLen = 1183;
+		vrLoc = 0;
+	};
+	F55C3B1403A3D7130100011D = {
+		fRef = 0BD1790F012998187F000001;
+		isa = PBXTextBookmark;
+		name = "gpgme.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1090;
+		vrLoc = 0;
+	};
+	F55C3B1503A3D7130100011D = {
+		fRef = F56F791C012E3F8001000001;
+		isa = PBXTextBookmark;
+		name = "README: 37";
+		rLen = 0;
+		rLoc = 2342;
+		rType = 0;
+		vrLen = 1781;
+		vrLoc = 637;
+	};
+	F55C3B1603A3D7130100011D = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.m: statusOfSignatureAtIndex:creationDate:fingerprint:";
+		rLen = 92;
+		rLoc = 25242;
+		rType = 0;
+		vrLen = 1484;
+		vrLoc = 24579;
 	};
 	F5ACB0CA035A1C36012884B0 = {
 		fRef = 0BD1790F012998187F000001;
@@ -264,28 +518,6 @@
 		rType = 0;
 		vrLen = 931;
 		vrLoc = 0;
-	};
-	F5ACB0CB035A1C36012884B0 = {
-		fRef = F5ACB0CD035A1C36012884B0;
-		isa = PBXTextBookmark;
-		name = "GPGEngine.h: 122";
-		rLen = 0;
-		rLoc = 6793;
-		rType = 0;
-		vrLen = 1061;
-		vrLoc = 6207;
-	};
-	F5ACB0CC035A1C36012884B0 = {
-		isa = PBXFileReference;
-		name = GPGEngine.h;
-		path = /Users/redbird/Development/macgpgcvs/GPGME/build/GPGME.framework/Versions/0.3.8/Headers/GPGEngine.h;
-		refType = 0;
-	};
-	F5ACB0CD035A1C36012884B0 = {
-		isa = PBXFileReference;
-		name = GPGEngine.h;
-		path = /Users/redbird/Development/macgpgcvs/GPGME/build/GPGME.framework/Versions/0.3.8/Headers/GPGEngine.h;
-		refType = 0;
 	};
 	F5C8211D02FF6A7301000104 = {
 		fileReference = 0BD178D101298E177F000001;
