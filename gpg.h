@@ -39,7 +39,7 @@
 @interface GPG : NSObject {
     GpgmeKey user_key;
     GpgmeCtx context;
-    id passphrase_callback_target;
+    //id passphrase_callback_target;
 }
 - (id)init;
 - (id)initWithUsername:(NSString *)username;
@@ -49,7 +49,7 @@
 // user management
 - (int)setUsername:(NSString *)username;
 - (void)setPassphraseCBTarget:(id)target;
-- (id)passphraseCBTarget;
+//- (id)passphraseCBTarget;
 - (NSString *)getUserKeyAsXML;
 
 // commands on data

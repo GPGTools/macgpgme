@@ -27,6 +27,7 @@
 #import "gpg.h"
 
 const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd);
+id passphrase_callback_target;
 
 @implementation GPG
 - (id)init
@@ -84,10 +85,10 @@ const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd);
     gpgme_set_passphrase_cb(context, _gpgPassphraseCB, self);
 }
 
-- (id)passphraseCBTarget
+/*- (id)passphraseCBTarget
 {
     return passphrase_callback_target;
-}
+}*/
 
 - (NSString *)getUserKeyAsXML
 {
@@ -100,12 +101,17 @@ const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd);
 {
     GpgmeData indata, outdata;
     int err = gpgme_data_new (&indata);
+    if (err) return @"an error occured indata";
     err = gpgme_data_new (&outdata);
+    if (err) return @"an error occured outdata";
     err = gpgme_data_write(indata, [data cString], [data cStringLength]);
-    err = gpgme_op_sign (context, indata, outdata, 2);
+    if (err) return @"an error occured data_write";
+    context = gpgme_wait(context, 5);
+    err = gpgme_op_sign_start (context, indata, outdata, 2);
+    if (err) return [[NSString alloc] initWithFormat:@"error %d occured", err];
     gpgme_data_release (indata);
     gpgme_data_release (outdata);
-    if (err) return nil;
+    if (err) return @"an error occured";
     return [self readGpgmeData:outdata];
 }
 
@@ -137,15 +143,16 @@ const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd);
 //  cb_value <-- user data, hopefully a pointer to the GPG object
 const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd)
 {
-    GPG *gpgObj = (GPG*)cb_value;
+    //GPG *gpgObj = (GPG*)cb_value;
     
     // Fetch the target object and call it's CB...
     // TODO: Find out about and support the other arguments
-    NSString *passphrase = [ [ gpgObj passphraseCBTarget ] passphraseCB ];
+    //NSString *passphrase = [ [ gpgObj passphraseCBTarget ] passphraseCB ];
     
     //  Also, we need to make sure that our passphrase is deallocated later
     //  May also want to support the keyring internally here.
-    return [ passphrase cString ];
+    //return [ passphrase cString ];
+    return [[[NSString alloc] initWithString:passphrase_callback_target] cString];
 }
 
 @end
