@@ -86,9 +86,12 @@ enum {
 };
 
 
-@interface GPGKey : GPGObject <NSCopying>
+@interface GPGKey : GPGObject <NSCopying> /*"NSObject"*/
 {
 }
+
+- (unsigned) hash;
+- (BOOL) isEqual:(id)anObject;
 
 - (NSString *) xmlDescription;
 - (NSDictionary *) dictionaryRepresentation;
@@ -113,12 +116,12 @@ enum {
 - (NSCalendarDate *) creationDate;
 - (NSArray *) subkeysCreationDates;
 
-// not yet implimented in GPGME as of 0.2.2
+// not yet implemented in GPGME as of 0.2.3
 // don't work on them, there's no way to get this info
 //- (NSCalendarDate *) expirationDate;
 //- (NSArray *) subkeysExpirationDates;
 
-// not yet implimented in GPGME as of 0.2.2
+// not yet implemented in GPGME as of 0.2.3
 // don't work on them, there's no way to get this info
 //- (unsigned long) ownerTrust;
 
@@ -137,7 +140,7 @@ enum {
 - (GPGValidity) validity;
 - (NSArray *) validities;
 
-// not yet implimented in GPGME as of 0.2.2
+// not yet implemented in GPGME as of 0.2.3
 // don't work on them, there's no way to get this info
 //- (unsigned int) type;
 
