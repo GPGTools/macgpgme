@@ -21,7 +21,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEBUGGING_SYMBOLS = NO;
-				OPTIMIZATION_CFLAGS = "-O3";
+				OPTIMIZATION_CFLAGS = "-Os";
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -66,6 +66,7 @@
 				F550BC480201F10201A80016,
 				014CEA440018CDF011CA2923,
 				014CEA450018CDF011CA2923,
+				55F613E604D9BAD600000001,
 			);
 			hasScannedForEncodings = 1;
 			isa = PBXProject;
@@ -93,7 +94,9 @@
 				F550BC4A0201F2BB01A80016,
 				F56F791B012E3F8001000001,
 				0BD1790F012998187F000001,
+				551033EF04C190E500000001,
 				08FB77AEFE84172EC02AAC07,
+				551033F604C198F800000001,
 				089C1665FE841158C02AAC07,
 				0867D69AFE84028FC02AAC07,
 				034768DFFF38A50411DB9C8B,
@@ -106,7 +109,6 @@
 			children = (
 				1058C7B0FEA5585E11CA2CBB,
 				1058C7B2FEA5585E11CA2CBB,
-				0BD178F601298EEC7F000001,
 			);
 			isa = PBXGroup;
 			name = "External Frameworks and Libraries";
@@ -128,18 +130,21 @@
 				F5330347012FC85C01000001,
 			);
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 7;
-				DYLIB_CURRENT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 11;
+				DYLIB_COMPATIBILITY_VERSION = 10;
+				DYLIB_CURRENT_VERSION = 11;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 0.3.14;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				FRAMEWORK_VERSION = 0.4.3;
+				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CFLAGS = "-DBUILDINGGPGME";
-				OTHER_LDFLAGS = "-seg1addr 0x18000000";
+				OTHER_LDFLAGS = "-seg1addr 0x18000000 -headerpad_max_install_names";
+				PRECOMPILE_PREFIX_HEADER = YES;
 				PREFIX_HEADER = /usr/local/include/gpgme.h;
 				PRODUCT_NAME = GPGME;
 				SECTORDER_FLAGS = "";
+				VERSIONING_SYSTEM = "apple-generic";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -169,11 +174,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.14</string>
+	<string>0.4.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.3.14</string>
+	<string>0.4.3</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
@@ -192,11 +197,14 @@
 				0BD178E801298E177F000001,
 				0BD178E901298E177F000001,
 				0BD178EA01298E177F000001,
-				0BD178EB01298E177F000001,
 				0BD178EC01298E177F000001,
 				F5F6E05802E18E8B01000002,
 				F549FD5802BFA3AB0128824A,
 				F55CD03D02D65F9C01C07EFC,
+				55627BD403BB4FD000000001,
+				55627BD803BC654000000001,
+				551033F304C1912B00000001,
+				551033F904C1991800000001,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -206,6 +214,9 @@
 			files = (
 				089C1668FE841158C02AAC07,
 				F55CD03A02D65F6201C07EFC,
+				5569442E04FFE4F900000002,
+				5569442F04FFE4FD00000002,
+				550F3B77052726DC00000003,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -219,11 +230,14 @@
 				0BD178F001298E177F000001,
 				0BD178F101298E177F000001,
 				0BD178F201298E177F000001,
-				0BD178F301298E177F000001,
 				0BD178F401298E177F000001,
 				F5F6E05902E18E8B01000002,
 				F549FD5902BFA3AB0128824A,
 				F55CD03E02D65F9C01C07EFC,
+				55627BD503BB4FD000000001,
+				55627BD903BC654000000001,
+				551033F404C1912B00000001,
+				551033FA04C1991800000001,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,7 +246,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BD178F501298E177F000001,
-				0BD178F701298EEC7F000001,
+				556943FD04FFA8D700000002,
+				55374E8905370DF800000001,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -254,6 +269,8 @@
 			children = (
 				089C1666FE841158C02AAC07,
 				F55CD03802D65F6201C07EFC,
+				5569441C04FFD0F900000002,
+				5569441D04FFD0F900000002,
 			);
 			isa = PBXGroup;
 			name = Resources;
@@ -301,16 +318,20 @@
 				0BD178D901298E177F000001,
 				0BD178DA01298E177F000001,
 				0BD178DB01298E177F000001,
+				55627BD203BB4FD000000001,
+				55627BD303BB4FD000000001,
 				0BD178DC01298E177F000001,
 				0BD178DD01298E177F000001,
 				F549FD5602BFA3AB0128824A,
 				F549FD5702BFA3AB0128824A,
-				0BD178DE01298E177F000001,
-				0BD178DF01298E177F000001,
 				F5F6E05602E18E8B01000002,
 				F5F6E05702E18E8B01000002,
+				551033F104C1912B00000001,
+				551033F204C1912B00000001,
 				0BD178E001298E177F000001,
 				0BD178E101298E177F000001,
+				55627BD603BC654000000001,
+				55627BD703BC654000000001,
 				F55CD03B02D65F9C01C07EFC,
 				F55CD03C02D65F9C01C07EFC,
 			);
@@ -418,18 +439,6 @@
 			path = GPGObject.m;
 			refType = 4;
 		};
-		0BD178DE01298E177F000001 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			path = GPGRecipients.h;
-			refType = 4;
-		};
-		0BD178DF01298E177F000001 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			path = GPGRecipients.m;
-			refType = 4;
-		};
 		0BD178E001298E177F000001 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -523,15 +532,6 @@
 				);
 			};
 		};
-		0BD178EB01298E177F000001 = {
-			fileRef = 0BD178DE01298E177F000001;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
 		0BD178EC01298E177F000001 = {
 			fileRef = 0BD178E001298E177F000001;
 			isa = PBXBuildFile;
@@ -577,12 +577,6 @@
 			settings = {
 			};
 		};
-		0BD178F301298E177F000001 = {
-			fileRef = 0BD178DF01298E177F000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		0BD178F401298E177F000001 = {
 			fileRef = 0BD178E101298E177F000001;
 			isa = PBXBuildFile;
@@ -591,18 +585,6 @@
 		};
 		0BD178F501298E177F000001 = {
 			fileRef = 0867D69BFE84028FC02AAC07;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		0BD178F601298EEC7F000001 = {
-			isa = PBXFileReference;
-			name = libgpgme.a;
-			path = /usr/local/lib/libgpgme.a;
-			refType = 0;
-		};
-		0BD178F701298EEC7F000001 = {
-			fileRef = 0BD178F601298EEC7F000001;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -627,6 +609,8 @@
 		1058C7B0FEA5585E11CA2CBB = {
 			children = (
 				1058C7B1FEA5585E11CA2CBB,
+				55757EDB04FF9FE800000002,
+				55374E8805370DF800000001,
 			);
 			isa = PBXGroup;
 			name = "Linked Frameworks";
@@ -652,6 +636,226 @@
 //102
 //103
 //104
+//550
+//551
+//552
+//553
+//554
+		550F3B76052726DC00000003 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = COPYING;
+			refType = 4;
+		};
+		550F3B77052726DC00000003 = {
+			fileRef = 550F3B76052726DC00000003;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		551033EF04C190E500000001 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = "gpg-error.h";
+			path = "/usr/local/include/gpg-error.h";
+			refType = 0;
+		};
+		551033F004C1911000000001 = {
+			fileEncoding = 30;
+			isa = PBXExecutableFileReference;
+			path = frameworkEmbedding.sh;
+			refType = 4;
+		};
+		551033F104C1912B00000001 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = GPGSubkey.h;
+			refType = 4;
+		};
+		551033F204C1912B00000001 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = GPGSubkey.m;
+			refType = 4;
+		};
+		551033F304C1912B00000001 = {
+			fileRef = 551033F104C1912B00000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		551033F404C1912B00000001 = {
+			fileRef = 551033F204C1912B00000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		551033F504C1915A00000001 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = TODO;
+			refType = 4;
+		};
+		551033F604C198F800000001 = {
+			children = (
+				551033F704C1991800000001,
+				551033F804C1991800000001,
+			);
+			isa = PBXGroup;
+			name = Options;
+			refType = 4;
+		};
+		551033F704C1991800000001 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = GPGOptions.h;
+			path = ../GPGPreferences/GPGOptions.h;
+			refType = 2;
+		};
+		551033F804C1991800000001 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = GPGOptions.m;
+			path = ../GPGPreferences/GPGOptions.m;
+			refType = 2;
+		};
+		551033F904C1991800000001 = {
+			fileRef = 551033F704C1991800000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		551033FA04C1991800000001 = {
+			fileRef = 551033F804C1991800000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55374E8805370DF800000001 = {
+			isa = PBXFileReference;
+			name = "libgpgme-pthread.dylib";
+			path = "/usr/local/lib/libgpgme-pthread.dylib";
+			refType = 0;
+		};
+		55374E8905370DF800000001 = {
+			fileRef = 55374E8805370DF800000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55627BD203BB4FD000000001 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = GPGKeySignature.h;
+			refType = 4;
+		};
+		55627BD303BB4FD000000001 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = GPGKeySignature.m;
+			refType = 4;
+		};
+		55627BD403BB4FD000000001 = {
+			fileRef = 55627BD203BB4FD000000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		55627BD503BB4FD000000001 = {
+			fileRef = 55627BD303BB4FD000000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55627BD603BC654000000001 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = GPGUserID.h;
+			refType = 4;
+		};
+		55627BD703BC654000000001 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = GPGUserID.m;
+			refType = 4;
+		};
+		55627BD803BC654000000001 = {
+			fileRef = 55627BD603BC654000000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		55627BD903BC654000000001 = {
+			fileRef = 55627BD703BC654000000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		556943FD04FFA8D700000002 = {
+			fileRef = 55757EDB04FF9FE800000002;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		5569441C04FFD0F900000002 = {
+			isa = PBXExecutableFileReference;
+			name = gpgkeys_hkp;
+			path = /usr/local/libexec/gnupg/gpgkeys_hkp;
+			refType = 0;
+		};
+		5569441D04FFD0F900000002 = {
+			isa = PBXExecutableFileReference;
+			name = gpgkeys_ldap;
+			path = /usr/local/libexec/gnupg/gpgkeys_ldap;
+			refType = 0;
+		};
+		5569442E04FFE4F900000002 = {
+			fileRef = 5569441C04FFD0F900000002;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		5569442F04FFE4FD00000002 = {
+			fileRef = 5569441D04FFD0F900000002;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55757EDB04FF9FE800000002 = {
+			isa = PBXFileReference;
+			name = "libgpg-error.dylib";
+			path = "/usr/local/lib/libgpg-error.dylib";
+			refType = 0;
+		};
+		55F613E604D9BAD600000001 = {
+			buildRules = (
+			);
+			buildSettings = {
+				CC = "/usr/bin/gcc-3.3";
+				CPLUSPLUS = "/usr/bin/g++-3.3";
+				GCC_VERSION = 3.x;
+				USE_GCC3_PFE_SUPPORT = NO;
+			};
+			isa = PBXBuildStyle;
+			name = GCC3.3;
+		};
+//550
+//551
+//552
+//553
+//554
 //7F0
 //7F1
 //7F2
@@ -752,16 +956,17 @@
 			buildPhases = (
 				F550BC420201F10201A80016,
 				F550BC430201F10201A80016,
+				F550BC660201F37E01A80016,
 				F550BC440201F10201A80016,
 				F550BC450201F10201A80016,
 				F550BC460201F10201A80016,
-				F550BC660201F37E01A80016,
 			);
 			buildSettings = {
 				INSTALL_PATH = "$(USER_APPS_DIR)";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
 				PRODUCT_NAME = GPGTester;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
@@ -825,10 +1030,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F550BC5B0201F2BC01A80016,
-				F550BC5C0201F2BC01A80016,
-				F550BC5D0201F2BC01A80016,
-				F550BC5E0201F2BC01A80016,
-				F550BC5F0201F2BC01A80016,
 				F550BC600201F2BC01A80016,
 				F550BC610201F2BC01A80016,
 			);
@@ -876,10 +1077,13 @@
 			buildRules = (
 			);
 			buildSettings = {
+				CC = /usr/bin/gcc;
 				COPY_PHASE_STRIP = YES;
+				CPLUSPLUS = "/usr/bin/g++";
 				DEBUGGING_SYMBOLS = NO;
+				GCC_VERSION = 3.x;
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				OPTIMIZATION_CFLAGS = "-O3";
+				OPTIMIZATION_CFLAGS = "-Os";
 				SKIP_INSTALL = YES;
 			};
 			isa = PBXBuildStyle;
@@ -930,10 +1134,6 @@
 		F550BC4F0201F2BB01A80016 = {
 			children = (
 				F550BC500201F2BB01A80016,
-				F550BC510201F2BB01A80016,
-				F550BC520201F2BB01A80016,
-				F550BC530201F2BB01A80016,
-				F550BC540201F2BB01A80016,
 				F550BC550201F2BB01A80016,
 				F550BC580201F2BB01A80016,
 			);
@@ -946,30 +1146,6 @@
 			isa = PBXFileReference;
 			name = CheckMark.tiff;
 			path = GPGTester/CheckMark.tiff;
-			refType = 4;
-		};
-		F550BC510201F2BB01A80016 = {
-			isa = PBXFileReference;
-			name = idle1.tiff;
-			path = GPGTester/idle1.tiff;
-			refType = 4;
-		};
-		F550BC520201F2BB01A80016 = {
-			isa = PBXFileReference;
-			name = idle2.tiff;
-			path = GPGTester/idle2.tiff;
-			refType = 4;
-		};
-		F550BC530201F2BB01A80016 = {
-			isa = PBXFileReference;
-			name = idle3.tiff;
-			path = GPGTester/idle3.tiff;
-			refType = 4;
-		};
-		F550BC540201F2BB01A80016 = {
-			isa = PBXFileReference;
-			name = idle4.tiff;
-			path = GPGTester/idle4.tiff;
 			refType = 4;
 		};
 		F550BC550201F2BB01A80016 = {
@@ -1018,30 +1194,6 @@
 		};
 		F550BC5B0201F2BC01A80016 = {
 			fileRef = F550BC500201F2BB01A80016;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F550BC5C0201F2BC01A80016 = {
-			fileRef = F550BC510201F2BB01A80016;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F550BC5D0201F2BC01A80016 = {
-			fileRef = F550BC520201F2BB01A80016;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F550BC5E0201F2BC01A80016 = {
-			fileRef = F550BC530201F2BB01A80016;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F550BC5F0201F2BC01A80016 = {
-			fileRef = F550BC540201F2BB01A80016;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1204,6 +1356,9 @@
 				F550BC6B0201F8D201A80016,
 				F56F791C012E3F8001000001,
 				F53E87DC0202125E01A80016,
+				551033F004C1911000000001,
+				551033F504C1915A00000001,
+				550F3B76052726DC00000003,
 			);
 			isa = PBXGroup;
 			name = Documentation;

@@ -3,22 +3,26 @@
 //  GPGME
 //
 //  Created by Gordon Worley
-//  Copyright (C) 2001 Mac GPG Project.
 //
+//
+//  Copyright (C) 2001-2005 Mac GPG Project.
+//  
 //  This code is free software; you can redistribute it and/or modify it under
-//  the terms of the GNU General Public License as published by the Free
-//  Software Foundation; either version 2 of the License, or any later version.
-//
+//  the terms of the GNU Lesser General Public License as published by the Free
+//  Software Foundation; either version 2.1 of the License, or (at your option)
+//  any later version.
+//  
 //  This code is distributed in the hope that it will be useful, but WITHOUT ANY
 //  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-//  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+//  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
 //  details.
+//  
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program; if not, visit <http://www.gnu.org/> or write to the
+//  Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
+//  MA 02111-1307, USA.
 //
-//  For a copy of the GNU General Public License, visit <http://www.gnu.org/> or
-//  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
-//  Boston, MA 02111-1307, USA.
-//
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
+//  More info at <http://macgpg.sourceforge.net/>
 //
 
 #include <GPGME/LocalizableStrings.h>
@@ -29,22 +33,6 @@ NSString * const GPGValidityNeverString = @"GPGValidityNeverString";
 NSString * const GPGValidityMarginalString = @"GPGValidityMarginalString";
 NSString * const GPGValidityFullString = @"GPGValidityFullString";
 NSString * const GPGValidityUltimateString = @"GPGValidityUltimateString";
-NSString * const GPGMD5HashAlgorithmString = @"GPGMD5HashAlgorithmString";
-NSString * const GPGSHA1HashAlgorithmString = @"GPGSHA1HashAlgorithmString";
-NSString * const GPGRIPEMD160HashAlgorithmString = @"GPGRIPEMD160HashAlgorithmString";
-NSString * const GPGDoubleWidthSHAHashAlgorithmString = @"GPGDoubleWidthSHAHashAlgorithmString";
-NSString * const GPGMD2HashAlgorithmString = @"GPGMD2HashAlgorithmString";
-NSString * const GPGTIGER192HashAlgorithmString = @"GPGTIGER192HashAlgorithmString";
-NSString * const GPGHAVALHashAlgorithmString = @"GPGHAVALHashAlgorithmString";
-NSString * const GPGRSAAlgorithmString = @"GPGRSAAlgorithmString";
-NSString * const GPGRSAEncryptOnlyAlgorithmString = @"GPGRSAEncryptOnlyAlgorithmString";
-NSString * const GPGRSASignOnlyAlgorithmString = @"GPGRSASignOnlyAlgorithmString";
-NSString * const GPGElgamalEncryptOnlyAlgorithmString = @"GPGElgamalEncryptOnlyAlgorithmString";
-NSString * const GPGDSAAlgorithmString = @"GPGDSAAlgorithmString";
-NSString * const GPGEllipticCurveAlgorithmString = @"GPGEllipticCurveAlgorithmString";
-NSString * const GPGECDSAAlgorithmString = @"GPGECDSAAlgorithmString";
-NSString * const GPGElgamalAlgorithmString = @"GPGElgamalAlgorithmString";
-NSString * const GPGDiffieHellmanAlgorithmString = @"GPGDiffieHellmanAlgorithmString";
 NSString * const GPGNoAlgorithmString = @"GPGNoAlgorithmString";
 NSString * const GPGIDEAAlgorithmString = @"GPGIDEAAlgorithmString";
 NSString * const GPGTripleDESAlgorithmString = @"GPGTripleDESAlgorithmString";
