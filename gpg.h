@@ -41,9 +41,9 @@
     GpgmeCtx context;
     id passphrase_callback_target;
 }
-- init;
-- initWithUsername:(NSString *)username;
-- initWithUsername:(NSString *)username passphraseCBTarget:(id)target;
+- (id)init;
+- (id)initWithUsername:(NSString *)username;
+- (id)initWithUsername:(NSString *)username passphraseCBTarget:(id)target;
 - (void)dealloc;
 
 // user management
@@ -53,7 +53,7 @@
 - (NSString *)getUserKeyAsXML;
 
 // commands on data
-//- (NSString *)clearSign:(NSString *)data;
+- (NSString *)clearSign:(NSString *)data;
 //- (NSString *)encrypt:(NSString *)data withRecipients:(NSArray *)recps;
 //- (NSString *)encryptAndSign:(NSString *)data withRecipients(NSArray *)recps;
 //- (NSString *)decrypt:(NSString *)data;
@@ -61,9 +61,10 @@
 //- (int)verify:(NSString *)data withSig:(NSString *)sig;
 
 // key management
+// these are delayed until we have a GPGKey class (GpgmeKey wrapper)
 //- (NSArray *)listKeys:(NSString *)pattern;
 //- (NSArray *)listSecretKeys:(NSString *)pattern;
 
-// class functions
-//+ (const char *)passphraseCB;
+// kluge methods; here until wrapper classes are done
+- (NSString *)readGpgmeData:(GpgmeData)data;
 @end
