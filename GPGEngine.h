@@ -32,76 +32,79 @@
 /*"
  * The #GPGError type specifies the set of all error values that are used by GPGME.
  * Possible values are:
- * _{GPGErrorEOF               This value indicates the end of a list, buffer or file. Not used in GPGME framework.}
- * _{GPGErrorNoError           This value indicates success. No #GPGException is raised with this value.}
- * _{GPGErrorGeneralError      This value means that something went wrong,
- *                             but either there is not enough information 
- *                             about the problem to return a more useful error value, 
- *                             or there is no seperate error value for this type of problem.}
- * _{GPGErrorOutOfCore         This value means that an out-of-memory condition occured.}
- * _{GPGErrorInvalidValue      This value means that some user provided data was out of range. 
- *                             This can also refer to objects. For example, if an empty #GPGData 
- *                             instance was expected, but one containing data was provided, 
- *                             this error value is returned.}
- * _{GPGErrorBusy              This value is returned if you try to start a new operation
- *                             in a context that is already busy with some earlier operation 
- *                             which was not canceled or finished yet.}
- * _{GPGErrorNoRequest         This value is in some sense the opposite of #GPGErrorBusy. 
- *                             There is no pending operation, but it is required for the function to succeed.}
- * _{GPGErrorExecError         This value means that an error occured when trying to spawn a child process.}
- * _{GPGErrorTooManyProcs      This value means that there are too many active backend processes.}
- * _{GPGErrorPipeError         This value means that the creation of a pipe failed.}
- * _{GPGErrorNoRecipients      This value means that no %recipients for a message have been set.}
- * _{GPGErrorNoData            This value means that a #GPGData instance which was expected 
- *                             to have content was found empty.}
- * _{GPGErrorConflict          This value means that a conflict of some sort occured.}
- * _{GPGErrorNotImplemented    This value indicates that the specific operation is not implemented.
- *                             This error should never happen. It can only occur if you use certain 
- *                             values or configuration options which do not work, but for which we 
- *                             think that they should work at some later time.}
- * _{GPGErrorReadError         This value means that an I/O read operation failed.}
- * _{GPGErrorWriteError        This value means that an I/O write operation failed.}
- * _{GPGErrorInvalidType       This value means that a user provided object was of a wrong 
- *                             or incompatible type. Usually this refers to the type of a #GPGData instance.}
- * _{GPGErrorInvalidMode       This value means that a #GPGData instance has an 
- *                             incorrect mode of operation (for example, doesn't support 
- *                             output although it is attempted to use it as an output buffer).}
- * _{GPGErrorFileError         This value means that a file I/O operation failed. 
- *                             The value of #errno contains the system error value.}
- * _{GPGErrorDecryptionFailed  This value indicates that a decryption operation was unsuccessful.}
- * _{GPGErrorNoPassphrase      This value means that the user did not provide a passphrase when requested.}
- * _{GPGErrorCanceled          This value means that the operation was canceled.}
- * _{GPGErrorInvalidKey        This value means that a key was invalid.}
- * _{GPGErrorInvalidEngine     This value means that the engine that implements the
- *                             desired protocol is currently not available. This can 
- *                             either be because the sources were configured to exclude 
- *                             support for this engine, or because the engine is not installed properly.}
+ * _{GPGErrorEOF                This value indicates the end of a list, buffer or file. Not used in GPGME framework.}
+ * _{GPGErrorNoError            This value indicates success. No #GPGException is raised with this value.}
+ * _{GPGErrorGeneralError       This value means that something went wrong,
+ *                              but either there is not enough information 
+ *                              about the problem to return a more useful error value, 
+ *                              or there is no seperate error value for this type of problem.}
+ * _{GPGErrorOutOfCore          This value means that an out-of-memory condition occured.}
+ * _{GPGErrorInvalidValue       This value means that some user provided data was out of range. 
+ *                              This can also refer to objects. For example, if an empty #GPGData 
+ *                              instance was expected, but one containing data was provided, 
+ *                              this error value is returned.}
+ * _{GPGErrorBusy               This value is returned if you try to start a new operation
+ *                              in a context that is already busy with some earlier operation 
+ *                              which was not canceled or finished yet.}
+ * _{GPGErrorNoRequest          This value is in some sense the opposite of #GPGErrorBusy. 
+ *                              There is no pending operation, but it is required for the function to succeed.}
+ * _{GPGErrorExecError          This value means that an error occured when trying to spawn a child process.}
+ * _{GPGErrorTooManyProcs       This value means that there are too many active backend processes.}
+ * _{GPGErrorPipeError          This value means that the creation of a pipe failed.}
+ * _{GPGErrorNoRecipients       This value means that no %recipients for a message have been set.}
+ * _{GPGErrorNoData             This value means that a #GPGData instance which was expected 
+ *                              to have content was found empty.}
+ * _{GPGErrorConflict           This value means that a conflict of some sort occured.}
+ * _{GPGErrorNotImplemented     This value indicates that the specific operation is not implemented.
+ *                              This error should never happen. It can only occur if you use certain 
+ *                              values or configuration options which do not work, but for which we 
+ *                              think that they should work at some later time.}
+ * _{GPGErrorReadError          This value means that an I/O read operation failed.}
+ * _{GPGErrorWriteError         This value means that an I/O write operation failed.}
+ * _{GPGErrorInvalidType        This value means that a user provided object was of a wrong 
+ *                              or incompatible type. Usually this refers to the type of a #GPGData instance.}
+ * _{GPGErrorInvalidMode        This value means that a #GPGData instance has an 
+ *                              incorrect mode of operation (for example, doesn't support 
+ *                              output although it is attempted to use it as an output buffer).}
+ * _{GPGErrorFileError          This value means that a file I/O operation failed. 
+ *                              The value of #errno contains the system error value.}
+ * _{GPGErrorDecryptionFailed   This value indicates that a decryption operation was unsuccessful.}
+ * _{GPGErrorNoPassphrase       This value means that the user did not provide a passphrase when requested.}
+ * _{GPGErrorCanceled           This value means that the operation was canceled.}
+ * _{GPGErrorInvalidKey         This value means that a key was invalid.}
+ * _{GPGErrorInvalidEngine      This value means that the engine that implements the
+ *                              desired protocol is currently not available. This can 
+ *                              either be because the sources were configured to exclude 
+ *                              support for this engine, or because the engine is not installed properly.}
+ * _{GPGErrorInvalidRecipients  This value means that some, but not all, recipients
+ *                              for a message have been invalid.}
 "*/
 typedef enum {
-    GPGErrorEOF              = -1,
-    GPGErrorNoError          =  0,
-    GPGErrorGeneralError     =  1,
-    GPGErrorOutOfCore        =  2,
-    GPGErrorInvalidValue     =  3,
-    GPGErrorBusy             =  4,
-    GPGErrorNoRequest        =  5,
-    GPGErrorExecError        =  6,
-    GPGErrorTooManyProcs     =  7,
-    GPGErrorPipeError        =  8,
-    GPGErrorNoRecipients     =  9,
-    GPGErrorNoData           = 10,
-    GPGErrorConflict         = 11,
-    GPGErrorNotImplemented   = 12,
-    GPGErrorReadError        = 13,
-    GPGErrorWriteError       = 14,
-    GPGErrorInvalidType      = 15,
-    GPGErrorInvalidMode      = 16,
-    GPGErrorFileError        = 17,
-    GPGErrorDecryptionFailed = 18,
-    GPGErrorNoPassphrase     = 19,
-    GPGErrorCanceled         = 20,
-    GPGErrorInvalidKey       = 21,
-    GPGErrorInvalidEngine    = 22 
+    GPGErrorEOF               = -1,
+    GPGErrorNoError           =  0,
+    GPGErrorGeneralError      =  1,
+    GPGErrorOutOfCore         =  2,
+    GPGErrorInvalidValue      =  3,
+    GPGErrorBusy              =  4,
+    GPGErrorNoRequest         =  5,
+    GPGErrorExecError         =  6,
+    GPGErrorTooManyProcs      =  7,
+    GPGErrorPipeError         =  8,
+    GPGErrorNoRecipients      =  9,
+    GPGErrorNoData            = 10,
+    GPGErrorConflict          = 11,
+    GPGErrorNotImplemented    = 12,
+    GPGErrorReadError         = 13,
+    GPGErrorWriteError        = 14,
+    GPGErrorInvalidType       = 15,
+    GPGErrorInvalidMode       = 16,
+    GPGErrorFileError         = 17,
+    GPGErrorDecryptionFailed  = 18,
+    GPGErrorNoPassphrase      = 19,
+    GPGErrorCanceled          = 20,
+    GPGErrorInvalidKey        = 21,
+    GPGErrorInvalidEngine     = 22,
+    GPGErrorInvalidRecipients = 23 
 } GPGError;
 
 
