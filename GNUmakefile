@@ -14,16 +14,19 @@ ifeq ($(GNUSTEP_SYSTEM_ROOT),)
 else
 
 FRAMEWORK_NAME = GPGME
-GPGME_CURRENT_VERSION_NAME = 0.3.15
+GPGME_CURRENT_VERSION_NAME = 1.0.2
 
-GPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
-           GPGObject.m GPGPrettyInfo.m GPGRecipients.m GPGSignature.m\
-           GPGTrustItem.m LocalizableStrings.m
+GPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m \
+           GPGKey.m GPGKeySignature.m GPGObject.m GPGPrettyInfo.m \
+           GPGSignature.m GPGSubkey.m GPGTrustItem.m GPGUserID.m \
+           LocalizableStrings.m GPGAsyncHelper.m GPGKeyGroup.m \
+           GPGOptions/GPGOptions.m
 
-GPGME_HEADER_FILES=GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
-          GPGExceptions.h GPGInternals.h GPGKey.h GPGME.h GPGObject.h\
-          GPGPrettyInfo.h GPGRecipients.h GPGSignature.h GPGTrustItem.h\
-          LocalizableStrings.h
+GPGME_HEADER_FILES = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h \
+          GPGExceptions.h GPGInternals.h GPGKey.h GPGKeySignature.h \
+          GPGME.h GPGObject.h GPGPrettyInfo.h GPGSignature.h \
+          GPGSubkey.h GPGTrustItem.h GPGUserID.h LocalizableStrings.h \
+          GPGAsyncHelper.h GPGKeyGroup.h GPGOptions/GPGOptions.h
 
 ADDITIONAL_OBJCFLAGS += -I../
 
