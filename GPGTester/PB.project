@@ -5,7 +5,7 @@
     FILESTABLE = {
         CLASSES = (Controller.m); 
         English_INTERFACES = (GPGTester.nib, "GPGTester-windows.nib"); 
-        FRAMEWORKS = (AppKit.framework, Foundation.framework, GPG.framework); 
+        FRAMEWORKS = (AppKit.framework, Foundation.framework, GPGME.framework); 
         FRAMEWORKSEARCH = ("$(USER_LIBRARY_DIR)/Frameworks", "$(LOCAL_LIBRARY_DIR)/Frameworks"); 
         H_FILES = (Controller.h); 
         IMAGES = (CheckMark.tiff, idle1.tiff, idle2.tiff, idle3.tiff, idle4.tiff); 
@@ -23,6 +23,7 @@
     LANGUAGE = English; 
     MAKEFILEDIR = "$(MAKEFILEPATH)/pb_makefiles"; 
     NEXTSTEP_BUILDTOOL = /bin/gnumake; 
+    NEXTSTEP_DOCUMENTEXTENSIONS = (); 
     NEXTSTEP_INSTALLDIR = /Applications; 
     NEXTSTEP_JAVA_COMPILER = /usr/bin/javac; 
     NEXTSTEP_MAINNIB = GPGTester.nib; 

@@ -43,7 +43,7 @@ PROF_LIBS = $(LIBS)
 
 FRAMEWORK_PATHS = -F$(USER_LIBRARY_DIR)/Frameworks\
                   -F$(LOCAL_LIBRARY_DIR)/Frameworks
-FRAMEWORKS = -framework AppKit -framework Foundation -framework GPG
+FRAMEWORKS = -framework AppKit -framework Foundation -framework GPGME
 
 
 NEXTSTEP_OBJCPLUS_COMPILER = /usr/bin/cc
