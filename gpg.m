@@ -33,10 +33,10 @@ id passphrase_callback_target;
 - (id)init
 {
     int err = gpgme_new (&context);
-    if (err)	{
+    if (err)    {
         return nil;
     }
-    else	{
+    else        {
         gpgme_set_armor(context, 1);
         gpgme_set_textmode(context, 1);
         return self;
@@ -80,6 +80,13 @@ id passphrase_callback_target;
     return err;
 }
 
+/*
+ * for testing only
+- (NSString *)enumSigners
+{
+    return [[NSString alloc] initWithCString:gpgme_key_get_as_xml(gpgme_signers_enum (context, 0))];
+}*/
+
 - (void)setPassphraseCBTarget:(id)target
 {
     [passphrase_callback_target autorelease];
@@ -98,20 +105,35 @@ id passphrase_callback_target;
 {
     GpgmeData indata, outdata;
     int err = gpgme_data_new (&indata);
-    //if (err) return @"an error occured indata";
     err = gpgme_data_new (&outdata);
-    //if (err) return @"an error occured outdata";
     err = gpgme_data_write(indata, [data cString], [data cStringLength]);
-    //if (err) return @"an error occured data_write";
+    // this next line keeps having busy errors; any ideas?
     err = gpgme_op_sign (context, indata, outdata, GPGME_SIG_MODE_CLEAR);
-    //if (err) return [[NSString alloc] initWithFormat:@"error %d occured", err];
+    // does this next line need to be here?
+    //context = gpgme_wait (context, 1);
     gpgme_data_release (indata);
-    gpgme_data_release (outdata);
-    //if (err) return @"an error occured";
+    //gpgme_data_release (outdata);
+    //if (err) return [[NSString alloc] initWithFormat:@"error %d occured", err];
     return [self readGpgmeData:outdata];
 }
 
-//kluge methods
+- (NSString *)decrypt:(NSString *)data
+{
+    GpgmeData indata, outdata;
+    int err = gpgme_data_new (&indata);
+    err = gpgme_data_new (&outdata);
+    err = gpgme_data_write(indata, [data cString], [data cStringLength]);
+    // this next line keeps having busy errors; any ideas?
+    err = gpgme_op_decrypt (context, indata, outdata);
+    // does this next line need to be here?
+    //context = gpgme_wait (context, 0);
+    gpgme_data_release (indata);
+    //gpgme_data_release (outdata);
+    if (err) return [[NSString alloc] initWithFormat:@"error %d occured", err];
+    return [self readGpgmeData:outdata];
+}
+
+// kluge methods
 
 - (NSString *)readGpgmeData:(GpgmeData)data
 {
@@ -148,6 +170,8 @@ const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd)
     //  Also, we need to make sure that our passphrase is deallocated later
     //  May also want to support the keyring internally here.
     //return [ passphrase cString ];
+    
+    //cleaned things up and made it all one line --redbird
     return [[[NSString alloc] initWithString:passphrase_callback_target] cString];
 }
 

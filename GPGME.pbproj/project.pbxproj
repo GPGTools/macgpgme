@@ -23,6 +23,16 @@
 			isa = PBXBuildStyle;
 			name = Deployment;
 		};
+//010
+//011
+//012
+//013
+//014
+//030
+//031
+//032
+//033
+//034
 		034768DFFF38A50411DB9C8B = {
 			children = (
 				034768E0FF38A50411DB9C8B,
@@ -36,12 +46,32 @@
 			path = GPGME.framework;
 			refType = 3;
 		};
+//030
+//031
+//032
+//033
+//034
+//050
+//051
+//052
+//053
+//054
 		05363207011BF5107F000001 = {
 			fileRef = F5F45A490119BC4201000001;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
+//050
+//051
+//052
+//053
+//054
+//080
+//081
+//082
+//083
+//084
 		0867D690FE84028FC02AAC07 = {
 			buildStyles = (
 				014CEA440018CDF011CA2923,
@@ -106,8 +136,6 @@
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = framework;
-			};
-			conditionalBuildSettings = {
 			};
 			dependencies = (
 			);
@@ -233,6 +261,16 @@
 			name = Classes;
 			refType = 4;
 		};
+//080
+//081
+//082
+//083
+//084
+//100
+//101
+//102
+//103
+//104
 		1058C7B0FEA5585E11CA2CBB = {
 			children = (
 				1058C7B1FEA5585E11CA2CBB,
@@ -262,6 +300,16 @@
 			settings = {
 			};
 		};
+//100
+//101
+//102
+//103
+//104
+//F50
+//F51
+//F52
+//F53
+//F54
 		F5F004E3011733AA01000001 = {
 			isa = PBXFileReference;
 			path = gpgcontext.h;

@@ -48,13 +48,14 @@
 // user management
 - (int)setUsername:(NSString *)username;
 - (void)setPassphraseCBTarget:(id)target;
-- (NSString *)getUserKeyAsXML;
+//- (NSString *)enumSigners; //for testing only
+- (NSString *)getUserKeyAsXML;  //don't use this too much; it'll go away ASAP
 
 // commands on data
 - (NSString *)clearSign:(NSString *)data;
 //- (NSString *)encrypt:(NSString *)data withRecipients:(NSArray *)recps;
 //- (NSString *)encryptAndSign:(NSString *)data withRecipients(NSArray *)recps;
-//- (NSString *)decrypt:(NSString *)data;
+- (NSString *)decrypt:(NSString *)data;
 //- (int)verify:(NSString *)data;
 //- (int)verify:(NSString *)data withSig:(NSString *)sig;
 
