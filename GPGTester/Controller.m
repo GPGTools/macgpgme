@@ -2,7 +2,7 @@
 //  Controller.m
 //  GPGTester
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -21,7 +21,7 @@
 //  Boston, MA 02111-1307, USA.
 //  
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  <davelopper@users.sourceforge.net>.
 //
 
 #import "Controller.h"
@@ -36,6 +36,7 @@
     NSString	*aString;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(idle:) name:GPGIdleNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyringChanged:) name:GPGKeyringChangedNotification object:nil];
     idleImages = [[NSArray alloc] initWithObjects:[NSImage imageNamed:@"idle1"], [NSImage imageNamed:@"idle2"], [NSImage imageNamed:@"idle3"], [NSImage imageNamed:@"idle4"], nil];
     aString = [NSString stringWithFormat:@"Testing engine...\n%@\nEngine info:\n%@", GPGErrorDescription(GPGCheckEngine()), GPGEngineInfoAsXMLString()];
     [xmlTextView setString:aString];
@@ -55,9 +56,8 @@
 
 - (void) idle:(NSNotification *)notification
 {
-	//commented out rpw 12-9-01, was interfering with window redrawing, reszing, etc. Don't want to look at it now
- //   [idleImageView setImage:[idleImages objectAtIndex:(idleCounter++ % 4)]];
-  //  [idleImageView display];
+    [idleImageView setImage:[idleImages objectAtIndex:(idleCounter++ % 4)]];
+    [idleImageView display];
 }
 
 - (GPGRecipients *) selectedRecipients
@@ -97,12 +97,18 @@
     if(tableView == keyTableView)
         return [keys count];
     else{
-        GPGKey	*selectedKey = [keys objectAtIndex:[keyTableView selectedRow]];
-        
-        if(tableView == userIDTableView)
-            return [[selectedKey userIDs] count];
-        else /* subkeyTableView */
-            return [[selectedKey subkeysKeyIDs] count];
+        int	selectedRow = [keyTableView selectedRow];
+
+        if(selectedRow >= 0){
+            GPGKey	*selectedKey = [keys objectAtIndex:selectedRow];
+
+            if(tableView == userIDTableView)
+                return [[selectedKey userIDs] count];
+            else /* subkeyTableView */
+                return [[selectedKey subkeysKeyIDs] count];
+        }
+        else
+            return 0;
     }
 }
 
@@ -110,49 +116,86 @@
 {
     if(tableView == keyTableView)
         return [[keys objectAtIndex:row] performSelector:NSSelectorFromString([tableColumn identifier])];
-    else
-        return [[[keys objectAtIndex:[keyTableView selectedRow]] performSelector:NSSelectorFromString([tableColumn identifier])] objectAtIndex:row];
+    else{
+        int	selectedRow = [keyTableView selectedRow];
+
+        if(selectedRow >= 0){
+            return [[[keys objectAtIndex:selectedRow] performSelector:NSSelectorFromString([tableColumn identifier])] objectAtIndex:row];
+        }
+        else
+            return nil; // Shouldn't happen
+    }
 }
 
 - (void) tableViewSelectionDidChange:(NSNotification *)notification
 {
     if([notification object] == keyTableView){
-        GPGKey	*selectedKey = [keys objectAtIndex:[keyTableView selectedRow]];
-		//commented out rpw 12-09-01, GPGContent does not respond to expirationDate right now
-      //  NSLog(@"%d", [selectedKey expirationDate]);
-
-        [xmlTextView setString:[selectedKey xmlDescription]];
-
-        [mainKeyBox setTitle:[selectedKey userID]];
-
-        [algorithmTextField setIntValue:[selectedKey algorithm]];
-        [lengthTextField setIntValue:[selectedKey length]];
-        [validityTextField setIntValue:[selectedKey validity]];
-
-        [hasSecretSwitch setState:[selectedKey hasSecretPart]];
-        [canExcryptSwitch setState:[selectedKey canEncrypt]];
-        [canSignSwitch setState:[selectedKey canSign]];
-        [canCertifySwitch setState:[selectedKey canCertify]];
-
-        [isRevokedSwitch setState:[selectedKey isKeyRevoked]];
-        [isInvalidSwitch setState:[selectedKey isKeyInvalid]];
-        [hasExpiredSwitch setState:[selectedKey hasKeyExpired]];
-        [isDisabledSwitch setState:[selectedKey isKeyDisabled]];
-
-        if(selectedKey != nil){
-            GPGContext		*aContext = [[GPGContext alloc] init];
-            GPGTrustItem	*trustItem;
-
-            trustItem = [[[aContext trustListEnumeratorForSearchPattern:[selectedKey userID] maximumLevel:100] allObjects] lastObject];
-            [aContext release];
-
-            [ownerTrustField setIntValue:[trustItem validity]];
-            [trustLevelField setIntValue:[trustItem level]];
-            [trustTypeTextField setIntValue:[trustItem type]];
-            [deleteButton setEnabled:YES];
+        int	selectedRow = [keyTableView selectedRow];
+        
+        if(selectedRow >= 0){
+            GPGKey	*selectedKey = [keys objectAtIndex:selectedRow];
+            //commented out rpw 12-09-01, GPGKey does not respond to expirationDate right now
+        //  NSLog(@"%d", [selectedKey expirationDate]);
+    
+            [xmlTextView setString:[selectedKey descriptionAsXMLString]];
+    
+            [mainKeyBox setTitle:[selectedKey userID]];
+    
+            [algorithmTextField setIntValue:[selectedKey algorithm]];
+            [lengthTextField setIntValue:[selectedKey length]];
+            [validityTextField setIntValue:[selectedKey validity]];
+    
+            [hasSecretSwitch setState:[selectedKey hasSecretPart]];
+            [canExcryptSwitch setState:[selectedKey canEncrypt]];
+            [canSignSwitch setState:[selectedKey canSign]];
+            [canCertifySwitch setState:[selectedKey canCertify]];
+    
+            [isRevokedSwitch setState:[selectedKey isKeyRevoked]];
+            [isInvalidSwitch setState:[selectedKey isKeyInvalid]];
+            [hasExpiredSwitch setState:[selectedKey hasKeyExpired]];
+            [isDisabledSwitch setState:[selectedKey isKeyDisabled]];
+    
+            if(selectedKey != nil){
+                GPGContext		*aContext = [[GPGContext alloc] init];
+                GPGTrustItem	*trustItem;
+    
+                trustItem = [[[aContext trustItemEnumeratorForSearchPattern:[selectedKey userID] maximumLevel:100] allObjects] lastObject];
+                [aContext release];
+    
+                [ownerTrustField setIntValue:[trustItem validity]];
+                [trustLevelField setIntValue:[trustItem level]];
+                [trustTypeTextField setIntValue:[trustItem type]];
+                [deleteButton setEnabled:YES];
+            }
+            else{
+                [ownerTrustField setIntValue:0];
+                [trustLevelField setIntValue:0];
+                [trustTypeTextField setIntValue:0];
+                [deleteButton setEnabled:NO];
+            }
         }
-        else
+        else{
+            [xmlTextView setString:@""];
+            [mainKeyBox setTitle:@""];
+            [algorithmTextField setIntValue:0];
+            [lengthTextField setIntValue:0];
+            [validityTextField setIntValue:0];
+    
+            [hasSecretSwitch setState:NO];
+            [canExcryptSwitch setState:NO];
+            [canSignSwitch setState:NO];
+            [canCertifySwitch setState:NO];
+    
+            [isRevokedSwitch setState:NO];
+            [isInvalidSwitch setState:NO];
+            [hasExpiredSwitch setState:NO];
+            [isDisabledSwitch setState:NO];
+            
+            [ownerTrustField setIntValue:0];
+            [trustLevelField setIntValue:0];
+            [trustTypeTextField setIntValue:0];
             [deleteButton setEnabled:NO];
+        }
         [subkeyTableView noteNumberOfRowsChanged];
         [subkeyTableView reloadData];
         [userIDTableView noteNumberOfRowsChanged];
@@ -195,16 +238,16 @@
     NSSavePanel	*savePanel;
 
     [aContext setPassphraseDelegate:self];
-    [aContext setProgressDelegate:self];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextOperationIsProgressing:) name:GPGProgressNotification object:aContext];
     NS_DURING
         inputData = [[GPGData alloc] initWithContentsOfFile:inputFilename];
         decryptedData = [[aContext decryptedData:inputData] retain];
 
-        NSLog(@"Notation: %@", [aContext xmlNotation]);
+        NSLog(@"Notations: %@", [aContext notationsAsXMLString]);
         [inputData release];
     NS_HANDLER
         NSLog(@"Exception userInfo: %@", [localException userInfo]);
-        NSRunAlertPanel(@"Error", [localException reason], nil, nil, nil);
+        NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
         [aContext release];
         [inputData release];
         [decryptedData release];
@@ -217,6 +260,7 @@
     if([savePanel runModal] == NSOKButton){
         [[decryptedData data] writeToFile:[savePanel filename] atomically:NO];
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:GPGProgressNotification object:aContext];
     [aContext release];
     [decryptedData release];
 }
@@ -236,9 +280,11 @@
     }
 }
 
-- (void) context:(GPGContext *)context progressingWithDescription:(NSString *)what type:(int)type current:(int)current total:(int)total
+- (void) contextOperationIsProgressing:(NSNotification *)notification
 {
-    NSLog(@"%@ (%d): %d/%d", what, type, current, total);
+    NSDictionary	*userInfo = [notification userInfo];
+    
+    NSLog(@"%@ (%@): %@/%@", [userInfo objectForKey:@"description"], [userInfo objectForKey:@"type"], [userInfo objectForKey:@"current"], [userInfo objectForKey:@"total"]);
 }
 
 - (IBAction) encrypt:(id)sender
@@ -254,7 +300,7 @@
 
         aContext = [[GPGContext alloc] init];
         [aContext setUsesArmor:[encryptionArmoredSwitch state]];
-[aContext addSigner:[keys objectAtIndex:2]];
+//[aContext addSigner:[keys objectAtIndex:2]]; // encrypt+sign is not yet supported
         inputData = [[GPGData alloc] initWithContentsOfFile:[encryptionInputFilenameTextField stringValue]];
 
         NS_DURING
@@ -262,7 +308,7 @@
         NS_HANDLER
             outputData = nil;
             NSLog(@"Exception userInfo: %@", [localException userInfo]);
-            NSRunAlertPanel(@"Error", [localException reason], nil, nil, nil);
+            NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
         NS_ENDHANDLER
 
         if(outputData != nil){
@@ -328,7 +374,7 @@
         }
     NS_HANDLER
         NSLog(@"Exception userInfo: %@", [localException userInfo]);
-        NSRunAlertPanel(@"Error", [localException reason], nil, nil, nil);
+        NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
     NS_ENDHANDLER
     [aContext release];
 }
@@ -354,7 +400,7 @@
 
         NS_HANDLER
             NSLog(@"Exception userInfo: %@", [localException userInfo]);
-            NSRunAlertPanel(@"Error", [localException reason], nil, nil, nil);
+            NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
         NS_ENDHANDLER
         [aContext release];
         [importedData release];
@@ -391,7 +437,7 @@
 {
     if([NSApp runModalForWindow:signingPanel] == NSOKButton){
         GPGContext	*aContext;
-        GPGData		*inputData, *outputData;
+        GPGData		*inputData, *outputData = nil;
 
         if([[signingInputFilenameTextField stringValue] length] == 0 || [[signingOutputFilenameTextField stringValue] length] == 0){
             NSRunAlertPanel(@"Error", @"You need to give a filename for input and output files.", nil, nil, nil);
@@ -400,7 +446,7 @@
 
         aContext = [[GPGContext alloc] init];
         [aContext setPassphraseDelegate:self];
-        [aContext setProgressDelegate:self];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextOperationIsProgressing:) name:GPGProgressNotification object:aContext];
         [aContext setUsesArmor:[signingArmoredSwitch state]];
         inputData = [[GPGData alloc] initWithContentsOfFile:[signingInputFilenameTextField stringValue]];
 
@@ -409,18 +455,19 @@
             NSNumber		*aRow;
 
             while(aRow = [anEnum nextObject])
-                [aContext addSigner:[keys objectAtIndex:[aRow intValue]]];
+                [aContext addSignerKey:[keys objectAtIndex:[aRow intValue]]];
             
             outputData = [aContext signedData:inputData signatureMode:[signingDetachedSwitch state]];
         NS_HANDLER
             outputData = nil;
             NSLog(@"Exception userInfo: %@", [localException userInfo]);
-            NSRunAlertPanel(@"Error", [localException reason], nil, nil, nil);
+            NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
         NS_ENDHANDLER
 
         if(outputData != nil){
             [[outputData data] writeToFile:[signingOutputFilenameTextField stringValue] atomically:NO];
         }
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:GPGProgressNotification object:aContext];
         [inputData release];
         [aContext release];
     }
@@ -453,7 +500,7 @@
     GPGContext	*aContext = [[GPGContext alloc] init];
     GPGData		*inputData = nil, *signatureData = nil;
 
-    [aContext setProgressDelegate:self];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextOperationIsProgressing:) name:GPGProgressNotification object:aContext];
     NS_DURING
         GPGSignatureStatus	aStatus;
         NSString			*statusString = nil;
@@ -483,12 +530,13 @@
         }
         NSRunInformationalAlertPanel(@"Authentication result", statusString, nil, nil, nil);
 
-        NSLog(@"Notation: %@", [aContext xmlNotation]);
+        NSLog(@"Notations: %@", [aContext notationsAsXMLString]);
     NS_HANDLER
         NSLog(@"Exception userInfo: %@", [localException userInfo]);
-        NSRunAlertPanel(@"Error", [localException reason], nil, nil, nil);
+        NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
     NS_ENDHANDLER
 
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:GPGProgressNotification object:aContext];
     [aContext release];
     [inputData release];
     [signatureData release];
@@ -543,11 +591,15 @@
             [aContext deleteKey:[keys objectAtIndex:[aRow intValue]] evenIfSecretKey:[deleteSwitch state]];
     NS_HANDLER
         NSLog(@"Exception userInfo: %@", [localException userInfo]);
-        NSRunAlertPanel(@"Error", [localException reason], nil, nil, nil);
+        NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
     NS_ENDHANDLER
+    [aContext release];
+}
+
+- (void) keyringChanged:(NSNotification *)notif
+{
     [keyTableView noteNumberOfRowsChanged];
     [keyTableView reloadData];
-    [aContext release];
 }
 
 @end
