@@ -254,6 +254,43 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
         gpgme_data_release(cachedData);
 }
 
+- (id) copyWithZone:(NSZone *)zone
+{
+    GPGData	*aCopy;
+    
+    switch([self type]){
+        case GPGDataTypeNone:
+            aCopy = [[[self class] allocWithZone:zone] init];
+            break;
+        case GPGDataTypeData:
+            if(_retainedData != nil){
+                NSMutableData	*copiedData = [_retainedData mutableCopyWithZone:zone];
+                
+                aCopy = [[[self class] allocWithZone:zone] initWithDataNoCopy:copiedData];
+                [copiedData release];
+            }
+            else
+                aCopy = [[[self class] allocWithZone:zone] initWithData:[self data]]; // WARNING: his rewinds myself and reads until EOF!
+            break;
+        case GPGDataTypeFileHandle:
+            // We don't provide a way in GPGME to create such data types
+            [NSException raise:NSInternalInconsistencyException format:@"### Unsupported GPGData type %d", [self type]];
+            break;
+        case GPGDataTypeFile:
+            // There is no way to know which inititializer was called!
+            [NSException raise:NSInternalInconsistencyException format:@"### Unsupported GPGData type %d", [self type]];
+            break;
+        case GPGDataTypeDataSource:
+            aCopy = [[[self class] allocWithZone:zone] initWithDataSource:_dataSource];
+            [aCopy rewind]; // This also rewinds myself!
+            break;
+        default:
+            [NSException raise:NSInternalInconsistencyException format:@"### Unknown GPGData type %d", [self type]];
+    }
+    
+    return aCopy;
+}
+
 - (unsigned long long) availableDataLength
 /*"
  * Returns the amount of bytes available without changing the read pointer.
@@ -371,6 +408,29 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
     NSAssert(type != GPGME_DATA_TYPE_NONE, @"### _data is not a valid pointer");
     
     return type;
+}
+
+- (GPGDataEncoding) encoding
+/*"
+ * Returns the encoding of the data object.
+"*/
+{
+    GPGDataEncoding	encoding = gpgme_data_get_encoding(_data);
+
+    return encoding;
+}
+
+- (void) setEncoding:(GPGDataEncoding)encoding
+/*"
+ * Sets the encoding of the data object.
+ *
+ * Can raise a #GPGException.
+"*/
+{
+    GpgmeError	anError = gpgme_data_set_encoding(_data, encoding);
+
+    if(anError != GPGME_No_Error)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 }
 
 - (void) rewind

@@ -49,6 +49,27 @@ typedef enum {
 } GPGDataType;
 
 
+/*"
+ * The #GPGDataEncoding type specifies the encoding of a #GPGData object.
+ * This encoding is useful to give the backend a hint on the type of data.
+ * The following data types are available:
+ * _{GPGDataEncodingNone    This specifies that the encoding is not known.
+ *                          This is the default for a new data object.}
+ * _{GPGDataEncodingBinary  This specifies that the data is encoding in binary form;
+ *                          i.e. there is no special encoding.}
+ * _{GPGDataEncodingBase64  This specifies that the data is encoded using the Base-64
+ *                          encoding scheme as used by MIME and other protocols.}
+ * _{GPGDataEncodingArmor   This specifies that the data is encoded in an armored
+ *                          form as used by OpenPGP and PEM.}
+"*/
+typedef enum {
+    GPGDataEncodingNone   = 0,
+    GPGDataEncodingBinary = 1,
+    GPGDataEncodingBase64 = 2,
+    GPGDataEncodingArmor  = 3
+} GPGDataEncoding;
+
+
 @interface GPGData : GPGObject /*"NSObject"*/
 {
     id				_dataSource;
@@ -72,6 +93,10 @@ typedef enum {
 - (BOOL) isAtEnd;
 
 - (GPGDataType) type;
+
+/*"Encoding"*/
+- (GPGDataEncoding) encoding;
+- (void) setEncoding:(GPGDataEncoding)encoding;
 
 /*"Manipulating data buffers"*/
 - (void) rewind;
