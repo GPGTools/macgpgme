@@ -1,54 +1,51 @@
 gpgme library
 =============
-In order to build this framework, you need gpgme 0.3.15 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.0). To download and install it, proceed like this:
 
-On MacOS X 10.2:
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.15.tar.gz
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-0.3.15.tar.gz.sig
-gpg --verify gpgme-0.3.15.tar.gz.sig
+*** WARNING These instructions are for MacOS X 10.3.x, and will NOT work as-is for 10.2 ***
 
-(It seems there is a bug in the package; rights will not be restored correctly if not unpackaged as root, that's why we use the 'sudo tcsh' command to perform all following commands as root)
+In order to build this framework, you need gpgme 1.0.2 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.2), and libgpg-error 1.0. These instructions show you how to build these libraries as static libraries, and not dynamic ones; this way you have no problem when installing your framework (not other dependency than framework's).
 
-sudo tcsh
-gnutar xzf gpgme-0.3.15.tar.gz
-cd gpgme-0.3.15
-./configure
-mv libtool libtool.original
-sed < libtool.original "s%-flat_namespace -undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
-make
-make install
-mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
-exit
+To download and install it, proceed like this:
+
+curl -O ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.0.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.0.tar.gz.sig
+gpg --verify libgpg-error-1.0.tar.gz.sig
+gnutar xzf libgpg-error-1.0.tar.gz
+cd libgpg-error-1.0
+./configure --enable-static --disable-shared --disable-dependency-tracking
+sudo make install
+cd ..
+
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.0.2.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.0.2.tar.gz.sig
+gpg --verify gpgme-1.0.2.tar.gz.sig
+gnutar xzf gpgme-1.0.2.tar.gz
+cd gpgme-1.0.2
+./configure --enable-static --disable-shared --disable-dependency-tracking
+sudo make install
 cd ..
 
 
-Note that now the dynamic library libgpgme.dylib is renamed to avoid it's use! If you link GPGME against the dylib (if there are both a static and dynamic version of the same library, the linker uses the dynamic one), then you must install the dylib on user's computer. To avoid this, it's preferrable to rename it to avoid its use, and link against the static version.
+WARNING: since gpgme 0.4.3, we need to use libgpgme-pthread (instead of libgpgme) if we want support for multithreading. We do that in GPGME.
 
 
 Installing GPGME framework (OR: Using It In Your Code)
 =======================================================
 
 In order to do anything useful with this framework you must install it. There are now 4 build styles, 2 of them are for stand-alone framework, the 2 others are for embedding the framework in your application (these are the ones you should use).
-So, compile the framework using the EmbDevelopment or EmbDeployment Build Styles, then add a Copy Phase in your application's project to copy the GPGME.framework (located in your build products directory) in the Frameworks subdirectory of your application. See GPGTester settings to get an example or read Project Builder's help about frameworks.
+So, compile the framework using the EmbDevelopment or EmbDeployment Build Styles, then add a Copy Phase in your application's project to copy the GPGME.framework (located in your build products directory) in the Frameworks subdirectory of your application. See GPGTester settings to get an example or read Xcode's help about frameworks.
 
 If you prefer to have a standalone installed version of GPGME.framework (why would you do?), then use the Development or Deployment Build Styles. 
 /Library/Frameworks is the default install location.
 (Why? It's really hard to create a portable access path to ~/Library/Frameworks. Very easy to create one to /Library/Frameworks)
 
-However, ProjectBuilder (as of ProjectBuilder 2.0.1) does not provide yet the -install- feature, you must use Terminal
 
-On Mac OS X 10.2:
-	(from within the GPGME directory)
-	pbxbuild install -target GPGME DSTROOT=  //there is no typo here. It really is "DSTROOT="
-	cd ..
-
-	
 Documentation generation
 ========================
 HTML documentation can be generated automatically from code. For this you need to have installed autodoc in /usr/local/bin/, and its templates in one of the searched locations (see AutoDoc documentation).
 To install AutoDoc, type the following commands in a terminal:
 
-On MacOS X 10.2:
+On MacOS X 10.3:
 curl -O ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-P-b.tar.gz
 gnutar xzf AutoDoc-2.0b8-P-b.tar.gz
 sudo mkdir -p /usr/local/bin
@@ -60,5 +57,5 @@ cd ..
 
 To generate and install the documentation, choose target GPGME Documentation, and build; documentation will be installed in /Library/Documentation/GPGME
 Note that if you use the Deployment Build Style for GPGME.framework, documentation will also be copied in GPGME.framework on install.
-Tip: To view documentation within ProjectBuilder, open the files using File/Open..., and bookmark them with Navigation/Add to Bookmarks.
+Tip: To view documentation within Xcode, open the installed files using File/Open..., and bookmark them with Navigation/Add to Bookmarks.
 

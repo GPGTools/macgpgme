@@ -2,32 +2,35 @@
 //  GPGKey.h
 //  GPGME
 //
-//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
+//  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2003 Mac GPG Project.
+//  Copyright (C) 2001-2005 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
-//  the terms of the GNU General Public License as published by the Free
-//  Software Foundation; either version 2 of the License, or any later version.
+//  the terms of the GNU Lesser General Public License as published by the Free
+//  Software Foundation; either version 2.1 of the License, or (at your option)
+//  any later version.
 //  
 //  This code is distributed in the hope that it will be useful, but WITHOUT ANY
 //  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-//  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+//  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
 //  details.
 //  
-//  For a copy of the GNU General Public License, visit <http://www.gnu.org/> or
-//  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
-//  Boston, MA 02111-1307, USA.
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program; if not, visit <http://www.gnu.org/> or write to the
+//  Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
+//  MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
+//  More info at <http://macgpg.sourceforge.net/>
 //
 
 #ifndef GPGKEY_H
 #define GPGKEY_H
 
 #include <GPGME/GPGObject.h>
-#include <GPGME/GPGRecipients.h>
+#include <GPGME/GPGEngine.h>
+#include <GPGME/GPGContext.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,35 +42,60 @@ extern "C" {
 
 @class NSArray;
 @class NSCalendarDate;
+@class NSData;
 @class NSDictionary;
 @class NSEnumerator;
 @class NSString;
 
 
 /*"
- * Values returned by #-type
- * _{GPG_PGPKey   PGP key}
- * _{GPG_X509Key  X.509 key}
+ * The #GPGValidity type is used to specify the validity of a %{user ID} in a
+ * key, or for a #GPGTrustItem instance. The following validities are defined:
+ * _{GPGValidityUnknown    The %{user ID} is of unknown validity [?].}
+ * _{GPGValidityUndefined  No value assigned. The validity of the %{user ID}
+ *                         is undefined [q].}
+ * _{GPGValidityNever      The %{user ID} is never valid [n].}
+ * _{GPGValidityMarginal   The %{user ID} is marginally valid [m].}
+ * _{GPGValidityFull       The %{user ID} is fully valid [f].}
+ * _{GPGValidityUltimate   The %{user ID} is ultimately valid [u]. Only used
+ *                         for keys for which the secret key is also
+ *                         available.}
+ *
+ * Don't assume that higher value means higher validity; this might change in the future.
 "*/
 typedef enum {
-    GPG_PGPKey = 0,
-    GPG_X509Key = 1
-}GPGKeyType;
+    GPGValidityUnknown   = 0,
+    GPGValidityUndefined = 1,
+    GPGValidityNever     = 2,
+    GPGValidityMarginal  = 3,
+    GPGValidityFull      = 4,
+    GPGValidityUltimate  = 5
+} GPGValidity;
 
 
 /*"
  * Algorithm numerical values (taken from OpenPGP, RFC2440)
 "*/
 /*"
- * Public key algorithms
- * _{GPG_RSAAlgorithm                 Encrypt or Sign.}
- * _{GPG_RSAEncryptOnlyAlgorithm      aka RSA-E.}
- * _{GPG_RSASignOnlyAlgorithm         aka RSA-S.}
- * _{GPG_ElgamalEncryptOnlyAlgorithm  aka Elgamal-E.}
- * _{GPG_DSAAlgorithm                 Digital Signature Standard.}
+ * Public key algorithms are used for encryption, decryption, signing and
+ * verification of signatures. You can convert the numerical values to strings
+ * with #{GPGPublicKeyAlgorithmDescription()} and
+ * #{GPGLocalizedPublicKeyAlgorithmDescription()} for printing.
+ * _{GPG_RSAAlgorithm                 RSA (Rivest, Shamir, Adleman) algorithm.}
+ * _{GPG_RSAEncryptOnlyAlgorithm      %Deprecated.
+ *                                    RSA (Rivest, Shamir, Adleman) algorithm
+ *                                    for encryption and decryption only
+ *                                    (aka RSA-E).}
+ * _{GPG_RSASignOnlyAlgorithm         %Deprecated.
+ *                                    RSA (Rivest, Shamir, Adleman) algorithm
+ *                                    for signing and verification only
+ *                                    (aka RSA-S).}
+ * _{GPG_ElgamalEncryptOnlyAlgorithm  Elgamal (aka Elgamal-E);
+ *                                    used specifically in GnuPG.}
+ * _{GPG_DSAAlgorithm                 Digital Signature Algorithm.}
  * _{GPG_EllipticCurveAlgorithm       .}
  * _{GPG_ECDSAAlgorithm               .}
- * _{GPG_ElgamalAlgorithm             .}
+ * _{GPG_ElgamalAlgorithm             Elgamal.}
  * _{GPG_DiffieHellmanAlgorithm       Encrypt or Sign.}
 "*/
 typedef enum {
@@ -120,6 +148,7 @@ typedef enum {
 
 /*"
  * Hash algorithms
+ * _{GPG_NoHashAlgorithm              .}
  * _{GPG_MD5HashAlgorithm             .}
  * _{GPG_SHA_1HashAlgorithm           [SHA1].}
  * _{GPG_RIPE_MD160HashAlgorithm      [RIPEMD160]}
@@ -127,15 +156,30 @@ typedef enum {
  * _{GPG_MD2HashAlgorithm             .}
  * _{GPG_TIGER192HashAlgorithm        .}
  * _{GPG_HAVALHashAlgorithm           5 pass, 160 bit.}
+ * _{GPG_SHA256HashAlgorithm          .}
+ * _{GPG_SHA384HashAlgorithm          .}
+ * _{GPG_SHA512HashAlgorithm          .}
+ * _{GPG_MD4HashAlgorithm             .}
+ * _{GPG_CRC32HashAlgorithm           .}
+ * _{GPG_CRC32RFC1510HashAlgorithm    .}
+ * _{GPG_CRC32RFC2440HashAlgorithm    .}
 "*/
 typedef enum {
-    GPG_MD5HashAlgorithm            = 1,
-    GPG_SHA_1HashAlgorithm          = 2,
-    GPG_RIPE_MD160HashAlgorithm     = 3,
-    GPG_DoubleWidthSHAHashAlgorithm = 4,
-    GPG_MD2HashAlgorithm            = 5,
-    GPG_TIGER192HashAlgorithm       = 6,
-    GPG_HAVALHashAlgorithm          = 7  // 5 pass, 160 bit
+    GPG_NoHashAlgorithm             =   0,
+    GPG_MD5HashAlgorithm            =   1,
+    GPG_SHA_1HashAlgorithm          =   2,
+    GPG_RIPE_MD160HashAlgorithm     =   3,
+    GPG_DoubleWidthSHAHashAlgorithm =   4,
+    GPG_MD2HashAlgorithm            =   5,
+    GPG_TIGER192HashAlgorithm       =   6,
+    GPG_HAVALHashAlgorithm          =   7,
+    GPG_SHA256HashAlgorithm         =   8,
+    GPG_SHA384HashAlgorithm         =   9,
+    GPG_SHA512HashAlgorithm         =  10,
+    GPG_MD4HashAlgorithm            = 301,
+    GPG_CRC32HashAlgorithm          = 302,
+    GPG_CRC32RFC1510HashAlgorithm   = 303,
+    GPG_CRC24RFC2440HashAlgorithm   = 304,
 }GPGHashAlgorithm;
 
 
@@ -154,10 +198,15 @@ typedef enum {
 
 @interface GPGKey : GPGObject <NSCopying> /*"NSObject"*/
 {
+    NSArray	*_subkeys; /*"Array containing GPGSubkey instances"*/
+    NSArray	*_userIDs; /*"Array containing GPGUserID instances"*/
+    NSData	*_photoData;
+    BOOL	_checkedPhotoData;
 }
 
 - (unsigned) hash;
 - (BOOL) isEqual:(id)anObject;
++ (NSString *) formattedFingerprint:(NSString *)fingerprint;
 
 /*"
  * Public and secret keys
@@ -168,11 +217,7 @@ typedef enum {
 /*"
  * Description
 "*/
-- (NSString *) descriptionAsXMLString;
 - (NSDictionary *) dictionaryRepresentation;
-+ (NSString *) algorithmDescription: (GPGPublicKeyAlgorithm)value;
-+ (NSString *) validityDescription: (GPGValidity)value;
-+ (NSString *) ownerTrustDescription: (GPGValidity)value;
 
 /*"
  * Global key capabilities
@@ -180,6 +225,7 @@ typedef enum {
 - (BOOL) canEncrypt;
 - (BOOL) canSign;
 - (BOOL) canCertify;
+- (BOOL) canAuthenticate;
 
 /*"
  * Main key
@@ -197,10 +243,7 @@ typedef enum {
 - (BOOL) isKeyInvalid;
 - (BOOL) hasKeyExpired;
 - (BOOL) isKeyDisabled;
-- (BOOL) hasSecretPart;
-- (BOOL) mainKeyCanEncrypt;
-- (BOOL) mainKeyCanSign;
-- (BOOL) mainKeyCanCertify;
+- (BOOL) isSecret;
 - (GPGValidity) ownerTrust;
 - (NSString *) ownerTrustDescription;
 - (NSString *) issuerSerial;
@@ -208,27 +251,12 @@ typedef enum {
 - (NSString *) chainID;
 
 /*"
- * Sub keys
+ * All subkeys
 "*/
-- (NSArray *) subkeysShortKeyIDs;
-- (NSArray *) subkeysKeyIDs;
-- (NSArray *) subkeysFingerprints;
-- (NSArray *) subkeysFormattedFingerprints;
-- (NSArray *) subkeysAlgorithms;
-- (NSArray *) subkeysAlgorithmDescriptions;
-- (NSArray *) subkeysLengths;
-- (NSArray *) subkeysCreationDates;
-- (NSArray *) subkeysExpirationDates;
-- (NSArray *) subkeysRevocationStatuses;
-- (NSArray *) subkeysValidityStatuses;
-- (NSArray *) subkeysExpirationStatuses;
-- (NSArray *) subkeysActivityStatuses;
-- (NSArray *) subkeysEncryptionCapabilities;
-- (NSArray *) subkeysSigningCapabilities;
-- (NSArray *) subkeysCertificationCapabilities;
+- (NSArray *) subkeys;
 
 /*"
- * Primary user ID
+ * Primary user ID information
 "*/
 - (NSString *) userID;
 - (NSString *) name;
@@ -236,26 +264,23 @@ typedef enum {
 - (NSString *) comment;
 - (GPGValidity) validity;
 - (NSString *) validityDescription;
-- (BOOL) isPrimaryUserIDRevoked;
-- (BOOL) isPrimaryUserIDInvalid;
 
 /*"
  * All user IDs
 "*/
 - (NSArray *) userIDs;
-- (NSArray *) names;
-- (NSArray *) emails;
-- (NSArray *) comments;
-- (NSArray *) validities;
-- (NSArray *) validityDescriptions;
-- (NSArray *) userIDsRevocationStatuses;
-- (NSArray *) userIDsValidityStatuses;
 
 /*"
- * Key type
+ * Supported protocol
 "*/
-- (GPGKeyType) type;
-- (NSString *) typeDescription;
+- (GPGProtocol) supportedProtocol;
+- (NSString *) supportedProtocolDescription;
+
+/*"
+ * Other key attributes
+"*/
+- (NSData *) photoData;
+- (GPGKeyListMode) keyListMode;
 
 @end
 

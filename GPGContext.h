@@ -2,25 +2,27 @@
 //  GPGContext.h
 //  GPGME
 //
-//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
+//  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2003 Mac GPG Project.
+//  Copyright (C) 2001-2005 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
-//  the terms of the GNU General Public License as published by the Free
-//  Software Foundation; either version 2 of the License, or any later version.
+//  the terms of the GNU Lesser General Public License as published by the Free
+//  Software Foundation; either version 2.1 of the License, or (at your option)
+//  any later version.
 //  
 //  This code is distributed in the hope that it will be useful, but WITHOUT ANY
 //  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-//  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+//  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
 //  details.
 //  
-//  For a copy of the GNU General Public License, visit <http://www.gnu.org/> or
-//  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
-//  Boston, MA 02111-1307, USA.
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program; if not, visit <http://www.gnu.org/> or write to the
+//  Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
+//  MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
+//  More info at <http://macgpg.sourceforge.net/>
 //
 
 #ifndef GPGCONTEXT_H
@@ -28,7 +30,6 @@
 
 #include <GPGME/GPGObject.h>
 #include <GPGME/GPGEngine.h>
-#include <GPGME/GPGSignature.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,18 +43,20 @@ extern "C" {
 @class NSCalendarDate;
 @class NSEnumerator;
 @class NSMutableDictionary;
+@class NSMutableSet;
 @class GPGData;
 @class GPGKey;
-@class GPGRecipients;
 
 
 /*"
- * The #GPGSignatureMode type is used to specify the desired type of a signature.
- * The following modes are available:
- * _{GPGSignatureModeNormal  A normal signature is made, the output includes the plaintext and the signature.}
+ * The #GPGSignatureMode type is used to specify the desired type of a 
+ * signature. The following modes are available:
+ * _{GPGSignatureModeNormal  A normal signature is made, the output includes
+ *                           the plaintext and the signature.}
  * _{GPGSignatureModeDetach  A detached signature is made.}
- * _{GPGSignatureModeClear   A clear text signature is made.
- *                           The %{ASCII armor} and %{text mode} settings of the context are ignored.}
+ * _{GPGSignatureModeClear   A clear text signature is made. The %ASCII %armor
+ *                           and %{text mode} settings of the context are
+ *                           ignored.}
 "*/
 typedef enum {
     GPGSignatureModeNormal = 0,
@@ -63,33 +66,50 @@ typedef enum {
 
 
 /*"
- * The key listing mode is a combination of one or multiple of the following bit values:
- * _{GPGKeyListModeLocal       Specifies that the local %{key ring} should be searched
- *                             for keys in the key listing operation.
+ * The key listing mode is a combination of one or multiple of the following
+ * bit values:
+ * _{GPGKeyListModeLocal       Specifies that the local %{key-ring} should be 
+ *                             searched for keys in the key listing operation.
  *                             This is the default.}
- * _{GPGKeyListModeExtern      Specifies that an external source should be searched for
- *                             keys in the key listing operation. The type of external
- *                             source is dependant on the crypto engine used.
- *                             For example, it can be a remote %{key server} or LDAP
- *                             certificate server.}
- * _{GPGKeyListModeSignatures  .}
+ * _{GPGKeyListModeExtern      Specifies that an external source should be 
+ *                             searched for keys in the key listing operation.
+ *                             The type of external source is dependant on the
+ *                             crypto engine used. For example, it can be a 
+ *                             remote %{key server} or LDAP certificate
+ *                             server.}
+ * _{GPGKeyListModeSignatures  Specifies that signatures on keys shall be
+ *                             retrieved too. This is a time-consuming 
+ *                             operation, and that mode should not be used
+ *                             when retrieving all keys, but only a key per
+ *                             key basis, like when using #{-refreshKey:}.
+ * _{GPGKeyListModeValidate    Specifies that the backend should do key or
+ *                             certificate validation and not just get the
+ *                             validity information from an internal cache.
+ *                             This might be an expensive operation and is in
+ *                             general not useful. Currently only implemented
+ *                             for the S/MIME backend and ignored for other
+ *                             backends.}
 "*/
-typedef enum {
-    GPGKeyListModeLocal      = 1 << 0,
-    GPGKeyListModeExtern     = 1 << 1,
-    GPGKeyListModeSignatures = 1 << 2
-}GPGKeyListMode;
+typedef unsigned int GPGKeyListMode;
+
+#define GPGKeyListModeLocal         1
+#define GPGKeyListModeExtern        2
+#define GPGKeyListModeSignatures    4
+#define GPGKeyListModeValidate    256
 
 
 /*"
  * Certificates inclusion (S/MIME only):
- * _{GPGAllExceptRootCertificatesInclusion  Include all certificates except the root certificate.}
+ * _{GPGAllExceptRootCertificatesInclusion  Include all certificates except
+ *                                          the root certificate.}
  * _{GPGAllCertificatesInclusion            Include all certificates.}
  * _{GPGNoCertificatesInclusion             Include no certificates.}
- * _{GPGOnlySenderCertificateInclusion      Include the sender's certificate only.}
- * _{n                                      Include the first n certificates of the certificates path,
- *                                          starting from the sender's certificate.
- *                                          The number n must be positive.}
+ * _{GPGOnlySenderCertificateInclusion      Include the sender's certificate
+ *                                          only.}
+ * _{n                                      Include the first n certificates
+ *                                          of the certificates path, starting
+ *                                          from the sender's certificate. The
+ *                                          number n must be positive.}
 "*/
 typedef enum {
     GPGAllExceptRootCertificatesInclusion = -2,
@@ -100,61 +120,102 @@ typedef enum {
 
 
 /*"
- * Posted whenever GPGME thinks that it is idle and time can be better
- * spent elsewhere.
- * 
- * Object is nil; no userInfo.
+ * The 'status' value of a key import is a combination of the following bit
+ * values:
+ * _{GPGImportNewKeyMask     Key is new in the key-ring}
+ * _{GPGImportNewUserIDMask  Some new userIDs has been imported, or updated}
+ * _{GPGImportSignatureMask  Some new key signatures have been imported, or
+ *                           updated}
+ * _{GPGImportSubkeyMask     Some new subkeys have been imported, or updated}
+ * _{GPGImportSecretKeyMask  Key is a secret key, and is new in the secret
+ *                           key-ring}
 "*/
-GPG_EXPORT NSString	* const GPGIdleNotification;
+typedef unsigned int GPGImportStatus;
+
+#define GPGImportNewKeyMask      1
+#define GPGImportNewUserIDMask   2
+#define GPGImportSignatureMask   4
+#define GPGImportSubkeyMask      8
+#define GPGImportSecretKeyMask  16
 
 
 /*"
- * Posted after a modification to a keyring has been done. For example,
+ * Posted after a modification to a key-ring has been done. For example,
  * after an import or delete operation.
  *
  * Object is (currently) nil.
  *
  * UserInfo:
- * _{GPGContextKey The #GPGContext instance in which the operation was executed.}
- * 
+ * _{GPGContextKey  The #GPGContext instance in which the operation was
+ *                  executed.}
+ * _{GPGChangesKey  An #NSDictionary whose keys are GPGKey instances
+ *                  (secret and public keys) and whose values are NSDictionary 
+ *                  instances containing key-value pair @"status" with a
+ *                  GPGImportStatus (as NSNumber), and possibly @"error"
+ *                  with a GPGError (as NSNumber).}
 "*/
 GPG_EXPORT NSString	* const GPGKeyringChangedNotification;
 GPG_EXPORT NSString	* const GPGContextKey;
+GPG_EXPORT NSString	* const GPGChangesKey;
 
 
 /*"
- * Posted when progress information about a cryptographic operation is available,
- * for example during key generation.
+ * Posted when progress information about a cryptographic operation is 
+ * available, for example during key generation.
  *
  * For details on the progress events, see the entry for the PROGRESS
  * status in the file doc/DETAILS of the GnuPG distribution.
  *
  * Currently it is used only during key generation.
  *
+ * Notification is always posted in the main thread.
+ *
  * UserInfo:
- * _{description  String...}
- * _{type         String containing the letter printed during key generation.}
- * _{current      Amount done, as #NSNumber.}
- * _{total        Amount to be done, as #NSNumber. 0 means that the total amount is not known.}
+ * _{@"description"  String...}
+ * _{@"type"         String containing the letter printed during key
+ *                   generation.}
+ * _{@"current"      Amount done, as #NSNumber.}
+ * _{@"total"        Amount to be done, as #NSNumber. 0 means that the total
+ *                   amount is not known.}
  * current/total = 100/100 may be used to detect the end of operation.
 "*/
 GPG_EXPORT NSString	* const GPGProgressNotification;
 
 
+/*"
+ * Posted when an asynchronous operation on a context has been terminated,
+ * for example during extended key search, or key upload. Object is the
+ * context whose operation has just terminated, successfully or not.
+ *
+ * Notification is always posted in the main thread.
+ *
+ * UserInfo:
+ * _{GPGErrorKey  A #NSNumber containing a #GPGError value}
+"*/
+GPG_EXPORT NSString	* const GPGAsynchronousOperationDidTerminateNotification;
+
+
+GPG_EXPORT NSString	* const GPGNextKeyNotification;
+GPG_EXPORT NSString	* const GPGNextKeyKey;
+
+
+GPG_EXPORT NSString	* const GPGNextTrustItemNotification;
+GPG_EXPORT NSString	* const GPGNextTrustItemKey;
+
+
 @interface GPGContext : GPGObject /*"NSObject"*/
 {
-    id	_passphraseDelegate; /*"Passphrase delegate, not retained."*/
+    id					_passphraseDelegate; /*"Passphrase delegate, not retained."*/
+    int					_operationMask;
+    NSMutableDictionary	*_operationData;
+    id					_userInfo; /*"Object set by user; not used by GPGContext itself."*/
+    NSMutableSet		*_signerKeys;
 }
 
 /*"
  * Initializer
 "*/
 - (id) init;
-
-/*"
- * Notations
-"*/
-- (NSString *) notationsAsXMLString;
 
 /*"
  * ASCII armor
@@ -181,11 +242,6 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 - (GPGProtocol) protocol;
 
 /*"
- * Operation status
-"*/
-- (NSString *) statusAsXMLString;
-
-/*"
  * Passphrase delegate
 "*/
 - (void) setPassphraseDelegate:(id)delegate;
@@ -197,12 +253,24 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 - (void) clearSignerKeys;
 - (void) addSignerKey:(GPGKey *)key;
 - (NSEnumerator *) signerKeyEnumerator;
+- (NSArray *) signerKeys;
 
 /*"
  * Including certificates (S/MIME only)
 "*/
 - (void) setCertificatesInclusion:(int)includedCertificatesNumber;
 - (int) certificatesInclusion;
+
+/*"
+ * Operation results
+"*/
+- (NSDictionary *) operationResults;
+
+/*"
+ * Contextual information
+"*/
+- (void) setUserInfo:(id)userInfo;
+- (id) userInfo;
 
 @end
 
@@ -211,15 +279,15 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 /*"
  * Asynchronous operations (#{NOTE THAT ASYNCHRONOUS OPERATIONS DON'T WORK RIGHT NOW.})
 "*/
-- (void) cancelOperation;
 + (GPGContext *) waitOnAnyRequest:(BOOL)hang;
 - (BOOL) wait:(BOOL)hang;
+- (void) cancel;
 @end
 
 
 @interface GPGContext(GPGSynchronousOperations)
 /*"
- * Crypto operations
+ * #{Crypto operations}
 "*/
 /*"
  * Decrypt
@@ -228,15 +296,14 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 /*"
  * Verify
 "*/
-- (GPGSignatureStatus) verifySignatureData:(GPGData *)signatureData againstData:(GPGData *)inputData;
-- (GPGSignatureStatus) verifySignedData:(GPGData *)signedData;
-- (GPGSignatureStatus) statusOfSignatureAtIndex:(int)index creationDate:(NSCalendarDate **)creationDatePtr fingerprint:(NSString **)fingerprint;
-- (GPGKey *) keyOfSignatureAtIndex:(int)index;
+- (NSArray *) verifySignatureData:(GPGData *)signatureData againstData:(GPGData *)inputData;
+- (NSArray *) verifySignedData:(GPGData *)signedData;
+- (NSArray *) verifySignedData:(GPGData *)signedData originalData:(GPGData **)originalDataPtr;
 - (NSArray *) signatures;
 /*"
  * Decrypt and verify
 "*/
-- (GPGData *) decryptedData:(GPGData *)inputData signatureStatus:(GPGSignatureStatus *)statusPtr;
+- (GPGData *) decryptedData:(GPGData *)inputData signatures:(NSArray **)signaturesPtr;
 /*"
  * Sign
 "*/
@@ -244,22 +311,28 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 /*"
  * Encrypt
 "*/
-- (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients allRecipientsAreValid:(BOOL *)allRecipientsAreValidPtr;
+- (GPGData *) encryptedData:(GPGData *)inputData withKeys:(NSArray *)recipientKeys trustAllKeys:(BOOL)trustAllKeys;
 /*"
  * Encrypt and Sign
 "*/
-- (GPGData *) encryptedSignedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients allRecipientsAreValid:(BOOL *)allRecipientsAreValidPtr;
+- (GPGData *) encryptedSignedData:(GPGData *)inputData withKeys:(NSArray *)keys trustAllKeys:(BOOL)trustAllKeys;
 /*"
  * Symmetric Encryption (no key needed)
 "*/
 - (GPGData *) encryptedData:(GPGData *)inputData;
 /*"
- * Managing keyring
+ * Managing key-ring
 "*/
-- (GPGData *) exportedKeysForRecipients:(GPGRecipients *)recipients;
-- (void) importKeyData:(GPGData *)keyData;
-//- (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr;
+- (GPGData *) exportedKeys:(NSArray *)recipientKeys;
+- (NSDictionary *) importKeyData:(GPGData *)keyData;
+- (NSDictionary *) generateKeyFromDictionary:(NSDictionary *)params secretKey:(GPGData *)secretKeyData publicKey:(GPGData *)publicKeyData;
 - (void) deleteKey:(GPGKey *)key evenIfSecretKey:(BOOL)allowSecret;
+/*"
+ * Finding/refreshing a single key
+"*/
+- (GPGKey *) keyFromFingerprint:(NSString *)fingerprint secretKey:(BOOL)secretKey;
+- (GPGKey *) refreshKey:(GPGKey *)key;
+
 @end
 
 
@@ -278,9 +351,37 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 @end
 
 
+@interface GPGContext(GPGExtendedKeyManagement)
+/*"
+ * Searching keys on a key server
+"*/
+- (void) asyncSearchForKeysMatchingPatterns:(NSArray *)searchPatterns serverOptions:(NSDictionary *)options;
+- (void) asyncDownloadKeys:(NSArray *)keys serverOptions:(NSDictionary *)options;
+/*"
+ * Uploading keys on a key server
+"*/
+- (void) asyncUploadKeys:(NSArray *)keys serverOptions:(NSDictionary *)options;
+
+/*"
+ * Interrupting async operations
+"*/
+- (void) interruptAsyncOperation;
+
+@end
+
+
+@interface GPGContext(GPGKeyGroups)
+/*"
+ * Getting key groups
+"*/
+- (NSArray *) keyGroups;
+@end
+
+
 @interface NSObject(GPGContextDelegate)
 - (NSString *) context:(GPGContext *)context passphraseForKey:(GPGKey *)key again:(BOOL)again;
 @end
+
 
 #ifdef __cplusplus
 }

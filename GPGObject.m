@@ -2,25 +2,27 @@
 //  GPGObject.m
 //  GPGME
 //
-//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
+//  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2003 Mac GPG Project.
+//  Copyright (C) 2001-2005 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
-//  the terms of the GNU General Public License as published by the Free
-//  Software Foundation; either version 2 of the License, or any later version.
+//  the terms of the GNU Lesser General Public License as published by the Free
+//  Software Foundation; either version 2.1 of the License, or (at your option)
+//  any later version.
 //  
 //  This code is distributed in the hope that it will be useful, but WITHOUT ANY
 //  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-//  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+//  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
 //  details.
 //  
-//  For a copy of the GNU General Public License, visit <http://www.gnu.org/> or
-//  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
-//  Boston, MA 02111-1307, USA.
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program; if not, visit <http://www.gnu.org/> or write to the
+//  Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
+//  MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
+//  More info at <http://macgpg.sourceforge.net/>
 //
 
 #include <GPGME/GPGObject.h>
@@ -57,10 +59,19 @@ static NSLock		*mapTableLock = nil;
         // one NSThread has been created, that's why we create a dummy
         // thread before doing anything with gpgme.
         [NSThread detachNewThreadSelector:@selector(release) toTarget:aThreadStarter withObject:nil];
-        
+
+        setlocale (LC_ALL, "");
         // Let's initialize libgpgme sub-systems now.
         NSAssert(gpgme_check_version(NULL) != NULL, @"### Unable to initialize gpgme sub-systems.");
+        // Let's initialize default locale; we don't use that possibility in GPGME.framework yet
+        gpgme_set_locale(NULL, LC_CTYPE, setlocale(LC_CTYPE, NULL));
+        gpgme_set_locale(NULL, LC_MESSAGES, setlocale(LC_MESSAGES, NULL));
     }
+}
+
++ (BOOL) needsPointerUniquing
+{
+    return NO;
 }
 
 - (id) initWithInternalRepresentation:(void *)aPtr
@@ -72,10 +83,18 @@ static NSLock		*mapTableLock = nil;
  * In this case the original object is released.
 "*/
 {
-    NSParameterAssert(aPtr != NULL);
+    BOOL	needsPointerUniquing = [[self class] needsPointerUniquing];
+
+    NSAssert(!needsPointerUniquing || aPtr != NULL, @"### Cannot map wrapper to a NULL pointer");
     
     if(self = [super init]){
-        id	anExistingObject = NSMapGet(mapTable, aPtr);
+        id	anExistingObject = nil;
+
+        if(needsPointerUniquing){
+            [mapTableLock lock];
+            anExistingObject = NSMapGet(mapTable, aPtr);
+            [mapTableLock unlock];
+        }
 
         if(anExistingObject != nil){
             [self release];
@@ -83,9 +102,11 @@ static NSLock		*mapTableLock = nil;
         }
         else{
             _internalRepresentation = aPtr;
-            [mapTableLock lock];
-            NSMapInsertKnownAbsent(mapTable, _internalRepresentation, self);
-            [mapTableLock unlock];
+            if(needsPointerUniquing){
+                [mapTableLock lock];
+                NSMapInsertKnownAbsent(mapTable, _internalRepresentation, self);
+                [mapTableLock unlock];
+            }
         }
     }
 
@@ -98,13 +119,25 @@ static NSLock		*mapTableLock = nil;
  * #{-[GPGObject dealloc]} method is called!!!
 "*/
 {
-    if(_internalRepresentation != NULL){
-        [mapTableLock lock];
-        NSMapRemove(mapTable, _internalRepresentation);
-        [mapTableLock unlock];
+    if([[self class] needsPointerUniquing]){
+        if(_internalRepresentation != NULL){
+            [mapTableLock lock];
+            NSMapRemove(mapTable, _internalRepresentation);
+            [mapTableLock unlock];
+        }
+    }
+    else{
+        if(_internalRepresentation != NULL){
+            // Free pointer?
+        }
     }
     
     [super dealloc];
+}
+
++ (BOOL) accessInstanceVariablesDirectly
+{
+    return NO;
 }
 
 @end

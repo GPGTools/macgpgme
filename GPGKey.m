@@ -2,25 +2,27 @@
 //  GPGKey.m
 //  GPGME
 //
-//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
+//  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2003 Mac GPG Project.
+//  Copyright (C) 2001-2005 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
-//  the terms of the GNU General Public License as published by the Free
-//  Software Foundation; either version 2 of the License, or any later version.
+//  the terms of the GNU Lesser General Public License as published by the Free
+//  Software Foundation; either version 2.1 of the License, or (at your option)
+//  any later version.
 //  
 //  This code is distributed in the hope that it will be useful, but WITHOUT ANY
 //  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-//  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+//  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
 //  details.
 //  
-//  For a copy of the GNU General Public License, visit <http://www.gnu.org/> or
-//  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
-//  Boston, MA 02111-1307, USA.
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program; if not, visit <http://www.gnu.org/> or write to the
+//  Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
+//  MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
+//  More info at <http://macgpg.sourceforge.net/>
 //
 
 #include <GPGME/GPGKey.h>
@@ -30,7 +32,7 @@
 #include <gpgme.h>
 
 
-#define _key	((GpgmeKey)_internalRepresentation)
+#define _key	((gpgme_key_t)_internalRepresentation)
 
 
 NSString *GPGStringFromChars(const char * chars)
@@ -38,46 +40,94 @@ NSString *GPGStringFromChars(const char * chars)
     // Normally, all string attributes should be UTF-8 encoded,
     // But some keys have userIDs which have been registered
     // using wrong string encoding, and cannot be decoded.
-    NSString	*result = [NSString stringWithUTF8String:chars];
+    if(chars != NULL){
+        NSString	*result = [NSString stringWithUTF8String:chars];
 
-    // We consider that if we cannot decode string as UTF-8 encoded,
-    // then we use ISOLatin1 encoding.
-    if(result == nil){
-        NSData	*someData = [NSData dataWithBytes:chars length:strlen(chars) + 1];
+        // We consider that if we cannot decode string as UTF-8 encoded,
+        // then we use ISOLatin1 encoding.
+        if(result == nil){
+            NSData	*someData = [NSData dataWithBytes:chars length:strlen(chars) + 1];
 
-        result = [[NSString alloc] initWithData:someData encoding:NSISOLatin1StringEncoding];
-        if(result == nil)
-            result = @"###"; // Let's avoid returning nil - this should not happen
-        else
-            [result autorelease];
+            result = [[NSString alloc] initWithData:someData encoding:NSISOLatin1StringEncoding];
+            if(result == nil)
+                result = @"###"; // Let's avoid returning nil - this should not happen
+            else
+                [result autorelease];
+        }
+
+        return result;
     }
-
-    return result;
+    else
+        return nil;
 }
 
+
+// Retain/release strategy
+// A GPGKey owns GPGUserID instances, as well as GPGSubkey instances, and
+// a GPGUserID instance owns GPGKeySignature instances. How to make sure
+// that an owned object having a backwards relationship to its owner always
+// has a valid owner, without creating non-breakable retain-cycles (i.e. owner
+// retains objects which retain the owner)? We have here a tree of objects,
+// so the problem can be solved.
+// Each time an owned object is retained or released, its owner is also
+// retained or released.
+// The first retain on an owned object, performed by the +alloc, is not
+// redirected to the owner, because method -retain is not invoked. The owned
+// object is retained by the owner (in an array) and the owned object has a
+// non-retained backwards pointer to the owner. When all retains on the owned
+// object except one have been released, then owner might be deallocated, if
+// its retain count is 0, and it will release, finally, the owned object, and
+// both will be deallocated at the same time. We use internal ref counts,
+// because it's faster than using retain/release/retainCount which use external
+// ref counts.
+
+
 @implementation GPGKey
+#warning BUG: with gpg <= 1.2.x, secret keys have wrong attributes
+// The following attributes are in fact always 0 for secret keys, because gpg
+// doesn't return the information!
+// -isKeyDisabled, ...
+
 /*"
- * Some of the cryptographic operations require that %recipients or %signers are specified.
- * This is always done by specifying the respective %keys that should be used for the operation.
- * GPGKey instances represent %public or %secret %keys.
+ * Some of the cryptographic operations require that %recipients or %signers
+ * are specified. This is always done by specifying the respective %keys that
+ * should be used for the operation.
  *
- * A %key can contain several %{user IDs} and %{sub keys}.
+ * A GPGKey instance represents a %public or %secret %key, but NOT both!
  *
- * #GPGKey instances are returned by #{-[GPGContext keyEnumeratorForSearchPattern:secretKeysOnly:]},
- * #{-[GPGContext keyOfSignatureAtIndex:]};
- * you should never need to instantiate objects of that class.
+ * A %key can contain several %{user IDs} and %{subkeys}.
  *
- * Two #GPGKey instances are considered equal (in GPGME) if they have the same %fingerprint.
- * #GPGKey instances are (currently) immutable.
+ * #GPGKey instances are returned by
+ * #{-[GPGContext keyEnumeratorForSearchPattern:secretKeysOnly:]},
+ * #{-[GPGContext keyOfSignatureAtIndex:]}; you should never need to
+ * instantiate objects of that class.
+ *
+ * Two #GPGKey instances are considered equal (in GPGME) if they have the same
+ * %fingerprint, and are both secret or public. #GPGKey instances are
+ * (currently) immutable objects.
 "*/
+
++ (BOOL) needsPointerUniquing
+{
+    return YES;
+}
 
 - (void) dealloc
 {
-    GpgmeKey	cachedKey = _key;
+    gpgme_key_t	cachedKey = _key;
+    BOOL		usesReferencesCount = [[self class] usesReferencesCount];
+
+    if(_userIDs != nil)
+        [_userIDs release];
+    if(_subkeys != nil)
+        [_subkeys release];
+    if(_photoData != nil)
+        [_photoData release];
     
     [super dealloc];
 
-    gpgme_key_unref(cachedKey);
+    if(cachedKey != NULL && usesReferencesCount)
+        gpgme_key_unref(cachedKey);
 }
 
 - (unsigned) hash
@@ -89,22 +139,23 @@ NSString *GPGStringFromChars(const char * chars)
     
     if(fingerprint != nil)
         return [fingerprint hash];
-    // WARNING: we don't take in account if key is secret or not!!!
+    // We do not take in account if key is secret or not, and if it is a subkey or not.
     return [super hash];
 }
 
 - (BOOL) isEqual:(id)anObject
 /*"
- * Returns YES if both the receiver and anObject have the same %fingerprint.
+ * Returns YES if both the receiver and anObject have the same %fingerprint,
+ * are of the same class, and are both public or secret keys.
 "*/
 {
-    if(anObject != nil && [anObject isKindOfClass:[GPGKey class]]){
+    if(anObject != nil && [anObject isMemberOfClass:[self class]] && [self isSecret] == [anObject isSecret]){
         NSString	*fingerprint = [self fingerprint];
     
         if(fingerprint != nil){
             NSString	*otherFingerprint = [anObject fingerprint];
         
-            if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint] /*&& [self hasSecretPart] == [anObject hasSecretPart]*/)
+            if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint])
                 return YES;
         }
     }
@@ -113,7 +164,8 @@ NSString *GPGStringFromChars(const char * chars)
 
 - (id) copyWithZone:(NSZone *)zone
 /*"
- * Returns the same instance, retained. #GPGKey instances are (currently) immutable.
+ * Returns the same instance, retained. #GPGKey instances are (currently)
+ * immutable.
  *
  * #WARNING: zone is not taken in account.
 "*/
@@ -122,13 +174,18 @@ NSString *GPGStringFromChars(const char * chars)
     return [self retain];
 }
 
+- (NSString *) debugDescription
+{
+    return [NSString stringWithFormat:@"<%@: %p> keyID = 0x%@", NSStringFromClass([self class]), self, [self keyID]];
+}
+
 - (GPGKey *) publicKey
 /*"
  * If key is the public key, returns self, else returns the corresponding secret key
  * if there is one, else nil.
 "*/
 {
-    if(![self hasSecretPart])
+    if(![self isSecret])
         return self;
     else{
         GPGContext	*aContext = [[GPGContext alloc] init];
@@ -136,6 +193,7 @@ NSString *GPGStringFromChars(const char * chars)
 
         aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:NO] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
         [aKey retain];
+        [aContext stopKeyEnumeration];
         [aContext release];
 
         return [aKey autorelease];
@@ -148,7 +206,7 @@ NSString *GPGStringFromChars(const char * chars)
  * if there is one, else nil.
 "*/
 {
-    if([self hasSecretPart])
+    if([self isSecret])
         return self;
     else{
         GPGContext	*aContext = [[GPGContext alloc] init];
@@ -156,113 +214,15 @@ NSString *GPGStringFromChars(const char * chars)
 
         aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:YES] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
         [aKey retain];
+        [aContext stopKeyEnumeration];
         [aContext release];
 
         return [aKey autorelease];
     }
 }
 
-- (NSString *) descriptionAsXMLString
-/*"
- * Returns a string in XML format describing the key. It never returns nil.
- * 
- * !{<GnupgKeyblock>
- *   <mainkey>
- *     <secret/>
- *     <invalid/>
- *     <revoked/>
- *     <expired/>
- *     <disabled/>
- *     <keyid>aString</keyid>
- *     <fpr>aString</fpr>
- *     <algo>anUnsignedInt</algo>
- *     <len>anUnsignedInt</len>
- *     <created>aTime</created>
- *     <expire>aTime</expire>
- *     <serial>issuerSerial</serial>
- *     <issuer>issuerName</issuer>
- *     <chainid>chainID</chainid>
- *   </mainkey>
- *   <userid> (first userid is the primary one)
- *     <invalid/>
- *     <revoked/>
- *     <raw>aString</raw>
- *     <name>aString</name>
- *     <email>aString</email>
- *     <comment>aString</comment>
- *   </userid>
- *   ... (other userids)
- *   <subkey>
- *     <secret/>
- *     <invalid/>
- *     <revoked/>
- *     <expired/>
- *     <disabled/>
- *     <keyid>aString</keyid>
- *     <fpr>aString</fpr>
- *     <algo>anUnsignedInt</algo>
- *     <len>anUnsignedInt</len>
- *     <created>aTime</created>
- *     <expire>aTime</expire>
- *   </subkey>
- * </GnupgKeyblock>}
-"*/
-{
-    char		*aBuffer = gpgme_key_get_as_xml(_key);
-    NSString	*aString;
-
-    NSAssert(aBuffer != NULL, @"### Unable to make an XML description.");
-    aString = GPGStringFromChars(aBuffer);
-    free(aBuffer);
-    
-    return aString;
-}
-
-/*
-- (NSDictionary *) dictionaryRepresentationForUserIDAtIndex:(unsigned)index
-{
-    int					i;
-    unsigned			userIDCount = [self secondaryUserIDsCount] + 1;
-    NSMutableDictionary	*dictionaryRepresentation;
-
-    NSParameterAssert(index < userIDCount);
-    
-    dictionaryRepresentation = [NSMutableDictionary dictionary];
-    //    uids = [self userIDs];
-    //    uids_invalid_sts = [self userIDsValidityStatuses];
-    //    uids_revoked_sts = [self userIDsRevocationStatuses];
-    //    uids_names = [self names];
-    //    uids_emails = [self emails];
-    //    uids_comments = [self comments];
-        id					aValue;
-
-        [userIDDictionaryRepresentations addObject:userIDDictionaryRepresentation];
-        aValue = [uids_invalid_sts objectAtIndex:i];
-        if(aValue != nil)
-            [aUserIDDictionaryRepresentation setObject:aValue forKey:@"invalid"];
-        if ([uids_revoked_sts objectAtIndex:i])
-            [aUserIDDictionaryRepresentation setObject:
-             [uids_revoked_sts objectAtIndex:i] forKey:@"revoked"];
-        if ([uids objectAtIndex:i])
-            [aUserIDDictionaryRepresentation setObject:
-                         [uids objectAtIndex:i] forKey:@"raw"];
-        if ([uids_names objectAtIndex:i])
-            [aUserIDDictionaryRepresentation setObject:
-                   [uids_names objectAtIndex:i] forKey:@"name"];
-        if ([uids_emails objectAtIndex:i])
-            [aUserIDDictionaryRepresentation setObject:
-                  [uids_emails objectAtIndex:i] forKey:@"email"];
-        if ([uids_comments objectAtIndex:i])
-            [aUserIDDictionaryRepresentation setObject:
-                [uids_comments objectAtIndex:i] forKey:@"comment"];
-}
-*/
-
 - (NSDictionary *) dictionaryRepresentation
 /*"
- * #Caution:  if the user changes libgpgme.a out from under GPGME.framework
- * then this will not return the same as #{-descriptionAsXMLString}.
- *
  * Returns a dictionary that looks something like this:
  *
  * !{{
@@ -291,7 +251,8 @@ NSString *GPGStringFromChars(const char * chars)
  *         expired = 0; 
  *         fpr = ""; 
  *         invalid = 0; 
- *         keyid = 5745314F70E767A9; 
+ *         keyid = 5745314F70E767A9;
+ *         shortkeyid = 70E767A9; 
  *         len = 2048; 
  *         revoked = 0; 
  *     }
@@ -303,7 +264,8 @@ NSString *GPGStringFromChars(const char * chars)
  *         invalid = 0; 
  *         name = "Gordon Worley <redbird@mac.com>"; 
  *         raw = "Gordon Worley <redbird@mac.com>"; 
- *         revoked = 0; 
+ *         revoked = 0;
+ *         validity = 0; 
  *     }, 
  *     {
  *         comment = ""; 
@@ -311,7 +273,8 @@ NSString *GPGStringFromChars(const char * chars)
  *         invalid = 0; 
  *         name = "[image of size 2493]"; 
  *         raw = "[image of size 2493]"; 
- *         revoked = 0; 
+ *         revoked = 0;
+ *         validity = 0; 
  *     }, 
  *     {
  *         comment = ""; 
@@ -319,20 +282,17 @@ NSString *GPGStringFromChars(const char * chars)
  *         invalid = 0; 
  *         name = "Gordon Worley"; 
  *         raw = "Gordon Worley <redbird@rbisland.cx>"; 
- *         revoked = 0; 
+ *         revoked = 0;
+ *         validity = 0; 
  *     }
  * );
  * }}
 "*/
 {
-    NSMutableDictionary *key_dict = [NSMutableDictionary dictionary];
-    NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
-            *uids_validities,
-            *subkeys, *sks_short_keyids, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
-        *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates, *sks_exp_dates;
-    int i;
+    NSMutableDictionary	*key_dict = [NSMutableDictionary dictionary];
+    NSArray 			*objects;
     
-    [key_dict setObject: [NSNumber numberWithBool:[self hasSecretPart]] forKey:@"secret"];
+    [key_dict setObject: [NSNumber numberWithBool:[self isSecret]] forKey:@"secret"];
     [key_dict setObject: [NSNumber numberWithBool:[self isKeyInvalid]] forKey:@"invalid"];
     [key_dict setObject: [NSNumber numberWithBool:[self isKeyRevoked]] forKey:@"revoked"];
     [key_dict setObject: [NSNumber numberWithBool:[self hasKeyExpired]] forKey:@"expired"];
@@ -353,208 +313,98 @@ NSString *GPGStringFromChars(const char * chars)
     if ([self chainID])
         [key_dict setObject: [self chainID] forKey:@"chainID"];
     [key_dict setObject: [NSNumber numberWithInt:[self ownerTrust]] forKey:@"ownertrust"];
-    [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
-    uids = [self userIDs];
-    uids_invalid_sts = [self userIDsValidityStatuses];
-    uids_revoked_sts = [self userIDsRevocationStatuses];
-    uids_names = [self names];
-    uids_emails = [self emails];
-    uids_comments = [self comments];
-    uids_validities = [self validities];
-    for (i = 0; i < [uids count]; i++)	{
-        [[key_dict objectForKey:@"userids"] addObject: [NSMutableDictionary dictionary]];
-        if ([uids_invalid_sts objectAtIndex:i])
-            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-                [uids_invalid_sts objectAtIndex:i] forKey:@"invalid"];
-        if ([uids_revoked_sts objectAtIndex:i])
-            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-                [uids_revoked_sts objectAtIndex:i] forKey:@"revoked"];
-        if ([uids objectAtIndex:i])
-            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-                [uids objectAtIndex:i] forKey:@"raw"];
-        if ([uids_names objectAtIndex:i])
-            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-                [uids_names objectAtIndex:i] forKey:@"name"];
-        if ([uids_emails objectAtIndex:i])
-            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-                [uids_emails objectAtIndex:i] forKey:@"email"];
-        if ([uids_comments objectAtIndex:i])
-            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-                [uids_comments objectAtIndex:i] forKey:@"comment"];
-        if ([uids_validities objectAtIndex:i])
-            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-                                     [uids_validities objectAtIndex:i] forKey:@"validity"];
+
+    objects = [self userIDs];
+    if(objects != nil){
+#if 0
+        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"userids"];
+#else
+        NSEnumerator	*anEnum = [objects objectEnumerator];
+        GPGUserID		*aUserID;
+        NSMutableArray	*anArray = [NSMutableArray array];
+
+        while(aUserID = [anEnum nextObject])
+            [anArray addObject:[aUserID dictionaryRepresentation]];
+        [key_dict setObject:anArray forKey:@"userids"];
+#endif
+    }
+    objects = [self subkeys];
+    if(objects != nil){
+#if 0
+        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"subkeys"];
+#else
+        NSEnumerator	*anEnum = [objects objectEnumerator];
+        GPGSubkey		*aSubkey;
+        NSMutableArray	*anArray = [NSMutableArray array];
+
+        while(aSubkey = [anEnum nextObject])
+            [anArray addObject:[aSubkey dictionaryRepresentation]];
+        [key_dict setObject:anArray forKey:@"subkeys"];
+#endif
     }
     
-    [key_dict setObject: [NSMutableArray array] forKey:@"subkeys"];
-    subkeys = [self subkeysKeyIDs];  //keyids
-    sks_short_keyids = [self subkeysShortKeyIDs];
-    sks_invalid_sts = [self subkeysValidityStatuses];
-    sks_revoked_sts = [self subkeysRevocationStatuses];
-    sks_expired_sts = [self subkeysExpirationStatuses];
-    sks_disabled_sts = [self subkeysActivityStatuses];
-    sks_fprs = [self subkeysFingerprints];
-    sks_algos = [self subkeysAlgorithms];
-    sks_lens = [self subkeysLengths];
-    sks_cre_dates = [self subkeysCreationDates];
-    sks_exp_dates = [self subkeysExpirationDates];
-    for (i = 0; i < [subkeys count]; i++)	{
-        [[key_dict objectForKey:@"subkeys"] addObject: [NSMutableDictionary dictionary]];
-        if ([sks_invalid_sts objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_invalid_sts objectAtIndex:i] forKey:@"invalid"];
-        if ([sks_revoked_sts objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_revoked_sts objectAtIndex:i] forKey:@"revoked"];
-        if ([sks_expired_sts objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_expired_sts objectAtIndex:i] forKey:@"expired"];
-        if ([sks_disabled_sts objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_disabled_sts objectAtIndex:i] forKey:@"disabled"];
-        if ([sks_short_keyids objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_short_keyids objectAtIndex:i] forKey:@"shortkeyid"];
-        if ([subkeys objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [subkeys objectAtIndex:i] forKey:@"keyid"];
-        if ([sks_fprs objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_fprs objectAtIndex:i] forKey:@"fpr"];
-        if ([sks_algos objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_algos objectAtIndex:i] forKey:@"algo"];
-        if ([sks_lens objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_lens objectAtIndex:i] forKey:@"len"];
-        if ([sks_cre_dates objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_cre_dates objectAtIndex:i] forKey:@"created"];
-        if ([sks_exp_dates objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_exp_dates objectAtIndex:i] forKey:@"expire"];
-    }
-        
     return key_dict;
-}
-
-+ (NSString *) algorithmDescription:(GPGPublicKeyAlgorithm)value
-/*"
- * Returns a localized description of the %{public key algorithm} value.
-"*/
-{
-    return GPGPublicKeyAlgorithmDescription(value);
-}
-
-+ (NSString *) validityDescription:(GPGValidity)value
-/*"
- * Returns a localized description of the %validity value.
-"*/
-{
-    return GPGValidityDescription(value);
-}
-
-+ (NSString *) ownerTrustDescription:(GPGValidity)value
-/*"
- * Returns a localized description of the %{owner trust} value.
-"*/
-{
-    return GPGValidityDescription(value);
-}
-
-- (NSString *) mainStringAttributeWithIdentifier:(GpgmeAttr)identifier
-{
-    const char	*aCString = gpgme_key_get_string_attr(_key, identifier, NULL, 0);
-
-    if(aCString != NULL)
-        return GPGStringFromChars(aCString);
-    else
-        return nil;
-}
-
-- (NSMutableArray *) subStringAttributesWithIdentifier:(GpgmeAttr)identifier maxCount:(unsigned)maxCount
-{
-    // If maxCount == 0, we stop enumerating when we get a NULL value,
-    // else we replace NULL values with empty strings, and continue
-    // up to maxCount. This is a workaround for the missing functions
-    // gpgme_key_subkeys_count() and gpgme_key_userids_count().
-    // Werner is aware of this, and will provide such a function/attribute.
-    int				i = 1;
-    const char		*aCString;
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    do{
-        aCString = gpgme_key_get_string_attr(_key, identifier, NULL, i++);
-        if(aCString == NULL)
-            if(maxCount > 0)
-                [attributes addObject:@""];
-            else
-                break;
-        else
-            [attributes addObject:GPGStringFromChars(aCString)];
-    }while(maxCount == 0 || i <= maxCount);
-
-    return attributes;
-}
-
-- (unsigned) subkeysCount
-{
-    return [[self subkeysKeyIDs] count];
-}
-
-- (unsigned) secondaryUserIDsCount
-{
-    return [[self subStringAttributesWithIdentifier:GPGME_ATTR_USERID maxCount:0] count];
 }
 
 - (NSString *) shortKeyID
 /*"
- * Returns %{main key short (128 bit) key ID}.
+ * Convenience method. Returns %{main key short (128 bit) key ID}.
 "*/
 {
     return [[self keyID] substringFromIndex:8];
 }
 
-- (NSArray *) subkeysShortKeyIDs
-/*"
- * Returns an array of #NSString instances.
-"*/
-{
-    NSMutableArray	*keyIDs = [NSMutableArray arrayWithArray:[self subkeysKeyIDs]];
-    int				i, count;
-
-    count = [keyIDs count];
-    for (i = count - 1; i >= 0; i--)
-        [keyIDs replaceObjectAtIndex:i withObject:[[keyIDs objectAtIndex:i] substringFromIndex:8]];
-    
-    return keyIDs;
-}
-
 - (NSString *) keyID
 /*"
- * Returns %{main key key ID}.
+ * Convenience method. Returns %{main key key ID}.
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_KEYID];
+    return [[[self subkeys] objectAtIndex:0] keyID];
 }
 
-- (NSArray *) subkeysKeyIDs
+- (NSArray *) subkeys
 /*"
- * Returns an array of #NSString instances.
+ * Returns the %{main key}, followed by other %{subkeys}, as #GPGSubkey
+ * instances.
 "*/
 {
-    return [self subStringAttributesWithIdentifier:GPGME_ATTR_KEYID maxCount:0];
+    if(_subkeys == nil){
+        gpgme_subkey_t	aSubkey = _key->subkeys;
+        NSZone			*aZone = [self zone];
+
+        _subkeys = [[NSMutableArray allocWithZone:aZone] init];
+
+        while(aSubkey != NULL){
+            GPGSubkey	*newSubkey = [[GPGSubkey allocWithZone:aZone] initWithInternalRepresentation:aSubkey key:self];
+
+            [(NSMutableArray *)_subkeys addObject:newSubkey];
+            [newSubkey release];
+            aSubkey = aSubkey->next;
+        }
+    }
+
+    return _subkeys;
 }
 
 - (NSString *) fingerprint
 /*"
- * Returns %{main key fingerprint}.
+ * Convenience method. Returns %{main key fingerprint} in hex digit form.
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_FPR];
+    return [[[self subkeys] objectAtIndex:0] fingerprint];
 }
 
-- (NSString *) _formattedFingerprint:(NSString *)fingerprint
++ (NSString *) formattedFingerprint:(NSString *)fingerprint
+/*"
+ * Convenience method. Returns fingerprint in hex digit form, formatted like
+ * this:
+ *
+ * XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX
+ *
+ * or
+ *
+ * XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
+"*/
 {
     if(fingerprint != nil && [fingerprint length] == 40){
         return [NSString stringWithFormat:@"%@ %@ %@ %@ %@  %@ %@ %@ %@ %@", [fingerprint substringWithRange:NSMakeRange(0, 4)], [fingerprint substringWithRange:NSMakeRange(4, 4)], [fingerprint substringWithRange:NSMakeRange(8, 4)], [fingerprint substringWithRange:NSMakeRange(12, 4)], [fingerprint substringWithRange:NSMakeRange(16, 4)], [fingerprint substringWithRange:NSMakeRange(20, 4)], [fingerprint substringWithRange:NSMakeRange(24, 4)], [fingerprint substringWithRange:NSMakeRange(28, 4)], [fingerprint substringWithRange:NSMakeRange(32, 4)], [fingerprint substringWithRange:NSMakeRange(36, 4)]];
@@ -568,7 +418,8 @@ NSString *GPGStringFromChars(const char * chars)
 
 - (NSString *) formattedFingerprint
 /*"
- * Returns %{main key fingerprint}, formatted like this:
+ * Convenience method. Returns %{main key fingerprint} in hex digit form,
+ * formatted like this:
  *
  * XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX
  *
@@ -577,195 +428,60 @@ NSString *GPGStringFromChars(const char * chars)
  * XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
 "*/
 {
-    return [self _formattedFingerprint:[self fingerprint]];
-}
-
-- (NSArray *) subkeysFingerprints
-/*"
- * Returns an array of #NSString instances.
- *
- * #Caution: it does not work currently.
-"*/
-{
-    // BUG: no fingerprint for subkeys! Reported to Werner.
-    return [self subStringAttributesWithIdentifier:GPGME_ATTR_FPR maxCount:[self subkeysCount]];
-}
-
-- (NSArray *) subkeysFormattedFingerprints
-/*"
- * Returns an array of #NSString instances; fingerprints are formatted,
- * according to what's decribed in #{-formattedFingerprint}.
- *
- * #Caution: it does not work currently.
-"*/
-{
-    // BUG: no fingerprint for subkeys! Reported to Werner.
-    int				aCount = [self subkeysCount];
-    NSMutableArray	*fingerprints = [NSMutableArray arrayWithCapacity:aCount];
-    NSEnumerator	*anEnum = [[self subStringAttributesWithIdentifier:GPGME_ATTR_FPR maxCount:aCount] objectEnumerator];
-    NSString		*aFingerprint;
-
-    while(aFingerprint = [anEnum nextObject])
-        [fingerprints addObject:[self _formattedFingerprint:aFingerprint]];
-
-    return fingerprints;
+    return [[self class] formattedFingerprint:[self fingerprint]];
 }
 
 - (GPGPublicKeyAlgorithm) algorithm
 /*"
- * Returns %{main key algorithm}. The algorithm is the crypto algorithm for which the key can be used.
- * The value corresponds to the #GPGPublicKeyAlgorithm enum values.
+ * Convenience method. Returns %{main key algorithm}. The algorithm is the
+ * crypto algorithm for which the key can be used. The value corresponds to
+ * the #GPGPublicKeyAlgorithm enum values.
 "*/
 {
-    return (GPGPublicKeyAlgorithm)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_ALGO, NULL, 0);
+    return [[[self subkeys] objectAtIndex:0] algorithm];
 }
 
 - (NSString *) algorithmDescription
+/*"
+ * Convenience method. Returns a non-localized description of the %{main key}
+ * algorithm.
+"*/
 {
     return GPGPublicKeyAlgorithmDescription([self algorithm]);
 }
 
-- (NSArray *) subkeysAlgorithms
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    unsigned int	aValue, maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_ALGO, NULL, i);
-        [attributes addObject:[NSNumber numberWithUnsignedInt:aValue]];
-    }
-
-    return attributes;
-}
-
-- (NSArray *) subkeysAlgorithmDescriptions
-/*"
- * Returns an array of #NSString instances.
-"*/
-{
-    int				i = 1;
-    unsigned int	aValue, maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_ALGO, NULL, i);
-        [attributes addObject:[GPGKey algorithmDescription:aValue]];
-    }
-
-    return attributes;
-}
-
 - (unsigned int) length
 /*"
- * Returns %{main key} length, in bits.
+ * Convenience method. Returns %{main key} length, in bits.
 "*/
 {
-    return (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_LEN, NULL, 0);
-}
-
-- (NSArray *) subkeysLengths
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    unsigned int	aValue, maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_LEN, NULL, i);
-        [attributes addObject:[NSNumber numberWithUnsignedInt:aValue]];
-    }
-
-    return attributes;
+    return [(GPGSubkey *)[[self subkeys] objectAtIndex:0] length];
 }
 
 - (NSCalendarDate *) creationDate
 /*"
- * Returns %{main key} creation date. Returns nil when not available or invalid.
-"*/
-{
-    unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CREATED, NULL, 0);
-
-    if(aValue == 0L)
-        return nil;
-    else
-        return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
-}
-
-- (NSArray *) subkeysCreationDates
-/*"
- * Returns an array of #NSCalendarDate instances. Array values can be
- * #{+[NSValue valueWithPointer:nil]} when corresponding creation date is not
+ * Convenience method. Returns %{main key} creation date. Returns nil when not
  * available or invalid.
 "*/
 {
-    int				i = 1;
-    unsigned long	aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CREATED, NULL, i);
-        if(aValue == 0L)
-            [attributes addObject:[NSValue valueWithPointer:nil]];
-        else
-            [attributes addObject:[NSCalendarDate dateWithTimeIntervalSince1970:aValue]];
-    }
-
-    return attributes;
+    return [[[self subkeys] objectAtIndex:0] creationDate];
 }
 
 - (NSCalendarDate *) expirationDate
 /*"
- * Returns %{main key} expiration date. Returns nil when there is none
- * or is not available or is invalid.
+ * Convenience method. Returns %{main key} expiration date. Returns nil when
+ * there is none or is not available or is invalid.
 "*/
 {
-    unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_EXPIRE, NULL, 0);
-
-    if(aValue == 0L)
-        return nil;
-    else
-        return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
-}
-
-- (NSArray *) subkeysExpirationDates
-/*"
- * Returns an array of #NSCalendarDate instances. Array values can be
- * #{+[NSValue valueWithPointer:nil]} when corresponding expiration date
- * does not exist, is not available or is invalid.
-"*/
-{
-#warning BUG? Seems that expiration date is never returned by gpgme for subkeys
-    int				i = 1;
-    unsigned long	aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_EXPIRE, NULL, i);
-        if(aValue == 0L)
-            [attributes addObject:[NSValue valueWithPointer:nil]];
-        else
-            [attributes addObject:[NSCalendarDate dateWithTimeIntervalSince1970:aValue]];
-    }
-
-    return attributes;
+    return [[[self subkeys] objectAtIndex:0] expirationDate];
 }
 
 - (GPGValidity) ownerTrust
 /*"
- * Returns %{owner trust}.
+ * Returns %{owner trust} (only for OpenPGP).
 "*/
 {
-    unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_OTRUST, NULL, 0);
-
-    return aValue;
+    return _key->owner_trust;
 }
 
 - (NSString *) ownerTrustDescription
@@ -776,424 +492,180 @@ NSString *GPGStringFromChars(const char * chars)
     return GPGValidityDescription([self ownerTrust]);
 }
 
+- (GPGUserID *) primaryUserID
+{
+    // It MIGHT happen that a key has NO userID!
+    NSArray	*userIDs = [self userIDs];
+
+    if([userIDs lastObject] != nil)
+        return [userIDs objectAtIndex:0];
+    else
+        return nil;
+}
+
 - (NSString *) userID
 /*"
- * Returns the %{primary user ID}.
+ * Convenience method. Returns the %{primary user ID}.
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_USERID];
+    return [[self primaryUserID] userID];
 }
 
 - (NSArray *) userIDs
 /*"
- * Returns the %{primary user ID}, followed by other %{user IDs}.
+ * Returns the %{primary user ID}, followed by other %{user IDs}, as
+ * #GPGUserID instances.
 "*/
 {
-    NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_USERID maxCount:[self secondaryUserIDsCount]];
+    if(_userIDs == nil){
+        gpgme_user_id_t	aUserID = _key->uids;
+        NSZone			*aZone = [self zone];
 
-    [result insertObject:[self userID] atIndex:0];
+        _userIDs = [[NSMutableArray allocWithZone:aZone] init];
 
-    return result;
+        while(aUserID != NULL){
+            GPGUserID	*newUserID = [[GPGUserID allocWithZone:aZone] initWithInternalRepresentation:aUserID key:self];
+            
+            [(NSMutableArray *)_userIDs addObject:newUserID];
+            [newUserID release];
+            aUserID = aUserID->next;
+        }
+    }
+
+    return _userIDs;
 }
 
 - (NSString *) name
 /*"
- * Returns the %{primary user ID} name.
+ * Convenience method. Returns the %{primary user ID} name.
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_NAME];
-}
-
-- (NSArray *) names
-/*"
- * Returns the %{primary user ID} name, followed by other %{user IDs} names.
-"*/
-{
-    NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_NAME maxCount:[self secondaryUserIDsCount]];
-
-    [result insertObject:[self name] atIndex:0];
-
-    return result;
+    return [[self primaryUserID] name];
 }
 
 - (NSString *) email
 /*"
- * Returns the %{primary user ID} email address.
+ * Convenience method. Returns the %{primary user ID} email address.
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_EMAIL];
-}
-
-- (NSArray *) emails
-/*"
- * Returns the %{primary user ID} email address, followed by other %{user IDs} email addresses.
-"*/
-{
-    NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_EMAIL maxCount:[self secondaryUserIDsCount]];
-
-    [result insertObject:[self email] atIndex:0];
-
-    return result;
+    return [[self primaryUserID] email];
 }
 
 - (NSString *) comment
 /*"
- * Returns the %{primary user ID} comment.
+ * Convenience method. Returns the %{primary user ID} comment.
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_COMMENT];
-}
-
-- (NSArray *) comments
-/*"
- * Returns the %{primary user ID} comment, followed by other %{user IDs} comments.
-"*/
-{
-    NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_COMMENT maxCount:[self secondaryUserIDsCount]];
-
-    [result insertObject:[self comment] atIndex:0];
-
-    return result;
+    return [[self primaryUserID] comment];
 }
 
 - (GPGValidity) validity
 /*"
- * Returns the %{primary user ID} validity.
+ * Convenience method. Returns the %{primary user ID} validity.
 "*/
 {
-    return gpgme_key_get_ulong_attr(_key, GPGME_ATTR_VALIDITY, NULL, 0);
+    return [[self primaryUserID] validity];
 }
 
 - (NSString *) validityDescription
+/*"
+ * Convenience method. Returns a localized description of the %{primary user
+ * ID} validity.
+"*/
 {
     return GPGValidityDescription([self validity]);
 }
 
-- (NSArray *) validities
-/*"
- * Returns the %{primary user ID} validity, followed by other %{user IDs} validities, as #NSNumber instances.
-"*/
-{
-    int				i = 0;
-    GPGValidity		aValue;
-    unsigned		maxCount = [self secondaryUserIDsCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 0; i <= maxCount; i++){
-        aValue = (GPGValidity)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_VALIDITY, NULL, i);
-        [attributes addObject:[NSNumber numberWithInt:aValue]];
-    }
-
-    return attributes;
-}
-
-- (NSArray *) validityDescriptions
-/*"
- * Returns the %{primary user ID} validity, followed by other
- * %{user IDs} validities, as #NSString instances.
-"*/
-{
-    int				i = 0;
-    GPGValidity		aValue;
-    unsigned		maxCount = [self secondaryUserIDsCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 0; i <= maxCount; i++){
-        aValue = (GPGValidity)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_VALIDITY, NULL, i);
-        [attributes addObject:[GPGKey validityDescription:aValue]];
-    }
-
-    return attributes;
-}
-
 - (BOOL) isKeyRevoked
 /*"
- * Returns whether %{main key} is revoked.
+ * Returns whether key is revoked.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_REVOKED, NULL, 0);
-
-    return (!!result);
-}
-
-- (NSArray *) subkeysRevocationStatuses
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    BOOL			aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_REVOKED, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:aValue]];
-    }
-    
-    return attributes;
+    return !!_key->revoked;
 }
 
 - (BOOL) isKeyInvalid
 /*"
- * Returns whether %{main key} is invalid (e.g. due to a missing self-signature).
+ * Returns whether key is invalid (e.g. due to a missing self-signature).
+ * This might have several reasons, for a example for the S/MIME backend, it
+ * will be set in during key listing if the key could not be validated due to
+ * a missing certificates or unmatched policies.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_INVALID, NULL, 0);
-
-    return (!!result);
-}
-
-- (NSArray *) subkeysValidityStatuses
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    BOOL			aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_INVALID, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:aValue]];
-    }
-
-    return attributes;
+    return !!_key->invalid;
 }
 
 - (BOOL) hasKeyExpired
 /*"
- * Returns whether %{main key} is expired.
+ * Returns whether key is expired.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_EXPIRED, NULL, 0);
+    // There is a bug in gpg/gpgme: the hasKeyExpired status is wrong!
+    // We need to check the expiration date.
+    BOOL	hasKeyExpired = !!_key->expired;
 
-    return (!!result);
-}
+    if(!hasKeyExpired){
+        NSCalendarDate	*expirationDate = [self expirationDate];
 
-- (NSArray *) subkeysExpirationStatuses
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    BOOL			aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_EXPIRED, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:aValue]];
+        if(expirationDate != nil)
+            hasKeyExpired = ([expirationDate compare:[NSCalendarDate calendarDate]] == NSOrderedAscending);
     }
 
-    return attributes;
+    return hasKeyExpired;
 }
 
 - (BOOL) isKeyDisabled
 /*"
- * Returns whether %{main key} is disabled.
+ * Returns whether key is disabled.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_DISABLED, NULL, 0);
-
-    return (!!result);
+    return !!_key->disabled;
 }
 
-- (NSArray *) subkeysActivityStatuses
+- (BOOL) isSecret
 /*"
- * Returns an array of #NSNumber instances, specifying whether corresponding %{sub key} is disabled.
+ * If a key is secret, than all %{subkeys} are password-protected (i.e. are 
+ * secret too), but password can be different for each %{subkey}. A %{subkey}
+ * cannot be secret if the key is not.
 "*/
 {
-    int				i = 1;
-    BOOL			aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_KEY_DISABLED, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:aValue]];
-    }
-    
-    return attributes;
-}
-
-- (BOOL) isPrimaryUserIDRevoked
-/*"
- * Returns whether %{primary user ID} is revoked.
-"*/
-{
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_UID_REVOKED, NULL, 0);
-
-    return (!!result);
-}
-
-- (NSArray *) userIDsRevocationStatuses
-/*"
- * Returns the %{primary user ID} revocation status (revoked or not),
- * followed by other %{user IDs} revocation statuses, as #NSNumber instances.
-"*/
-{
-    int				i = 0;
-    BOOL			aValue;
-    unsigned		maxCount = [self secondaryUserIDsCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 0; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_UID_REVOKED, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:aValue]];
-    }
-
-    return attributes;
-}
-
-- (BOOL) isPrimaryUserIDInvalid
-/*"
- * Returns whether %{primary user ID} is invalid.
-"*/
-{
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_UID_INVALID, NULL, 0);
-
-    return (!!result);
-}
-
-- (NSArray *) userIDsValidityStatuses
-/*"
- * Returns the %{primary user ID} validity status (#{invalid or not}),
- * followed by other %{user IDs} validity statuses, as #NSNumber instances.
-"*/
-{
-    int				i = 0;
-    unsigned long	aValue;
-    unsigned		maxCount = [self secondaryUserIDsCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 0; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_UID_INVALID, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:!!aValue]];
-    }
-
-    return attributes;
-}
-
-- (BOOL) hasSecretPart
-/*"
- * If a key has a secret part, than all %{sub keys} are password-protected (i.e. have a secret part too),
- * but password can be different for each %{sub key}.
- * A %{sub key} cannot have a secret part if the key has none.
-"*/
-{
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_IS_SECRET, NULL, 0);
-
-    return (!!result);
+    return !!_key->secret;
 }
 
 - (BOOL) canEncrypt
 /*"
- * Returns whether the %key can be used for encryption.
+ * Returns whether the %key (i.e. one of its subkeys) can be used for
+ * encryption.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CAN_ENCRYPT, NULL, 0);
-
-    return (!!result);
-}
-
-- (BOOL) mainKeyCanEncrypt
-/*"
- * Returns whether %{main key} can be used for encryption.
-"*/
-{
-    return strchr(gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, 0), 'e') != NULL;
-}
-
-- (NSArray *) subkeysEncryptionCapabilities
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    const char		*aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:(strchr(aValue, 'e') != NULL)]];
-    }
-
-    return attributes;
+    return !!_key->can_encrypt;
 }
 
 - (BOOL) canSign
 /*"
- * Returns whether the key can be used for signatures.
+ * Returns whether the key (i.e. one of its subkeys) can be used to create
+ * data signatures.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CAN_SIGN, NULL, 0);
-
-    return (!!result);
-}
-
-- (BOOL) mainKeyCanSign
-/*"
- * Returns whether %{main key} can be used for signatures.
-"*/
-{
-    return strchr(gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, 0), 's') != NULL;
-}
-
-- (NSArray *) subkeysSigningCapabilities
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    const char		*aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:(strchr(aValue, 's') != NULL)]];
-    }
-
-    return attributes;
+    return !!_key->can_sign;
 }
 
 - (BOOL) canCertify
 /*"
- * Returns whether the key can be used for certifications.
+ * Returns whether the key (i.e. one of its subkeys) can be used to create key
+ * certificates.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_CAN_CERTIFY, NULL, 0);
-
-    return (!!result);
+    return !!_key->can_certify;
 }
 
-- (BOOL) mainKeyCanCertify
+- (BOOL) canAuthenticate
 /*"
- * Returns whether %{main key} can be used for certification.
+ * Returns whether the key (i.e. one of its subkeys) can be used for
+ * authentication.
 "*/
 {
-    return strchr(gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, 0), 'c') != NULL;
-}
-
-- (NSArray *) subkeysCertificationCapabilities
-/*"
- * Returns an array of #NSNumber instances.
-"*/
-{
-    int				i = 1;
-    const char		*aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = gpgme_key_get_string_attr(_key, GPGME_ATTR_KEY_CAPS, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:(strchr(aValue, 'c') != NULL)]];
-    }
-    
-    return attributes;
+    return !!_key->can_authenticate;
 }
 
 - (NSString *) issuerSerial
@@ -1201,7 +673,7 @@ NSString *GPGStringFromChars(const char * chars)
  * Returns the X.509 %{issuer serial} attribute of the key (only for S/MIME).
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_SERIAL];
+    return GPGStringFromChars(_key->issuer_serial);
 }
 
 - (NSString *) issuerName
@@ -1209,34 +681,82 @@ NSString *GPGStringFromChars(const char * chars)
  * Returns the X.509 %{issuer name} attribute of the key (only for S/MIME).
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_ISSUER];
+    return GPGStringFromChars(_key->issuer_name);
 }
 
 - (NSString *) chainID
 /*"
- * Returns the X.509 %{chain ID} that can be used to build the certification chain (only for S/MIME).
+ * Returns the X.509 %{chain ID} that can be used to build the certificate
+ * chain (only for S/MIME).
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_CHAINID];
+    return GPGStringFromChars(_key->chain_id);
 }
 
-- (GPGKeyType) type
+- (GPGProtocol) supportedProtocol
 /*"
- * This returns information about the type of key.
+ * Returns information about the protocol supported by the key.
 "*/
 {
-    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_TYPE, NULL, 0);
-
-    return result;
+    return _key->protocol;
 }
 
-- (NSString *) typeDescription
+- (NSString *) supportedProtocolDescription
 /*"
- * This returns information about the type of key, as string.
- * Returns either "PGP" or "X.509".
+ * Returns a localized description of the %{supported protocol}.
 "*/
 {
-    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_TYPE];
+    return GPGLocalizedProtocolDescription([self supportedProtocol]);
+}
+
+- (NSData *) photoData
+/*"
+ * Returns data for the photo %{user ID}, if there is one.
+ * You can create an #NSImage using #{-[NSImage initWithData:]}
+ * method.
+ *
+ * Returns nil when there is no photo user ID.
+"*/
+{
+    // This is a temporary implementation; libgpgme will return
+    // corresponding data within an API, later.
+    if(!_checkedPhotoData){
+        NSTask	*aTask = [[NSTask alloc] init];
+
+        NS_DURING
+            NSString	*temporaryFilename = [[NSProcessInfo processInfo] globallyUniqueString];
+            NSString	*aPath = [NSTemporaryDirectory() stringByAppendingPathComponent:temporaryFilename];
+
+            [aTask setLaunchPath:@"/usr/local/bin/gpg"];
+            // Seems it is not possible to read only image data:
+            // with some keys (e.g. 18AC60DD67191493), image data 
+            // is mixed with userID data. gpg is though able to do
+            // it correctly.. We'll wait till gpgme does it too,
+            // in the meantime we use a temporary file
+            [aTask setArguments:[NSArray arrayWithObjects:@"--photo-viewer", [NSString stringWithFormat:@"tee %@", aPath], @"--show-photos", @"--list-keys", [self keyID], nil]];
+            [aTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
+            [aTask setStandardError:[NSFileHandle fileHandleWithNullDevice]];
+            [aTask launch];
+            [aTask waitUntilExit];
+            _photoData = [[NSData alloc] initWithContentsOfFile:aPath];
+            (void)[[NSFileManager defaultManager] removeFileAtPath:aPath handler:nil];
+        NS_HANDLER
+            NSLog(@"Something happened with the photo: %@", localException);
+        NS_ENDHANDLER
+
+        [aTask release];
+        _checkedPhotoData = YES;
+    }
+
+    return _photoData;
+}
+
+- (GPGKeyListMode) keyListMode
+/*"
+ * Returns the keylist mode that was active when the key was retrieved.    
+"*/
+{
+    return _key->keylist_mode;
 }
 
 @end
@@ -1244,21 +764,54 @@ NSString *GPGStringFromChars(const char * chars)
 
 @implementation GPGKey(GPGInternals)
 
++ (BOOL) usesReferencesCount
+{
+    // Note that we need to keep reference to the gpgme_key_t struct ptr,
+    // because we need it for some context operations.
+    return YES;
+}
+
 - (id) initWithInternalRepresentation:(void *)aPtr
 {
     id	originalSelf = self;
 
     if(self = [super initWithInternalRepresentation:aPtr]){
-        if(originalSelf == self)
+        if(originalSelf == self && [[self class] usesReferencesCount])
             gpgme_key_ref(_key);
     }
 
     return self;
 }
 
-- (GpgmeKey) gpgmeKey
+- (gpgme_key_t) gpgmeKey
 {
     return _key;
+}
+
+- (GPGPublicKeyAlgorithm) algorithmFromName:(NSString *)name
+{
+    static NSDictionary	*algoForNameDict = nil;
+    NSNumber			*aNumber;
+
+    if(algoForNameDict == nil)
+#warning CHECK!
+        algoForNameDict = [[NSDictionary alloc] initWithObjectsAndKeys:
+            [NSNumber numberWithInt:GPG_RSAAlgorithm], @"RSA", // OK
+            [NSNumber numberWithInt:GPG_RSAEncryptOnlyAlgorithm], @"RSA-S",
+            [NSNumber numberWithInt:GPG_RSASignOnlyAlgorithm], @"RSA-E",
+            [NSNumber numberWithInt:GPG_ElgamalEncryptOnlyAlgorithm], @"ELG-E", // OK
+            [NSNumber numberWithInt:GPG_DSAAlgorithm], @"DSA", // OK
+            [NSNumber numberWithInt:GPG_DSAAlgorithm], @"DSS/DH", // OK; there are 2 names, but it's very complicated; google ("DSS/DH" DSA) to learn more
+            [NSNumber numberWithInt:GPG_EllipticCurveAlgorithm], @"Elliptic",
+            [NSNumber numberWithInt:GPG_ECDSAAlgorithm], @"ECDSA",
+            [NSNumber numberWithInt:GPG_ElgamalAlgorithm], @"ELG",
+            [NSNumber numberWithInt:GPG_DiffieHellmanAlgorithm], @"DH", nil];
+
+    aNumber = [algoForNameDict objectForKey:name];
+    if(aNumber == nil)
+        return -1;
+    else
+        return [aNumber intValue];
 }
 
 @end

@@ -2,62 +2,98 @@
 //  GPGData.m
 //  GPGME
 //
-//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
+//  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2003 Mac GPG Project.
+//  Copyright (C) 2001-2005 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
-//  the terms of the GNU General Public License as published by the Free
-//  Software Foundation; either version 2 of the License, or any later version.
+//  the terms of the GNU Lesser General Public License as published by the Free
+//  Software Foundation; either version 2.1 of the License, or (at your option)
+//  any later version.
 //  
 //  This code is distributed in the hope that it will be useful, but WITHOUT ANY
 //  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-//  FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+//  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
 //  details.
 //  
-//  For a copy of the GNU General Public License, visit <http://www.gnu.org/> or
-//  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
-//  Boston, MA 02111-1307, USA.
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program; if not, visit <http://www.gnu.org/> or write to the
+//  Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
+//  MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
+//  More info at <http://macgpg.sourceforge.net/>
 //
 
 #include <GPGME/GPGData.h>
 #include <GPGME/GPGExceptions.h>
+#include <GPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
 
-#define _data		((GpgmeData)_internalRepresentation)
-#define _dataPtr	((GpgmeData *)&_internalRepresentation)
+#define _data		((gpgme_data_t)_internalRepresentation)
 
 
 @implementation GPGData
 /*"
  * A lot of data has to be exchanged between the user and the crypto engine,
- * like plaintext messages, ciphertext, signatures and information about the keys.
- * The technical details about exchanging the data information are completely
- * abstracted by GPGME. The user provides and receives the data via #GPGData instances,
- * regardless of the communication protocol between GPGME and the crypto engine in use.
+ * like plaintext messages, ciphertext, signatures and information about the
+ * keys. The technical details about exchanging the data information are
+ * completely abstracted by GPGME. The user provides and receives the data via
+ * #GPGData instances, regardless of the communication protocol between GPGME
+ * and the crypto engine in use.
+ *
+ * Data objects can be based on memory, files, or callback methods provided by
+ * the user (data source). Not all operations are supported by all objects.
+ *
+ * #{Memory Based Data Buffers}
+ *
+ * Memory based data objects store all data in allocated memory.  This is
+ * convenient, but only practical for an amount of data that is a fraction of
+ * the available physical memory. The data has to be copied from its source
+ * and to its destination, which can often be avoided by using one of the
+ * other data object.
+ * Here are the methods to initialize memory based data buffers:
+ * _{-init }
+ * _{-initWithData:}
+ * _{-initWithDataNoCopy:}
+ * _{-initWithContentsOfFile:}
+ * _{-initWithContentsOfFile:atOffset:length:}
+ *
+ * #{File Based Data Buffers}
+ *
+ * File based data objects operate directly on file descriptors or streams.
+ * Only a small amount of data is stored in core at any time, so the size of
+ * the data objects is not limited by GPGME.
+ * Here are the methods to initialize file based data buffers:
+ * _{-initWithFileHandle:}
+ *
+ * #{Callback Based Data Buffers}
+ *
+ * If neither memory nor file based data objects are a good fit for your
+ * application, you can provide a data source implementing
+ * #{NSObject(GPGDataSource)} methods and create a data object with this data
+ * source.
+ * Here are the methods to initialize callback based data buffers:
+ * _{-initWithDataSource: }
 "*/
 
 - (id) init
 /*"
- * Data is created without content. Type is set to #GPGDataTypeNone; it can later
- * be set to #GPGDataTypeData.
+ * Data is created without content and is memory based.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
 {
-    GpgmeError	anError = gpgme_data_new(_dataPtr);
+    gpgme_data_t	aData;
+    gpgme_error_t	anError = gpgme_data_new(&aData);
 
-    if(anError != GPGME_No_Error){
-        _data = NULL;
+    if(anError != GPG_ERR_NO_ERROR){
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
-    self = [self initWithInternalRepresentation:_data];
+    self = [self initWithInternalRepresentation:aData];
     
     return self;
 }
@@ -65,161 +101,224 @@
 - (id) initWithData:(NSData *)someData
 /*"
  * Copies someData's bytes.
- * Type is set to #GPGDataTypeData.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
 {
-    GpgmeError	anError = gpgme_data_new_from_mem(_dataPtr, [someData bytes], [someData length], 1);
+    gpgme_data_t	aData;
+    gpgme_error_t	anError = gpgme_data_new_from_mem(&aData, [someData bytes], [someData length], 1);
 
-    if(anError != GPGME_No_Error){
-        _data = NULL;
+    if(anError != GPG_ERR_NO_ERROR){
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
-    self = [self initWithInternalRepresentation:_data];
+    self = [self initWithInternalRepresentation:aData];
 
     return self;
 }
 
-- (id) initWithDataNoCopy:(NSMutableData *)someData
+- (id) initWithDataNoCopy:(NSData *)someData
 /*"
- * Doesn't copy someData, but user needs to make sure that someData remains valid
- * until #dealloc. Type is set to #GPGDataTypeData.
+ * Doesn't copy someData, but retains it.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
 {
-#warning Is someData really to be modified??? Ask Werner.
-    // No, it seems that data is not modified, because
-    // there is a const char *buffer => buffer is not modified
-    // => No difference with -initWithData: ???
-    // Difference is that with this initialization, we know that
-    // Gpgme_data will not be modified.
-    // The same applies for gpgme_data_new_from_file()
-    ////////// NOT SURE ABOUT THIS... ////////////////
-    GpgmeError	anError = gpgme_data_new_from_mem(_dataPtr, [someData mutableBytes], [someData length], 0);
+    gpgme_data_t	aData;
+    gpgme_error_t	anError = gpgme_data_new_from_mem(&aData, ([someData respondsToSelector:@selector(mutableBytes)] ? [(NSMutableData *)someData mutableBytes]:[someData bytes]), [someData length], 0);
 
-    if(anError != GPGME_No_Error){
-        _data = NULL;
+    if(anError != GPG_ERR_NO_ERROR){
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
-    self = [self initWithInternalRepresentation:_data];
-    [_retainedData retain];
+    self = [self initWithInternalRepresentation:aData];
+    ((GPGData *)self)->_objectReference = [someData retain];
     
     return self;
 }
 
-static int readCallback(void *object, char *destinationBuffer, size_t destinationBufferSize, size_t *readLengthPtr)
+static ssize_t readCallback(void *object, void *destinationBuffer, size_t destinationBufferSize)
 {
-    // Returns GPGME_No_Error if it could read anything, else any other value.
-    // In case of rewinding (destinationBuffer = NULL), returns GPGME_No_Error if implemented, else any other value.
-    volatile NSData	*readData = nil;
+    // Returns the number of bytes read, or -1 on error. Sets errno in case of error.
+    NSData	*readData = nil;
+    ssize_t	readLength = 0;
     
-    NSCParameterAssert(destinationBufferSize != 0 || (destinationBuffer == NULL && readLengthPtr == NULL));
+    NSCParameterAssert(destinationBufferSize != 0 && destinationBuffer != NULL);
 
     NS_DURING
-        readData = [((GPGData *)object)->_dataSource data:((GPGData *)object) readLength:destinationBufferSize];
+        readData = [((GPGData *)object)->_objectReference data:((GPGData *)object) readDataOfLength:destinationBufferSize];
     NS_HANDLER
         if([[localException name] isEqualToString:GPGException]){
-            NSNumber	*errorCodeNumber = [[localException userInfo] objectForKey:GPGErrorCodeKey];
+            NSNumber	*errorNumber = [[localException userInfo] objectForKey:GPGErrorKey];
+            int			errorCodeAsErrno;
+            
+            NSCAssert(errorNumber != nil, @"### GPGException raised by GPGData dataSource has no error");
+            errorCodeAsErrno = gpg_err_code_to_errno(gpgme_err_code([errorNumber intValue]));
+            NSCAssert2(errorCodeAsErrno != 0, @"### GPGException raised by GPGData dataSource has not a system error errorCode (%@: %@)", errorNumber, GPGErrorDescription([errorNumber intValue]));
 
-            NSCAssert1(errorCodeNumber != nil && [errorCodeNumber intValue] == GPGErrorNotImplemented, @"### GPGException raised by GPGData dataSource is not GPGErrorNotImplemented (%@)", errorCodeNumber);
+            errno = errorCodeAsErrno;
             
-            // Rewinding not implemented
-            
-            return !GPGME_No_Error;
+            return -1;
         }
         else
             [localException raise];
     NS_ENDHANDLER
 
-    if(readData == nil){
-        // Rewinding or EOF
-        if(readLengthPtr != NULL)
-            *readLengthPtr = 0;
-        
-        return (destinationBuffer == NULL ? GPGME_No_Error:!GPGME_No_Error);
+    if(readData != nil){
+        readLength = [readData length];
+
+        if(readLength > 0){
+            NSCAssert(((size_t)readLength) <= destinationBufferSize, @"### GPGData dataSource may not return more bytes than given capacity!");
+            [readData getBytes:destinationBuffer];
+        }
     }
-    else{
-        size_t	aLength = [(NSData *)readData length];
-        
-        if(readLengthPtr != NULL)
-            *readLengthPtr = aLength;
-        NSCAssert(aLength <= destinationBufferSize, @"### GPGData dataSource may not return more bytes than given capacity!");
-        [(NSData *)readData getBytes:destinationBuffer];
-        
-        return GPGME_No_Error;
-    }
+    
+    return readLength;
+}
+
+static ssize_t writeCallback(void *object, const void *buffer, size_t size)
+{
+    // Returns the number of bytes written, or -1 on error. Sets errno in case of error.
+    unsigned long long	writeLength = 0;
+    NSData				*data = [NSData dataWithBytesNoCopy:(void *)buffer length:size freeWhenDone:NO];
+
+    NS_DURING
+        writeLength = [((GPGData *)object)->_objectReference data:((GPGData *)object) writeData:data];
+    NS_HANDLER
+        if([[localException name] isEqualToString:GPGException]){
+            NSNumber	*errorNumber = [[localException userInfo] objectForKey:GPGErrorKey];
+            int			errorCodeAsErrno;
+
+            NSCAssert(errorNumber != nil, @"### GPGException raised by GPGData dataSource has no error");
+            errorCodeAsErrno = gpg_err_code_to_errno(gpgme_err_code([errorNumber intValue]));
+            NSCAssert2(errorCodeAsErrno != 0, @"### GPGException raised by GPGData dataSource has not a system error errorCode (%@: %@)", errorNumber, GPGErrorDescription([errorNumber intValue]));
+
+            errno = errorCodeAsErrno;
+
+            return -1;
+        }
+        else
+            [localException raise];
+    NS_ENDHANDLER
+
+    return writeLength;
+}
+
+static off_t seekCallback(void *object, off_t offset, int whence)
+{
+    // Returns the number of bytes written, or -1 on error. Sets errno in case of error.
+    off_t	newPosition = 0;
+
+    NS_DURING
+        newPosition = [((GPGData *)object)->_objectReference data:((GPGData *)object) seekToFileOffset:offset offsetType:whence];
+    NS_HANDLER
+        if([[localException name] isEqualToString:GPGException]){
+            NSNumber	*errorNumber = [[localException userInfo] objectForKey:GPGErrorKey];
+            int			errorCodeAsErrno;
+
+            NSCAssert(errorNumber != nil, @"### GPGException raised by GPGData dataSource has no error");
+            errorCodeAsErrno = gpg_err_code_to_errno(gpgme_err_code([errorNumber intValue]));
+            NSCAssert2(errorCodeAsErrno != 0, @"### GPGException raised by GPGData dataSource has not a system error errorCode (%@: %@)", errorNumber, GPGErrorDescription([errorNumber intValue]));
+
+            errno = errorCodeAsErrno;
+
+            return -1;
+        }
+        else
+            [localException raise];
+    NS_ENDHANDLER
+
+    return newPosition;
+}
+
+static void releaseCallback(void *object)
+{
+    [((GPGData *)object)->_objectReference dataRelease:((GPGData *)object)];
 }
 
 - (id) initWithDataSource:(id)dataSource
 /*"
- * dataSource must respond to selector #{data:readLength:}. dataSource is not
- * retained. dataSource is invoked to retrieve data on-demand, and it can
+ * dataSource must implement some of the methods declared in
+ * #{NSObject(GPGDataSource)} informal protocol. dataSource is not retained.
+ * dataSource is invoked to read/write data on-demand, and it can
  * supply the data in any way it wants; this is the most flexible data type
- * GPGME provides. However it cannot be used to write data.
+ * GPGME provides.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
 {
-    GpgmeError	anError;
+    gpgme_data_t		aData;
+    gpgme_error_t		anError;
+    gpgme_data_cbs_t	callbacks;
 
-    NSParameterAssert(dataSource != nil && [dataSource respondsToSelector:@selector(data:readLength:)]);
+    NSParameterAssert(dataSource != nil);
 
-    anError = gpgme_data_new_with_read_cb(_dataPtr, readCallback, self);
+    callbacks = (gpgme_data_cbs_t)NSZoneMalloc([self zone], sizeof(struct gpgme_data_cbs));
+    if([dataSource respondsToSelector:@selector(data:readDataOfLength:)])
+        callbacks->read = readCallback;
+    if([dataSource respondsToSelector:@selector(data:writeData:)])
+        callbacks->write = writeCallback;
+    if([dataSource respondsToSelector:@selector(data:seekToFileOffset:offsetType:)])
+        callbacks->seek = seekCallback;
+    if([dataSource respondsToSelector:@selector(data:dataRelease:)])
+        callbacks->release = releaseCallback;
+    
+    NSParameterAssert(callbacks->read != NULL || callbacks->write != NULL);
 
-    if(anError != GPGME_No_Error){
-        _data = NULL;
+    anError = gpgme_data_new_from_cbs(&aData, callbacks, self);
+
+    if(anError != GPG_ERR_NO_ERROR){
+        NSZoneFree([self zone], callbacks);
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
-    self = [self initWithInternalRepresentation:_data];
-    _dataSource = dataSource; // We don't retain dataSource
+    NSAssert(self == [self initWithInternalRepresentation:aData], @"Tried to change self! Impossible due to callback registration.");
+    _objectReference = dataSource; // We don't retain dataSource
+    _callbacks = callbacks;
     
     return self;
 }
 
 - (id) initWithContentsOfFile:(NSString *)filename
 /*"
- * Immediately opens file and copies content into memory; then it closes file.
+ * Immediately opens file named filename (which must be an absolute path) and
+ * copies content into memory; then it closes file.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
 {
-    GpgmeError	anError = gpgme_data_new_from_file(_dataPtr, [filename fileSystemRepresentation], 1);
+    gpgme_data_t	aData;
+    gpgme_error_t	anError = gpgme_data_new_from_file(&aData, [filename fileSystemRepresentation], 1);
 
-    if(anError != GPGME_No_Error){
-        _data = NULL;
+    if(anError != GPG_ERR_NO_ERROR){
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
-    self = [self initWithInternalRepresentation:_data];
+    self = [self initWithInternalRepresentation:aData];
     
     return self;
 }
 
 - (id) initWithContentsOfFileNoCopy:(NSString *)filename
-// Not yet supported as of 0.3.3
+#warning Not yet supported as of 1.0.x
 // Can raise a GPGException; in this case, a release is sent to self
 {
-    GpgmeError	anError = gpgme_data_new_from_file(_dataPtr, [filename fileSystemRepresentation], 0);
+    gpgme_data_t	aData;
+    gpgme_error_t	anError = gpgme_data_new_from_file(&aData, [filename fileSystemRepresentation], 0);
 
-    if(anError != GPGME_No_Error){
-        _data = NULL;
+    if(anError != GPG_ERR_NO_ERROR){
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
-    self = [self initWithInternalRepresentation:_data];
+    self = [self initWithInternalRepresentation:aData];
     
     return self;
 }
 
 - (id) initWithContentsOfFile:(NSString *)filename atOffset:(unsigned long long)offset length:(unsigned long long)length
 /*"
- * Immediately opens file and copies partial content into memory; then it closes
- * file.
+ * Immediately opens file and copies partial content into memory; then it
+ * closes file.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
@@ -227,24 +326,56 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
     // We don't provide a method to match the case where filename is NULL
     // and filePtr (FILE *) is not NULL (both arguments are exclusive),
     // because we generally don't manipulate FILE * types in Cocoa.
-    GpgmeError	anError = gpgme_data_new_from_filepart(_dataPtr, [filename fileSystemRepresentation], NULL, offset, length);
+    gpgme_data_t	aData;
+    gpgme_error_t	anError = gpgme_data_new_from_filepart(&aData, [filename fileSystemRepresentation], NULL, offset, length);
 
-    if(anError != GPGME_No_Error){
-        _data = NULL;
+    if(anError != GPG_ERR_NO_ERROR){
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
-    self = [self initWithInternalRepresentation:_data];
+    self = [self initWithInternalRepresentation:aData];
+
+    return self;
+}
+
+// We don't support gpgme_data_new_from_stream(), because there is
+// no STREAM handling in Cocoa, yet(?).
+// Maybe in Panther with NSStream?
+
+- (id) initWithFileHandle:(NSFileHandle *)fileHandle
+/*"
+ * Uses fileHandle to read from (if used as an input data object) and write to
+ * (if used as an output data object). fileHandle is retained.
+ *
+ * When using the data object as an input buffer, the method might read a bit
+ * more from the file handle than is actually needed by the crypto engine in
+ * the desired operation because of internal buffering.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
+{
+    gpgme_data_t	aData;
+    gpgme_error_t	anError = gpgme_data_new_from_fd(&aData, [fileHandle fileDescriptor]);
+
+    if(anError != GPG_ERR_NO_ERROR){
+        [self release];
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    }
+    self = [self initWithInternalRepresentation:aData];
+    ((GPGData *)self)->_objectReference = [fileHandle retain];
 
     return self;
 }
 
 - (void) dealloc
 {
-    GpgmeData	cachedData = _data;
+    gpgme_data_t	cachedData = _data;
 
-    if(_retainedData != nil)
-        [_retainedData release];
+    if(_callbacks != NULL)
+        NSZoneFree([self zone], _callbacks);
+    // If _callbacks is not NULL, it means that _objectReference was a non-retained dataSource
+    else if(_objectReference != nil)
+        [_objectReference release];
     [super dealloc];
 
     // We could have a problem here if we set ourself as callback
@@ -254,6 +385,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
         gpgme_data_release(cachedData);
 }
 
+#if 0
 - (id) copyWithZone:(NSZone *)zone
 {
     GPGData	*aCopy = nil;
@@ -270,7 +402,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
                 [copiedData release];
             }
             else
-                aCopy = [[[self class] allocWithZone:zone] initWithData:[self data]]; // WARNING: his rewinds myself and reads until EOF!
+                aCopy = [[[self class] allocWithZone:zone] initWithData:[self data]]; // WARNING: this rewinds myself and reads until EOF!
             break;
         case GPGDataTypeFileHandle:
             // We don't provide a way in GPGME to create such data types
@@ -290,125 +422,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
     
     return aCopy;
 }
-
-- (unsigned long long) availableDataLength
-/*"
- * Returns the amount of bytes available without changing the read pointer.
- * This is not supported by all types of data objects.
- *
- * If this method is not supported, a #GPGException is raised, with error
- * #GPGErrorInvalidType.
- *
- * If end of data object is reached or no data is currently available,
- * it returns 0. To know if there are more bytes to read, you must
- * invoke #{-isAtEnd}.
-"*/
-{
-    size_t		availableDataLength;
-    GpgmeError	anError = gpgme_data_read(_data, NULL, 0, &availableDataLength);
-
-    if(anError != GPGME_No_Error && anError != GPGErrorEOF)
-        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
-
-    return availableDataLength;
-}
-
-- (unsigned long long) length
-/*"
- * Convenience method. Returns length of all data.
- * It rewinds receiver, then reads available data length
- * and returns it. Read pointer is reset.
- *
- * If this method is not supported, a #GPGException is raised, with error
- * #GPGErrorInvalidType.
- *
- * Can raise a #GPGException.
-"*/
-{
-    [self rewind];
-    
-    return [self availableDataLength];
-}
-
-- (BOOL) isAtEnd
-/*"
- * Returns YES if there are no more bytes to read (EOF). If #{-availableDataLength} returns 0,
- * it means that either there is nothing more to read, or there is currently nothing to read.
- * Read pointer is not moved.
- *
- * If this method is not supported, a #GPGException is raised, with error
- * #GPGErrorInvalidType.
- *
- * Can raise a #GPGException.
-"*/
-{
-    size_t		availableDataLength;
-    GpgmeError	anError = gpgme_data_read(_data, NULL, 0, &availableDataLength);
-
-    if(anError != GPGME_No_Error)
-        if(anError != GPGErrorEOF)
-            [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
-        else
-            return YES;
-
-    return NO;
-}
-
-- (NSData *) availableData
-/*"
- * Returns a copy of data, read from current position, up to end of data.
- *
- * Can raise a #GPGException.
-"*/
-{
-    GpgmeError		anError;
-    size_t			bufferSize = NSPageSize();
-    NSZone			*aZone = NSDefaultMallocZone();
-    char			*bufferPtr = (char *)NSZoneMalloc(aZone, bufferSize);
-    NSMutableData	*readData = [NSMutableData dataWithCapacity:bufferSize];
-    
-    do{
-        size_t	aReadLength;
-        
-        anError = gpgme_data_read(_data, bufferPtr, bufferSize, &aReadLength);
-        // CAUTION: function can return a length of 0, without being at EOF
-        // => could potentially turn into a dead-lock here!
-        if(anError == GPGME_No_Error && aReadLength > 0)
-            [readData appendBytes:bufferPtr length:aReadLength];
-    }while(anError == GPGME_No_Error);
-
-    NSZoneFree(aZone, bufferPtr);
-    if(anError != GPGME_EOF)
-        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
-
-    return readData;
-}
-
-- (NSData *) data
-/*"
- * Convenience method. Returns a copy of all data.
- * It rewinds receiver, then reads data
- * until EOF, and returns it.
- *
- * Can raise a #GPGException.
-"*/
-{
-    [self rewind];
-    
-    return [self availableData];
-}
-
-- (GPGDataType) type
-/*"
- * Returns the type of the data object.
-"*/
-{
-    GPGDataType	type = gpgme_data_get_type(_data);
-    
-    NSAssert(type != GPGME_DATA_TYPE_NONE, @"### _data is not a valid pointer");
-    
-    return type;
-}
+#endif
 
 - (GPGDataEncoding) encoding
 /*"
@@ -427,67 +441,78 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
  * Can raise a #GPGException.
 "*/
 {
-    GpgmeError	anError = gpgme_data_set_encoding(_data, encoding);
+    gpgme_error_t	anError = gpgme_data_set_encoding(_data, encoding);
 
-    if(anError != GPGME_No_Error)
+    if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 }
 
-- (void) rewind
+- (unsigned long long) seekToFileOffset:(unsigned long long)offset offsetType:(GPGDataOffsetType)offsetType
 /*"
- * Prepares data in a way that the next call to #{-readDataOfLength:} starts at
- * the beginning of the data. This has to be done for all types of #GPGData instances.
+ * Sets the current position from where the next read or write starts in the
+ * data object to offset, relativ to offsetType. Returns the resulting file
+ * position, measured in bytes from the beginning of the data object. You can
+ * use this feature together with #GPGDataCurrentPosition to read the current
+ * read/write position.
  *
- * Can raise a #GPGException.
+ * Can raise a #GPGException of type #{GPGError_E*}.
 "*/
 {
-    GpgmeError	anError = gpgme_data_rewind(_data);
-    
-    if(anError != GPGME_No_Error)
-        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    off_t	newPosition = gpgme_data_seek(_data, offset, offsetType);
+
+    if(newPosition < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+
+    return newPosition;
 }
 
-- (NSData *) readDataOfLength:(unsigned int)length
+- (NSData *) readDataOfLength:(unsigned long long)length
 /*"
- * Reading starts from the current position. Returned data has the
- * appropriate size, smaller or equal to length. Returns nil when there isn't
- * anything more to read (EOF). Read data should be copied, not referenced.
+ * Reads up to length bytes and returns them wrapped in a #NSData. Reading
+ * starts from the current position. Returned data has the appropriate size,
+ * smaller or equal to length. Returns nil when there isn't anything more to
+ * read (EOF).
  *
- * Can raise a #GPGException (but never a #GPGErrorEOF one).
+ * Can raise a #GPGException of type #{GPGError_E*}.
 "*/
 {
-    GpgmeError		anError;
     NSMutableData	*readData = [NSMutableData dataWithLength:length];
-    size_t			aReadLength;
+    ssize_t			aReadLength = gpgme_data_read(_data, [readData mutableBytes], length);
     
-    anError = gpgme_data_read(_data, [readData mutableBytes], length, &aReadLength);
-    if(anError == GPGME_EOF)
+    if(aReadLength == 0)
         return nil;
-    if(anError != GPGME_No_Error)
-        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    if(aReadLength < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
     [readData setLength:aReadLength];
 
     return readData;
 }
 
-- (void) writeData:(NSData *)data
+- (unsigned long long) writeData:(NSData *)data
 /*"
- * Writing starts from the current position. Writes all data (makes a copy of it).
+ * Writes data bytes by copying them. Writing starts from the current
+ * position. Returns the number of bytes written.
  *
- * Can raise a #GPGException.
+ * Can raise a #GPGException of type #{GPGError_E*}.
 "*/
 {
-    GpgmeError	anError = gpgme_data_write(_data, [data bytes], [data length]);
+    ssize_t writtenByteCount = gpgme_data_write(_data, [data bytes], [data length]);
     
-    if(anError != GPGME_No_Error)
-        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    if(writtenByteCount < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+
+    return writtenByteCount;
 }
+
+@end
+
+
+@implementation GPGData(GPGExtensions)
 
 - (id) initWithString:(NSString *)string
 /*"
- * Convenience method.
- * Gets data from string, and invokes #{-initWithData:}.
- * Type is set to #GPGDataTypeData.
+ * Convenience method. Gets data from string using UTF8 encoding, and invokes
+ * #{-initWithData:}.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
@@ -499,19 +524,137 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 
 - (NSString *) string
 /*"
- * Convenience method. Returns a copy of all data as string.
- * It rewinds receiver, then reads data
- * until EOF, and returns a string initialized with it.
+ * Convenience method. Returns a copy of all data as string, using UTF8 string
+ * encoding (or ISOLatin1 if it cannot be decoded as UTF8). It rewinds
+ * receiver, then reads data until EOF, and returns a string initialized with
+ * it.
  *
- * Invoking this method has sense only when you know
- * that data corresponds to a string!
+ * Invoking this method has sense only when you know that data corresponds to
+ * a string!
  *
  * Can raise a #GPGException.
 "*/
 {
     NSData	*data = [self data];
 
-    return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+    return GPGStringFromChars([data bytes]);
+}
+
+- (unsigned long long) availableDataLength
+/*"
+ * Returns the amount of bytes available without changing the read pointer.
+ * This is not supported by all types of data objects.
+ *
+ * If this method is not supported, a #GPGException is raised, with error
+ * #GPGErrorInvalidType.
+ *
+ * If end of data object is reached or no data is currently available, it
+ * returns 0. To know if there are more bytes to read, you must invoke
+ * #{-isAtEnd}.
+ *
+ * Can raise a #GPGException of type #{GPGError_E*}.
+"*/
+{
+    ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
+
+    if(availableDataLength < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+
+    return availableDataLength;
+}
+
+- (unsigned long long) length
+/*"
+ * Convenience method. Returns length of all data. It rewinds receiver, then
+ * reads available data length and returns it. Read pointer is reset.
+ *
+ * If this method is not supported, a #GPGException is raised, with error
+ * #GPGErrorInvalidType.
+ *
+ * Can raise a #GPGException.
+"*/
+{
+    [self rewind];
+
+    return [self availableDataLength];
+}
+
+- (BOOL) isAtEnd
+/*"
+ * Returns YES if there are no more bytes to read (EOF). Read pointer is not
+ * moved.
+ *
+ * If this method is not supported, a #GPGException is raised, with error
+ * #GPGErrorInvalidType.
+ *
+ * Can raise a #GPGException of type #{GPGError_E*}.
+"*/
+{
+    ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
+
+    if(availableDataLength < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+    else if(availableDataLength == 0)
+        return YES;
+    
+    return NO;
+}
+
+- (NSData *) availableData
+/*"
+ * Returns a copy of data, read from current position, up to end of data.
+ *
+ * Can raise a #GPGException of type #{GPGError_E*}.
+"*/
+{
+    size_t			bufferSize = NSPageSize();
+    NSZone			*aZone = NSDefaultMallocZone();
+    char			*bufferPtr = (char *)NSZoneMalloc(aZone, bufferSize);
+    NSMutableData	*readData = [NSMutableData dataWithCapacity:bufferSize];
+    ssize_t			aReadLength;
+    
+    do{
+        aReadLength = gpgme_data_read(_data, bufferPtr, bufferSize);
+        
+        if(aReadLength > 0)
+            [readData appendBytes:bufferPtr length:aReadLength];
+    }while(aReadLength > 0);
+
+    NSZoneFree(aZone, bufferPtr);
+    if(aReadLength < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+
+    return readData;
+}
+
+- (NSData *) data
+/*"
+ * Convenience method. Returns a copy of all data. It rewinds receiver, then
+ * reads data until EOF, and returns it.
+ *
+ * If this method is not supported, a #GPGException is raised, with error
+ * #GPGErrorInvalidType.
+ *
+ * Can raise a #GPGException.
+"*/
+{
+    [self rewind];
+
+    return [self availableData];
+}
+
+- (void) rewind
+/*"
+ * Prepares data in a way that the next call to #{-readDataOfLength:} or
+ * #{-writeData:} starts at the beginning of the data.
+ *
+ * Can raise a #GPGException of type #{GPGError_E*}.
+"*/
+{
+    off_t	newPosition = gpgme_data_seek(_data, 0, GPGDataStartPosition);
+
+    if(newPosition < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 }
 
 @end
@@ -519,7 +662,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 
 @implementation GPGData(GPGInternals)
 
-- (GpgmeData) gpgmeData
+- (gpgme_data_t) gpgmeData
 {
     return _data;
 }
@@ -531,16 +674,45 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 // just to force autodoc to take our comments in account!
 #ifdef FAKE_IMPLEMENTATION_FOR_AUTODOC
 @implementation NSObject(GPGDataSource)
-- (NSData *) data:(GPGData *)data readLength:(unsigned int)maxLength
 /*"
- * Returned data must have a length smaller or equal to maxLength.
- * If there is no data currently available, return an empty data.
- * If there is nothing more to read (EOF), return nil.
- * If maxLength is 0, dataSource is asked to reset/rewind its internal pointer;
- * if it is not possible, raise a #GPGException with error #GPGErrorNotImplemented,
- * else return nil.
+ * This category declares methods that need to be implemented by
+ * #GPGData data sources. Data sources can be readable or writable.
+"*/
+- (NSData *) data:(GPGData *)data readDataOfLength:(unsigned long long)maxLength
+/*"
+ * Reads up to maxLength bytes of data and returns it. Returning an empty data
+ * or nil means that there is nothing more to read (EOF). Only required for
+ * input data objects.
+ *
+ * Reading must be performed from the current position.
+ *
+ * In case of error, raise a #GPGException of type #{GPGError_E*}.
  *
  * Returned data will be copied.
+"*/
+{}
+
+- (unsigned long long) data:(GPGData *)data writeData:(NSData *)writeData
+/*"
+ * Writes writeData from the current position. Returns the number of
+ * bytes written. Only required for output data objects.
+ *
+ * In case of error, raise a #GPGException of type #{GPGError_E*}.
+"*/
+{}
+
+- (unsigned long long) data:(GPGData *)data seekToFileOffset:(unsigned long long)fileOffset offsetType:(GPGDataOffsetType)offsetType
+/*"
+ * Changes the read/write position according to fileOffset and offsetType. Returns the new
+ * absolute position. Optional method.
+ *
+ * In case of error, raise a #GPGException of type #{GPGError_E*}.
+"*/
+{}
+
+- (void) dataRelease:(GPGData *)data
+/*"
+ * Releases internal resources owned by the data source. Optional method.
 "*/
 {}
 @end
