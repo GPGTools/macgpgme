@@ -122,16 +122,18 @@ typedef enum {
 /*"
  * The 'status' value of a key import is a combination of the following bit
  * values:
- * _{GPGImportNewKeyMask     Key is new in the key-ring}
- * _{GPGImportNewUserIDMask  Some new userIDs has been imported, or updated}
- * _{GPGImportSignatureMask  Some new key signatures have been imported, or
- *                           updated}
- * _{GPGImportSubkeyMask     Some new subkeys have been imported, or updated}
- * _{GPGImportSecretKeyMask  Key is a secret key, and is new in the secret
- *                           key-ring}
+ * _{GPGImportDeletedKeyMask  Key has been removed from the key-ring}
+ * _{GPGImportNewKeyMask      Key is new in the key-ring}
+ * _{GPGImportNewUserIDMask   Some new userIDs has been imported, or updated}
+ * _{GPGImportSignatureMask   Some new key signatures have been imported, or
+ *                            updated}
+ * _{GPGImportSubkeyMask      Some new subkeys have been imported, or updated}
+ * _{GPGImportSecretKeyMask   Key is a secret key, and is new in the secret
+ *                            key-ring}
 "*/
 typedef unsigned int GPGImportStatus;
 
+#define GPGImportDeletedKeyMask  0
 #define GPGImportNewKeyMask      1
 #define GPGImportNewUserIDMask   2
 #define GPGImportSignatureMask   4
@@ -145,14 +147,19 @@ typedef unsigned int GPGImportStatus;
  *
  * Object is (currently) nil.
  *
+ * This notification is also posted by the distributed notification center.
+ * object is also nil.
+ *
  * UserInfo:
  * _{GPGContextKey  The #GPGContext instance in which the operation was
- *                  executed.}
+ *                  executed. Not available in distributed notifications.}
  * _{GPGChangesKey  An #NSDictionary whose keys are GPGKey instances
  *                  (secret and public keys) and whose values are NSDictionary 
  *                  instances containing key-value pair @"status" with a
  *                  GPGImportStatus (as NSNumber), and possibly @"error"
- *                  with a GPGError (as NSNumber).}
+ *                  with a GPGError (as NSNumber). For distributed 
+ *                  notifications, GPGKey instances are replaced by NSString
+ *                  instances representing the key fingerprints.}
 "*/
 GPG_EXPORT NSString	* const GPGKeyringChangedNotification;
 GPG_EXPORT NSString	* const GPGContextKey;

@@ -577,6 +577,10 @@ static void progressCallback(void *object, const char *description, int type, in
  * _{#GPGChangesKey  See #GPGKeyringChangedNotification notification for more
  *                   information about #GPGChangesKey.}
  *
+ * If last operation was a key deletion operation, dictionary can contain:
+ * _{@"deletedKeyFingerprints"  An NSArray of NSString instances representing
+ *                              the fingerprints of deleted keys.}
+ *
  * If last operation was a key enumeration operation, dictionary can contain:
  * _{@"truncated"  A boolean result as a NSNumber instance indicating whether
  *                 all matching keys were listed or not.}
@@ -743,6 +747,13 @@ static void progressCallback(void *object, const char *description, int type, in
         }
     }
 
+    if(_operationMask & KeyDeletionOperation){
+        NSArray *deletedKeyFingerprints = [_operationData objectForKey:@"deletedKeyFingerprints"];
+        
+        if(deletedKeyFingerprints)
+            [operationResults setObject:deletedKeyFingerprints forKey:@"deletedKeyFingerprints"];
+    }
+    
     if(_operationMask & KeyListingOperation){
         gpgme_keylist_result_t	result = gpgme_op_keylist_result(_context);
 
@@ -1504,6 +1515,22 @@ static void progressCallback(void *object, const char *description, int type, in
     return [returnedKey autorelease];
 }
 
+- (NSDictionary *) convertedChangesDictionaryForDistributedNotification:(NSDictionary *)dictionary
+{
+    // We replace all GPGKey instances (which are the keys in the dictionary)
+    // by key fingerprints as NSString instances
+    NSMutableDictionary *convertedDictionary = [NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
+    NSEnumerator        *keyEnum = [dictionary keyEnumerator];
+    GPGKey              *aKey;
+    
+    while((aKey = [keyEnum nextObject]))
+        // FIXME No difference between secret and public keys
+        [convertedDictionary setObject:[dictionary objectForKey:aKey] forKey:[aKey fingerprint]];
+    
+    return convertedDictionary;
+}
+
+
 - (NSDictionary *) importKeyData:(GPGData *)keyData
 /*"
  * Adds the keys in keyData to the key-ring of the crypto engine used by the
@@ -1551,8 +1578,10 @@ static void progressCallback(void *object, const char *description, int type, in
     }
 
     // Posts notif only if key-ring changed
-    if([changedKeys count] > 0)
+    if([changedKeys count] > 0){
         [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, GPGContextKey, changedKeys, GPGChangesKey, nil]];
+        [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[self convertedChangesDictionaryForDistributedNotification:changedKeys], GPGChangesKey, nil]];
+    }
 
     return [self operationResults];
 }
@@ -1683,6 +1712,7 @@ static void progressCallback(void *object, const char *description, int type, in
     keyChangesDict = [operationResults objectForKey:GPGChangesKey];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, GPGContextKey, keyChangesDict, GPGChangesKey, nil]];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[self convertedChangesDictionaryForDistributedNotification:keyChangesDict], GPGChangesKey, nil]];
 
     return keyChangesDict;
 }
@@ -1701,17 +1731,23 @@ static void progressCallback(void *object, const char *description, int type, in
 "*/
 {
     gpgme_error_t	anError;
+    NSString        *aFingerprint;
+    NSArray         *deletedKeyFingerprints;
 
     NSParameterAssert(key != nil);
+    aFingerprint = [[key fingerprint] retain];
     anError = gpgme_op_delete(_context, [key gpgmeKey], allowSecret);
     [self setOperationMask:KeyDeletionOperation];
     [_operationData setObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey];
     if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    deletedKeyFingerprints = [NSArray arrayWithObject:aFingerprint];
+    [_operationData setObject:deletedKeyFingerprints forKey:@"deletedKeyFingerprints"];
 #warning TODO
     // We should mark GPGKey as deleted, and it would raise an exception on any method invocation
-    // We should also pass it in userInfo, as a fingerprint only?
-    [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:GPGContextKey]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, GPGContextKey, deletedKeyFingerprints, @"deletedKeyFingerprints", nil]];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:GPGImportDeletedKeyMask] forKey:aFingerprint] forKey:GPGChangesKey]]; // FIXME No difference between secret and public keys
+    [aFingerprint release];
 }
 
 - (GPGKey *) keyFromFingerprint:(NSString *)fingerprint secretKey:(BOOL)secretKey
@@ -2438,7 +2474,8 @@ enum {
 
     aString = [@"/usr/local/libexec/gnupg/" stringByAppendingPathComponent:launchPath]; // Hardcoded
     if(![[NSFileManager defaultManager] fileExistsAtPath:aString]){
-        // Try to use embedded version
+        // Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
+#warning FIXME Emdeb gpgkeys_* 1.2 binaries (backwards compatible)
         launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
         if(!launchPath || ![[NSFileManager defaultManager] fileExistsAtPath:launchPath]){
             [gpgOptions release];
@@ -3126,58 +3163,43 @@ enum {
  * Returns all groups defined in gpg.conf.
 "*/
 {
-    GPGOptions      *options = [[GPGOptions alloc] init];
-    NSArray         *groupOptionValues = [options activeOptionValuesForName:@"group"];
-    NSEnumerator    *groupDefEnum = [groupOptionValues objectEnumerator];
-    NSMutableArray  *groups = [NSMutableArray arrayWithCapacity:[groupOptionValues count]];
-    NSString        *aGroupDefinition;
-    NSMutableSet    *definedGroupNames = [[NSMutableSet alloc] init];
+    GPGOptions          *options = [[GPGOptions alloc] init];
+    NSArray             *groupOptionValues = [options activeOptionValuesForName:@"group"];
+    NSEnumerator        *groupDefEnum = [groupOptionValues objectEnumerator];
+    NSMutableDictionary *groupsPerName = [NSMutableDictionary dictionaryWithCapacity:[groupOptionValues count]];
+    NSString            *aGroupDefinition;
     
     while((aGroupDefinition = [groupDefEnum nextObject]) != nil){
-        int         anIndex = [aGroupDefinition rangeOfString:@"="].location;
-        GPGKeyGroup *newGroup;
-        NSString    *aName;
-        NSArray     *keys;
+        NSDictionary    *aDict = [[self class] parsedGroupDefinitionLine:aGroupDefinition];
+        GPGKeyGroup     *newGroup;
+        NSString        *aName;
+        NSArray         *keys;
+        NSArray         *additionalKeys = nil;
         
-        if(anIndex == NSNotFound){
-            NSLog(@"### Invalid group definition:\n%@", aGroupDefinition);
-            continue; // This is an invalid group definition! Let's ignore it
-        }
+        if(aDict == nil)
+            continue;
         
-        aName = [aGroupDefinition substringToIndex:anIndex];
-        aName = [aName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        if([aName length] == 0){
-            NSLog(@"### Invalid group definition - empty name:\n%@", aGroupDefinition);
-            continue; // This is an invalid group definition! Let's ignore it
+        aName = [aDict objectForKey:@"name"];
+        newGroup = [groupsPerName objectForKey:aName];
+        if(newGroup){
+            // Multiple groups with the same name are automatically merged
+            // into a single group.
+            additionalKeys = [newGroup keys];
         }
-        if([definedGroupNames containsObject:aName]){
-            NSLog(@"### Group '%@' appears more than once; ignoring others.", aName);
-            continue; // Group already defined; we ignore new definition
-        }
-        else
-            [definedGroupNames addObject:aName];
                 
-        if(anIndex < ([aGroupDefinition length] - 1)){
-            // We accept only keyIDs or fingerprints, separated by a space or a tab
-            NSMutableString *aString = [NSMutableString stringWithString:[[aGroupDefinition substringFromIndex:anIndex + 1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-            
-            [aString replaceOccurrencesOfString:@"\t" withString:@" " options:0 range:NSMakeRange(0, [aString length])];
-            while([aString replaceOccurrencesOfString:@"  " withString:@" " options:0 range:NSMakeRange(0, [aString length])] != 0)
-                ;
-            keys = [[self keyEnumeratorForSearchPatterns:[aString componentsSeparatedByString:@" "] secretKeysOnly:NO] allObjects];
-        }
-        else
-            keys = [NSArray array];
-        newGroup = [[GPGKeyGroup alloc] initWithName:aName keys:keys];
+        keys = [aDict objectForKey:@"keys"];
+        if([keys count] > 0)
+            keys = [[self keyEnumeratorForSearchPatterns:keys secretKeysOnly:NO] allObjects];
+
+        newGroup = [[GPGKeyGroup alloc] initWithName:aName keys:(additionalKeys ? [additionalKeys arrayByAddingObjectsFromArray:keys] : keys)];
         
-        [groups addObject:newGroup];
+        [groupsPerName setObject:newGroup forKey:aName];
         [newGroup release];
     }
     
-    [definedGroupNames release];
     [options release];
     
-    return groups;
+    return [groupsPerName allValues];
 }
 
 @end
@@ -3198,6 +3220,37 @@ enum {
 - (NSMutableDictionary *) operationData
 {
     return _operationData;
+}
+
++ (NSDictionary *) parsedGroupDefinitionLine:(NSString *)groupDefLine
+{
+    int         anIndex = [groupDefLine rangeOfString:@"="].location;
+    NSString    *aName;
+    
+    if(anIndex == NSNotFound){
+        NSLog(@"### Invalid group definition:\n%@", groupDefLine);
+        return nil; // This is an invalid group definition! Let's ignore it
+    }
+    
+    aName = [groupDefLine substringToIndex:anIndex];
+    aName = [aName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if([aName length] == 0){
+        NSLog(@"### Invalid group definition - empty name:\n%@", groupDefLine);
+        return nil; // This is an invalid group definition! Let's ignore it
+    }
+    
+    if(anIndex < ([groupDefLine length] - 1)){
+        // We accept only keyIDs or fingerprints, separated by a space or a tab
+        NSMutableString *aString = [NSMutableString stringWithString:[[groupDefLine substringFromIndex:anIndex + 1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+        
+        [aString replaceOccurrencesOfString:@"\t" withString:@" " options:0 range:NSMakeRange(0, [aString length])];
+        while([aString replaceOccurrencesOfString:@"  " withString:@" " options:0 range:NSMakeRange(0, [aString length])] != 0)
+            ;
+        
+        return [NSDictionary dictionaryWithObjectsAndKeys:[aString componentsSeparatedByString:@" "], @"keys", aName, @"name", nil];
+    }
+    else
+        return [NSDictionary dictionaryWithObjectsAndKeys:[NSArray array], @"keys", aName, @"name", nil];
 }
 
 @end
