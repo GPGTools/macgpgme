@@ -24,6 +24,7 @@
 //
 
 #import "GPGTrustItem.h"
+#import "GPGPrettyInfo.h"
 #import <Foundation/Foundation.h>
 #import <gpgme.h>
 
@@ -99,6 +100,11 @@
     return GPGValidityUnknown;
 }
 
+- (NSString *) ownerTrustDescription
+{
+    return GPGValidityDescription([self ownerTrust]);
+}
+
 - (NSString *) userID
 /*"
  * Returns the %{user ID} associated with the trust item.
@@ -129,6 +135,11 @@
     }
 
     return GPGValidityUnknown;
+}
+
+- (NSString *) validityDescription
+{
+    return GPGValidityDescription([self validity]);
 }
 
 - (int) level
@@ -165,4 +176,15 @@
     - (GPGKey *) key
     (we need to create a local context to get the named key; key should be cached)
 */
+
++ (NSString *) ownerTrustDescription: (GPGValidity)value
+{
+    return GPGValidityDescription(value);
+}
+
++ (NSString *) validityDescription: (GPGValidity)value
+{
+    return GPGValidityDescription(value);
+}
+
 @end

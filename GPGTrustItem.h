@@ -36,9 +36,14 @@
 
 - (NSString *) keyID;
 - (GPGValidity) ownerTrust;
+- (NSString *) ownerTrustDescription;
 - (NSString *) userID;
 - (GPGValidity) validity;
+- (NSString *) validityDescription;
 - (int) level;
 - (int) type;
+
++ (NSString *) ownerTrustDescription: (GPGValidity)value;
++ (NSString *) validityDescription: (GPGValidity)value;
 
 @end

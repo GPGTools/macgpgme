@@ -24,6 +24,7 @@
 //
 
 #import "GPGKey.h"
+#import "GPGPrettyInfo.h"
 #import <Foundation/Foundation.h>
 #import <gpgme.h>
 
@@ -317,6 +318,22 @@
     return key_dict;
 }
 
++ (NSString *) algorithmDescription: (GPGPublicKeyAlgorithm)value
+{
+    return GPGPublicKeyAlgorithmDescription(value);
+}
+
++ (NSString *) validityDescription: (GPGValidity)value
+{
+    return GPGValidityDescription(value);
+}
+
++ (NSString *) ownerTrustDescription: (GPGValidity)value
+{
+    return GPGValidityDescription(value);
+}
+
+
 - (NSString *) mainStringAttributeWithIdentifier:(GpgmeAttr)identifier
 {
     const char	*aCString = gpgme_key_get_string_attr(_key, identifier, NULL, 0);
@@ -427,6 +444,11 @@
 "*/
 {
     return (GPGPublicKeyAlgorithm)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_ALGO, NULL, 0);
+}
+
+- (NSString *) algorithmDescription
+{
+    return GPGPublicKeyAlgorithmDescription([self algorithm]);
 }
 
 - (NSArray *) subkeysAlgorithms
@@ -561,6 +583,11 @@
     return GPGValidityUnknown;
 }
 
+- (NSString *) ownerTrustDescription
+{
+    return GPGValidityDescription([self ownerTrust]);
+}
+
 - (NSArray *) subkeysOwnerTrusts
 /*"
  * Returns an array of #NSNumber instances.
@@ -666,6 +693,11 @@
 "*/
 {
     return gpgme_key_get_ulong_attr(_key, GPGME_ATTR_VALIDITY, NULL, 0);
+}
+
+- (NSString *) validityDescription
+{
+    return GPGValidityDescription([self validity]);
 }
 
 - (NSArray *) validities

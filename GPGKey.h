@@ -130,6 +130,9 @@ typedef enum {
 "*/
 - (NSString *) descriptionAsXMLString;
 - (NSDictionary *) dictionaryRepresentation;
++ (NSString *) algorithmDescription: (GPGPublicKeyAlgorithm)value;
++ (NSString *) validityDescription: (GPGValidity)value;
++ (NSString *) ownerTrustDescription: (GPGValidity)value;
 
 /*"
  * Global key capabilities
@@ -145,6 +148,7 @@ typedef enum {
 - (NSString *) keyID;
 - (NSString *) fingerprint;
 - (GPGPublicKeyAlgorithm) algorithm;
+- (NSString *) algorithmDescription;
 - (unsigned int) length;
 - (NSCalendarDate *) creationDate;
 - (NSCalendarDate *) expirationDate;
@@ -178,6 +182,7 @@ typedef enum {
 // Not yet implemented in GPGME as of 0.3.4
 // Don't work on them, there's no way to get this info
 //- (unsigned long) ownerTrust;
+//- (NSString *) ownerTrustDescription;
 
 /*"
  * Primary user ID
@@ -187,6 +192,7 @@ typedef enum {
 - (NSString *) email;
 - (NSString *) comment;
 - (GPGValidity) validity;
+- (NSString *) validityDescription;
 - (BOOL) isPrimaryUserIDRevoked;
 - (BOOL) isPrimaryUserIDInvalid;
 
@@ -200,7 +206,6 @@ typedef enum {
 - (NSArray *) validities;
 - (NSArray *) userIDsRevocationStatuses;
 - (NSArray *) userIDsValidityStatuses;
-
 
 // Not yet implemented in GPGME as of 0.3.4
 // Don't work on them, there's no way to get this info
