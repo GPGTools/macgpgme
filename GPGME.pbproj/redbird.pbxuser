@@ -13,10 +13,10 @@
 					ActiveTab = 0;
 					Frame = "{{0, 23}, {1024, 607}}";
 					Split0 = {
-						ActiveTab = 3;
-						Frame = "{{225, 0}, {799, 607}}";
+						ActiveTab = 2;
+						Frame = "{{224, 0}, {800, 607}}";
 						Split0 = {
-							Frame = "{{0, 320}, {799, 287}}";
+							Frame = "{{0, 216}, {800, 391}}";
 						};
 						SplitCount = 1;
 						Tab0 = {
@@ -52,12 +52,12 @@
 							};
 						};
 						Tab2 = {
-							BuildMessageFrame = "{{0, 0}, {801, 137}}";
-							BuildTranscriptFrame = "{{0, 146}, {801, 48}}";
-							Frame = "{{0, 0}, {799, 192}}";
+							BuildMessageFrame = "{{0, 0}, {802, 137}}";
+							BuildTranscriptFrame = "{{0, 146}, {802, 48}}";
+							Frame = "{{0, 0}, {800, 192}}";
 						};
 						Tab3 = {
-							Frame = "{{0, 0}, {799, 295}}";
+							Frame = "{{0, 0}, {800, 295}}";
 						};
 						TabCount = 4;
 					};

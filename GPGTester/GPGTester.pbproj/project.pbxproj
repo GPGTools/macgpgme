@@ -172,8 +172,8 @@
 //104
 		1058C7A0FEA54F0111CA2CBB = {
 			children = (
-				F592931A01B3A6C90130DCEA,
 				1058C7A1FEA54F0111CA2CBB,
+				F5C4125A01D2990001000107,
 			);
 			isa = PBXGroup;
 			name = "Linked Frameworks";
@@ -323,7 +323,7 @@
 				043355C9FE30361CC02AAC07,
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks/;
+				FRAMEWORK_SEARCH_PATHS = "/Library/Frameworks/ /Users/redbird/Library/Frameworks";
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
@@ -410,9 +410,9 @@
 		29B9732DFDCFA39411CA2CEA = {
 			buildActionMask = 2147483647;
 			files = (
-				F592931B01B3A6C90130DCEA,
 				F538A19F01C33D3601158B65,
 				F538A1A001C33D3601158B65,
+				F5C4125B01D2990001000107,
 			);
 			isa = PBXFrameworksBuildPhase;
 			name = "Frameworks & Libraries";
@@ -468,14 +468,14 @@
 			settings = {
 			};
 		};
-		F592931A01B3A6C90130DCEA = {
+		F5C4125A01D2990001000107 = {
 			isa = PBXFrameworkReference;
 			name = GPGME.framework;
 			path = /Library/Frameworks/GPGME.framework;
 			refType = 0;
 		};
-		F592931B01B3A6C90130DCEA = {
-			fileRef = F592931A01B3A6C90130DCEA;
+		F5C4125B01D2990001000107 = {
+			fileRef = F5C4125A01D2990001000107;
 			isa = PBXBuildFile;
 			settings = {
 			};
