@@ -43,7 +43,24 @@ make
 sudo make install
 cd ..
 
+Installing gpgme framework (OR: Using It In Your Code)
+=======================================================
 
+In order to do anything useful with this framework you must install it. 
+/Library/Frameworks is the default install location.
+(Why? It's really hard to create a portable access path to ~/Library/Frameworks. Very easy to create one to /Library/Frameworks)
+
+Indeed, to build the included GPGTester program, the framework must be installed in /Library/Frameworks/
+
+However, ProjectBuilder (as of ProjectBuilder 1.1.1) does not provide the -install- feature, you must use Terminal
+
+On Mac OS X 10.1:
+	(from within the GPGME directory)
+	pbxbuild install -target GPGME DSTROOT=  //there is no typo here. It really is "DSTROOT="
+	cd ..
+
+In programs that include GPGME, ProjectBuilder should put the GPGME Framework in your application's bundle. See Inside Mac OS X: System Overview
+	
 Documentation generation
 ========================
 HTML documentation can be generated automatically from code, on installation. For this you need to have installed autodoc in /usr/local/bin/, and its templates in one of the searched locations (see AutoDoc documentation).
