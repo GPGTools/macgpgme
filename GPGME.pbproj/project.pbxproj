@@ -116,10 +116,10 @@
 				F5330347012FC85C01000001,
 			);
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 3;
+				DYLIB_COMPATIBILITY_VERSION = 4;
+				DYLIB_CURRENT_VERSION = 4;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 0.3.0;
+				FRAMEWORK_VERSION = 0.3.3;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				IMPLICITLY_INCLUDED_HEADERS = /usr/local/include/gpgme.h;
 				INSTALL_PATH = Library/Frameworks;
@@ -157,11 +157,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.0</string>
+	<string>0.3.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.3.0</string>
+	<string>0.3.3</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
@@ -671,7 +671,7 @@
 	<key>CFBundleExecutable</key>
 	<string>GPGTester</string>
 	<key>CFBundleGetInfoString</key>
-	<string></string>
+	<string>0.3.2</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
@@ -683,11 +683,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string></string>
+	<string>0.3.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.1</string>
+	<string>0.3.2</string>
 	<key>NSMainNibFile</key>
 	<string>GPGTester.nib</string>
 	<key>NSPrincipalClass</key>
