@@ -2,7 +2,7 @@
 //  GPGTrustItem.m
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import "GPGTrustItem.h"
@@ -33,6 +32,10 @@
 
 
 @implementation GPGTrustItem
+/*"
+ * You should never need to instantiate objects of that class. GPGContext does
+ * it for you.
+"*/
 
 - (void) dealloc
 {
@@ -54,6 +57,25 @@
     return aString;
 }
 
+- (GPGValidity) validityFromCharacter:(char)character
+{
+    switch(character){
+        case 'q':
+            return GPGValidityUnknown;
+        case 'n':
+            return GPGValidityNever;
+        case 'm':
+            return GPGValidityMarginal;
+        case 'f':
+            return GPGValidityFull;
+        case 'u':
+            return GPGValidityUltimate;
+        default:
+            [NSException raise:NSInternalInconsistencyException format:@"Unknown trust value '%c'", character];
+            return -1; // Never reached; just here to make compiler happy ;-)
+    }
+}
+
 - (GPGValidity) ownerTrust
 {
     const char	*aCString = gpgme_trust_item_get_string_attr(_trustItem, GPGME_ATTR_OTRUST, NULL, 0);
@@ -61,20 +83,7 @@
     if(aCString != NULL){
         NSAssert1(strlen(aCString) == 1, @"We cannot decode this ownerTrust value: %s", aCString);
 
-        switch(aCString[0]){
-            case 'q':
-                return GPGValidityUnknown;
-            case 'n':
-                return GPGValidityNever;
-            case 'm':
-                return GPGValidityMarginal;
-            case 'f':
-                return GPGValidityFull;
-            case 'u':
-                return GPGValidityUltimate;
-            default:
-                [NSException raise:NSInternalInconsistencyException format:@"Unknown ownerTrust value '%c'", aCString[0]];
-        }
+        return [self validityFromCharacter:aCString[0]];
     }
 
     return GPGValidityUnknown;
@@ -92,26 +101,16 @@
 }
 
 - (GPGValidity) validity
+/*"
+ * Returns the computed validity.
+"*/
 {
     const char	*aCString = gpgme_trust_item_get_string_attr(_trustItem, GPGME_ATTR_VALIDITY, NULL, 0);
 
     if(aCString != NULL){
         NSAssert1(strlen(aCString) == 1, @"We cannot decode this validity value: %s", aCString);
 
-        switch(aCString[0]){
-            case 'q':
-                return GPGValidityUnknown;
-            case 'n':
-                return GPGValidityNever;
-            case 'm':
-                return GPGValidityMarginal;
-            case 'f':
-                return GPGValidityFull;
-            case 'u':
-                return GPGValidityUltimate;
-            default:
-                [NSException raise:NSInternalInconsistencyException format:@"Unknown validity value '%c'", aCString[0]];
-        }
+        return [self validityFromCharacter:aCString[0]];
     }
 
     return GPGValidityUnknown;

@@ -2,7 +2,7 @@
 //  GPGTrustItem.h
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import <GPGME/GPGObject.h>
@@ -31,10 +30,6 @@
 @class NSString;
 
 
-// You should never need to instantiate objects of that class.
-// GPGContext does it for you.
-
-
 @interface GPGTrustItem : GPGObject
 {
 }
@@ -42,7 +37,7 @@
 - (NSString *) keyID;
 - (GPGValidity) ownerTrust;
 - (NSString *) userID;
-- (GPGValidity) validity; // Calculated trust
+- (GPGValidity) validity;
 - (int) level;
 - (int) type;
 
