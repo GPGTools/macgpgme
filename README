@@ -1,69 +1,54 @@
 gpgme library
 =============
-In order to build this, you need GPGME 0.2.3 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
+In order to build this framework, you need gpgme 0.3.0 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
 
 On MacOS X 10.1:
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz.sig
-gpg --verify gpgme-0.2.3.tar.gz.sig
-gnutar xzf gpgme-0.2.3.tar.gz
-cd gpgme-0.2.3
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.0.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.0.tar.gz.sig
+gpg --verify gpgme-0.3.0.tar.gz.sig
+gnutar xzf gpgme-0.3.0.tar.gz
+cd gpgme-0.3.0
 ./configure
 mv libtool libtool.original
-sed < libtool.original "s%-undefined suppress%-prebind -F/System/Library/Frameworks/System.framework%" > libtool
+sed < libtool.original "s%-undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
 make
 sudo make install
 cd ..
 
-On MacOS X 10.0:
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz.sig
-gpg --verify gpgme-0.2.3.tar.gz.sig
-gnutar xzf gpgme-0.2.3.tar.gz
-cd gpgme-0.2.3
-mv config.guess config.guess.original
-mv config.sub config.sub.original
-cp /usr/libexec/config.guess .
-cp /usr/libexec/config.sub .
-./configure
-make
-sudo make install
-cd ..
-
-On MacOS X Server 1.x:
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz.sig
-gpg --verify gpgme-0.2.3.tar.gz.sig
-gnutar xzf gpgme-0.2.3.tar.gz
-cd gpgme-0.2.3
+On MacOS X Server 1.x (Rhapsody):
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.0.tar.gz
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.0.tar.gz.sig
+gpg --verify gpgme-0.3.0.tar.gz.sig
+gnutar xzf gpgme-0.3.0.tar.gz
+cd gpgme-0.3.0
 ./configure
 mv tests/mkdemodirs tests/mkdemodirs.original
 sed < tests/mkdemodirs.original 's/\[ -d \$name \] \&\& rm -r \$name/\[ -d \$name \] \&\& rm -r \$name || true/' > tests/mkdemodirs
 make
-sudo make install
+su root make install
 cd ..
 
-Installing gpgme framework (OR: Using It In Your Code)
+Installing GPGME framework (OR: Using It In Your Code)
 =======================================================
 
-In order to do anything useful with this framework you must install it. 
+In order to do anything useful with this framework you must install it. There are now 4 build styles, 2 of them are for stand-alone framework, the 2 others are for embedding the framework in your application (these are the ones you should use).
+So, compile the framework using the EmbDevelopment or EmbDeployment Build Styles, then add a Copy Phase in your application's project to copy the GPGME.framework (located in your build products directory) in the Frameworks subdirectory of your application. See GPGTester settings to get an example or read Inside Mac OS X: System Overview.
+
+If you prefer to have a standalone installed version of GPGME.framework (why would you do?), then use the Development or Deployment Build Styles. 
 /Library/Frameworks is the default install location.
 (Why? It's really hard to create a portable access path to ~/Library/Frameworks. Very easy to create one to /Library/Frameworks)
 
-Indeed, to build the included GPGTester program, the framework must be installed in /Library/Frameworks/
-
-However, ProjectBuilder (as of ProjectBuilder 1.1.1) does not provide the -install- feature, you must use Terminal
+However, ProjectBuilder (as of ProjectBuilder 1.1.1) does not provide yet the -install- feature, you must use Terminal
 
 On Mac OS X 10.1:
 	(from within the GPGME directory)
 	pbxbuild install -target GPGME DSTROOT=  //there is no typo here. It really is "DSTROOT="
 	cd ..
 
-In programs that include GPGME, ProjectBuilder should put the GPGME Framework in your application's bundle. See Inside Mac OS X: System Overview
 	
 Documentation generation
 ========================
-HTML documentation can be generated automatically from code, on installation. For this you need to have installed autodoc in /usr/local/bin/, and its templates in one of the searched locations (see AutoDoc documentation).
+HTML documentation can be generated automatically from code. For this you need to have installed autodoc in /usr/local/bin/, and its templates in one of the searched locations (see AutoDoc documentation).
 To install AutoDoc, type the following commands in a terminal:
 
 On MacOS X 10.1:
@@ -76,14 +61,14 @@ mkdir /Developer/AutoDoc/
 cp -pR HTMLTemplate.html LaTeXTemplate.latex RTFTemplate.rtf /Developer/AutoDoc/
 cd ..
 
-On MacOS X 10.0:
-wget ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-P-b.tar.gz
-gnutar xzf AutoDoc-2.0b8-P-b.tar.gz
-sudo mkdir -p /usr/local/bin
-cd AutoDoc-2.0b8-P-b
-sudo cp -p autodoc /usr/local/bin/
-mkdir /Developer/AutoDoc/
-cp -pR HTMLTemplate.html LaTeXTemplate.latex RTFTemplate.rtf /Developer/AutoDoc/
-cd ..
+To generate and install the documentation, choose target GPGME Documentation, and build; documentation will be installed in /Library/Documentation/GPGME
+Note that if you use the Deployment Build Style for GPGME.framework, documentation will also be copied in GPGME.framework on install.
+Tip: To view documentation within ProjectBuilder, open the files using File/Open..., and bookmark them with Navigation/Add to Bookmarks.
 
-(MacOS X Server 1.x: download AutoDoc-2.0b8-OSXS-P-b.tar.gz instead, and install Makefiles following instructions in contrib/Makefiles/README)
+
+On MacOS X Server 1.x (Rhapsody):
+wget ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-OSXS-P-b.tar.gz
+gnutar xzf AutoDoc-2.0b8-OSXS-P-b.tar.gz
+Then install Makefiles following instructions in contrib/Makefiles/README
+
+To generate and install the documentation, choose target 
