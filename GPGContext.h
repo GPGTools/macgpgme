@@ -81,7 +81,7 @@ typedef enum {
  *                             retrieved too. This is a time-consuming 
  *                             operation, and that mode should not be used
  *                             when retrieving all keys, but only a key per
- *                             key basis, like when using #{-refreshKey:}.
+ *                             key basis, like when using #{-refreshKey:}.}
  * _{GPGKeyListModeValidate    Specifies that the backend should do key or
  *                             certificate validation and not just get the
  *                             validity information from an internal cache.
