@@ -291,7 +291,7 @@
 //0B4
 		0BD178CF01298E177F000001 = {
 			isa = PBXFileReference;
-			path = GPG.h;
+			path = GPGME.h;
 			refType = 4;
 		};
 		0BD178D001298E177F000001 = {

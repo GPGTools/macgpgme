@@ -19,8 +19,8 @@ CURRENT_VERSION_NAME = 0.2.3
 GPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
            GPGObject.m GPGRecipients.m GPGTrustItem.m
 
-GPGME_HEADER_FILES=GPG.h GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
-          GPGExceptions.h GPGInternals.h GPGKey.h GPGObject.h\
+GPGME_HEADER_FILES=GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
+          GPGExceptions.h GPGInternals.h GPGKey.h GPGME.h GPGObject.h\
           GPGRecipients.h GPGTrustItem.h
 
 ADDITIONAL_OBJCFLAGS += -I../

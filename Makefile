@@ -15,8 +15,8 @@ PROJECT_TYPE = Framework
 CLASSES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
           GPGObject.m GPGRecipients.m GPGTrustItem.m
 
-HFILES = GPG.h GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
-         GPGExceptions.h GPGInternals.h GPGKey.h GPGObject.h\
+HFILES = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
+         GPGExceptions.h GPGInternals.h GPGKey.h GPGME.h GPGObject.h\
          GPGRecipients.h GPGTrustItem.h
 
 OTHERSRCS = h.template m.template Makefile Makefile.postamble\
@@ -38,8 +38,8 @@ PROF_LIBS = $(LIBS)
 HEADER_PATHS = -I/usr/local/include
 LIBRARY_PATHS = -L/usr/local/lib
 FRAMEWORKS = -framework Foundation
-PUBLIC_HEADERS = GPG.h GPGContext.h GPGDefines.h GPGExceptions.h\
-                 GPGKey.h GPGObject.h GPGRecipients.h GPGTrustItem.h\
+PUBLIC_HEADERS = GPGContext.h GPGDefines.h GPGExceptions.h\
+                 GPGKey.h GPGObject.h GPGME.h GPGRecipients.h GPGTrustItem.h\
                  GPGEngine.h GPGData.h
 
 

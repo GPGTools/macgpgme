@@ -16,7 +16,6 @@
         FRAMEWORKS = (Foundation.framework); 
         HEADERSEARCH = (/usr/local/include); 
         H_FILES = (
-            GPG.h, 
             GPGContext.h, 
             GPGData.h, 
             GPGDefines.h, 
@@ -24,6 +23,7 @@
             GPGExceptions.h, 
             GPGInternals.h, 
             GPGKey.h, 
+			GPGME.h, 
             GPGObject.h, 
             GPGRecipients.h, 
             GPGTrustItem.h
@@ -34,11 +34,11 @@
         PRECOMPILED_HEADERS = (); 
         PROJECT_HEADERS = (); 
         PUBLIC_HEADERS = (
-            GPG.h, 
             GPGContext.h, 
             GPGDefines.h, 
             GPGExceptions.h, 
             GPGKey.h, 
+			GPGME.h, 
             GPGObject.h, 
             GPGRecipients.h, 
             GPGTrustItem.h, 

@@ -1,5 +1,5 @@
 //
-//  GPG.h
+//  GPGME.h
 //  GPGME
 //
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
@@ -22,7 +22,6 @@
 //  
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
-
 
 #import <Foundation/Foundation.h>
 
