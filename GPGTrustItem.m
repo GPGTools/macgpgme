@@ -35,6 +35,8 @@
 /*"
  * You should never need to instantiate objects of that class. GPGContext does
  * it for you.
+ *
+ * NOTE: the underlying implementation is not yet well defined, dixit Werner Koch.
 "*/
 
 - (void) dealloc
@@ -81,7 +83,7 @@
     const char	*aCString = gpgme_trust_item_get_string_attr(_trustItem, GPGME_ATTR_OTRUST, NULL, 0);
 
     if(aCString != NULL){
-        NSAssert1(strlen(aCString) == 1, @"We cannot decode this ownerTrust value: %s", aCString);
+        NSAssert1(strlen(aCString) == 1, @"### We cannot decode this ownerTrust value: %s", aCString);
 
         return [self validityFromCharacter:aCString[0]];
     }
@@ -123,7 +125,7 @@
 
 - (int) type
 {
-#warning What is the <type> attribute???
+#warning What is the <type> attribute??? Ask Werner
     return gpgme_trust_item_get_int_attr(_trustItem, GPGME_ATTR_TYPE, NULL, 0);
 }
 
