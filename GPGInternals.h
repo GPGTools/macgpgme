@@ -87,9 +87,16 @@ extern "C" {
 - (NSDictionary *) dictionaryRepresentation;
 @end
 
+
 @interface GPGKeyGroup(GPGInternals)
 - (id) initWithName:(NSString *)name keys:(NSArray *)keys;
 @end
+
+
+@interface GPGObject(GPGInternals)
++ (BOOL) needsPointerUniquing;
+@end
+
 
 GPG_EXPORT NSString *GPGStringFromChars(const char * chars);
 

@@ -44,7 +44,6 @@ extern "C" {
 }
 
 + (void) initialize;
-+ (BOOL) needsPointerUniquing;
 
 - (id) initWithInternalRepresentation:(void *)aPtr;
 
