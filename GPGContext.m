@@ -2,7 +2,7 @@
 //  GPGContext.m
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import "GPGContext.h"
@@ -79,6 +78,30 @@ NSString	* const GPGIdleNotification = @"GPGIdleNotification";
 
 
 @implementation GPGContext
+/*"
+ * UserID search patterns:
+ * 
+ * For search pattern, you can give:
+ * 
+ * - a key ID, in short or long form, prefixed or not by !{0x}
+ * 
+ * - a key fingerprint
+ * 
+ * - using "=aString", where aString must be an exact match like
+ *   "=Heinrich Heine <heinrichh@uni-duesseldorf.de>"
+ * 
+ * - using the email address part, matching exactly:
+ *   "<heinrichh@uni-duesseldorf.de>"
+ * 
+ * - using a format like this: "+Heinrich Heine duesseldorf". All words must
+ *   match exactly (not case sensitive) but can appear in any order in the user
+ *   ID. Words are any sequences of letters, digits, the underscore and all
+ *   characters with bit 7 set.
+ * 
+ * - or a substring matching format like that: "Heine" or "*Heine". By case
+ *   insensitive substring matching. This is the default mode but applications may
+ *   want to explicitely indicate this by putting the asterisk in front.
+"*/
 
 static void idleFunction()
 {
@@ -99,6 +122,11 @@ static void idleFunction()
 }
 
 - (id) init
+/*"
+ * Designated initializer.
+ * 
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
 {
     GpgmeError	anError = gpgme_new((GpgmeCtx *)&_internalRepresentation);
 
@@ -134,11 +162,24 @@ static void idleFunction()
 }
 
 - (void) cancel
+/*"
+ * Cancels the current operation. It is not guaranteed that it will work for
+ * all kinds of operations. It is especially useful in a passphrase callback
+ * to stop the system from asking another time for the passphrase.
+"*/
 {
     gpgme_cancel(_context);
 }
 
 + (GPGContext *) waitOnAnyRequest:(BOOL)hang
+/*"
+ * Waits for any finished request. When hang is YES the method will wait, otherwise
+ * it will return immediately when there is no pending finished request.
+ * If hang is YES, a #GPGIdleNotification may be posted.
+ *
+ * Returns the context of the finished request or nil if hang is NO
+ * and no request has finished.
+"*/
 {
     GpgmeCtx	returnedCtx = gpgme_wait(NULL, hang);
 
@@ -153,6 +194,15 @@ static void idleFunction()
 }
 
 - (BOOL) wait:(BOOL)hang;
+/*"
+ * Waits for a finished request for context.
+ * When hang is YES the method will wait, otherwise
+ * it will return immediately when there is no pending finished request.
+ * If hang is YES, a #GPGIdleNotification may be posted.
+ *
+ * Returns YES if there is a finished request for context or NO if hang is NO
+ * and no request (for context) has finished.
+"*/
 {
     GpgmeCtx	returnedCtx = gpgme_wait(_context, hang);
 
@@ -163,6 +213,19 @@ static void idleFunction()
 }
 
 - (NSString *) xmlNotation
+/*"
+ * If there is notation data available from the last signature check, this
+ * method may be used to return this notation data as a string. The string
+ * is an XML representation of that data embedded in a !{<notation>} container.
+ *
+ * !{<notation>
+ *   <name>aString</name>
+ *   <data>aString</data>
+ *   <policy>aString</policy>
+ * </notation>}
+ *
+ * Returns an XML string or nil if no notation data is available.
+"*/
 {
 #warning Use method returning a NSDictionary for XML content
     char		*aCString = gpgme_get_notation(_context);
@@ -177,18 +240,35 @@ static void idleFunction()
 }
 
 - (void) setArmor:(BOOL)armor
+/*"
+    Enables or disables the use of an %{ASCII armor} for all output.
+
+     Default value is NO.
+    "*/
 {
     gpgme_set_armor(_context, armor);
 }
 
 - (void) setTextMode:(BOOL)mode
+/*"
+ * Enables or disables the use of the special %textmode. Textmode is for
+ * example used for MIME (RFC2015) signatures.
+ * 
+ * Default value is NO.
+"*/
 {
     gpgme_set_textmode(_context, mode);
 }
 
-- (void) setFastKeyListMode:(BOOL)mode
+- (void) setFastKeyListMode:(BOOL)fastMode
+/*"
+ * Changes the default behaviour of the key listing methods.
+ * %{Fast listing} doesn't give information about key validity.
+ *
+ * Default value is NO.
+"*/
 {
-    gpgme_set_keylist_mode(_context, !!mode);
+    gpgme_set_keylist_mode(_context, !!fastMode);
 }
 
 static const char *passphraseCallback(void *object, const char *description, void *r_hd)
@@ -237,6 +317,15 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) setPassphraseDelegate:(id)delegate
+/*"
+ * This methods allows a delegate to be used to pass a passphrase
+ * to gpg. The preferred way to handle this is by using the gpg-agent, but
+ * because that beast is not ready for real use, you can use this passphrase
+ * thing.
+ *
+ * Delegate must respond to #context:passphraseForDescription:userInfo:.
+ * Delegate is not retained.
+"*/
 {
     NSParameterAssert(delegate == nil || [delegate respondsToSelector:@selector(context:passphraseForDescription:userInfo:)]);
     _passphraseDelegate = delegate; // We don't retain delegate
@@ -247,6 +336,14 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) setProgressDelegate:(id)delegate
+/*"
+ * This method allows a delegate to update a progress indicator.
+ * For details on the progress events, see the entry for the PROGRESS
+ * status in the file doc/DETAILS of the GnuPG distribution.
+ *
+ * Delegate must respond to #context:progressingWithDescription:type:current:total:.
+ * Delegate is not retained.
+"*/
 {
     NSParameterAssert(delegate == nil || [delegate respondsToSelector:@selector(context:progressingWithDescription:type:current:total:)]);
     _progressDelegate = delegate; // We don't retain delegate
@@ -262,6 +359,9 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) addSigner:(GPGKey *)key
+/*"
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeError	anError;
 
@@ -274,21 +374,30 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSEnumerator *) signerEnumerator
+/*"
+ * Returns an enumerator of #GPGKey instances.
+"*/
 {
     return [[[GPGSignerEnumerator alloc] initForContext:self] autorelease];
 }
 
-- (GPGSignatureStatus) statusOfSignatureAtIndex:(int)index creationDate:(NSCalendarDate **)creationDatePtr fingerPrint:(NSString **)fingerPrintPtr
+- (GPGSignatureStatus) statusOfSignatureAtIndex:(int)index creationDate:(NSCalendarDate **)creationDatePtr fingerprint:(NSString **)fingerprintPtr
+/*"
+ * Returns #GPGSignatureStatusNone if there are no results yet, or there was a
+ * verification error, or there is no signature at index index.
+ * 
+ * index starts at 0.
+"*/
 {
     GPGSignatureStatus	returnedStatus;
     time_t				aTime;
     const char			*aCString = gpgme_get_sig_status(_context, index, &returnedStatus, &aTime);
 
-    if(fingerPrintPtr != NULL){
+    if(fingerprintPtr != NULL){
         if(aCString != NULL)
-            *fingerPrintPtr = [NSString stringWithUTF8String:aCString];
+            *fingerprintPtr = [NSString stringWithUTF8String:aCString];
         else
-            *fingerPrintPtr = nil;
+            *fingerprintPtr = nil;
     }
 
     if(creationDatePtr != NULL){
@@ -306,6 +415,15 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGKey *) keyOfSignatureAtIndex:(int)index
+/*"
+ * Returns the key which was used to check the signature.
+ * 
+ * index starts at 0.
+ * 
+ * Returns nil if there is no signature at index index.
+ * 
+ * Can raise a #GPGException (except a #GPGErrorEOF)
+"*/
 {
     GpgmeKey	aGpgmeKey;
     GpgmeError	anError = gpgme_get_sig_key(_context, index, &aGpgmeKey);
@@ -332,6 +450,15 @@ static void progressCallback(void *object, const char *description, int type, in
 @implementation GPGContext(GPGNormalUsage)
 
 - (GPGSignatureStatus) verifySignatureData:(GPGData *)signatureData againstData:(GPGData *)inputData
+/*"
+ * Use this method for %detached signatures.
+ * 
+ * If result is #GPGSignatureStatusDifferent or there are more than one
+ * signature, use #{-statusOfSignatureAtIndex:creationDate:fingerprint:} to get
+ * all signatures statuses.
+ * 
+ * Can raise a #GPGException.
+"*/
 {
     GPGSignatureStatus	returnedStatus;
     GpgmeError			anError = gpgme_op_verify(_context, [signatureData gpgmeData], [inputData gpgmeData], &returnedStatus);
@@ -343,6 +470,13 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGSignatureStatus) verifySignedData:(GPGData *)signedData
+/*"
+ * If result is #GPGSignatureStatusDifferent or there are more than one
+ * signature, use #{-statusOfSignatureAtIndex:creationDate:fingerprint:} to get
+ * all signatures statuses.
+ * 
+ * Can raise a #GPGException.
+"*/
 {
     GPGSignatureStatus	returnedStatus;
     GpgmeError			anError = gpgme_op_verify(_context, [signedData gpgmeData], NULL, &returnedStatus);
@@ -354,6 +488,11 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) importKeyData:(GPGData *)keyData
+/*"
+ * Imports keys into default pubring file.
+ * 
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeError	anError = gpgme_op_import(_context, [keyData gpgmeData]);
     // It would be nice if we could get imported keys in returned value...
@@ -364,12 +503,38 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 #warning gpgme_op_genkey() has no counterpart
-/*- (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
+#if 0
+- (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
+/*"
+ * !{<GnupgKeyParms format="internal">
+ *   Key-Type: DSA
+ *   Key-Length: 1024
+ *   Subkey-Type: ELG-E
+ *   Subkey-Length: 1024
+ *   Name-Real: Joe Tester
+ *   Name-Comment: (pp=abc,try=%d)
+ *   Name-Email: joe@foo.bar
+ *   Expire-Date: 0
+ *   Passphrase: abc
+ * </GnupgKeyParms>}
+ * Strings should be given in UTF-8 encoding. The format we support for now
+ * "internal". The content of the !{<GnupgKeyParms>} container is passed
+ * verbatim to GnuPG. Control statements (e.g. pubring) are not allowed.
+ * Key is generated in standard secring/pubring files if both secretKeyPtr
+ * and publicKeyPtr are NULL, else newly created key is returned but not stored
+ * Currently cannot return generated secret/public keys.
+ *
+ * Can raise a #GPGException.
+"*/
 {
     // We could post a notification here...
-}*/
+}
+#endif
 
 - (void) deleteKey:(GPGKey *)key evenIfSecretKey:(BOOL)allowSecret
+/*"
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeError	anError = gpgme_op_delete(_context, [key gpgmeKey], allowSecret);
 
@@ -384,11 +549,31 @@ static void progressCallback(void *object, const char *description, int type, in
 @implementation GPGContext(GPGKeyManagement)
 
 - (NSEnumerator *) keyEnumeratorForSearchPattern:(NSString *)searchPattern secretKeysOnly:(BOOL)secretKeysOnly
+/*"
+ * Returns an enumerator of GPGKey instances.
+ * 
+ * searchPattern is a GnuPG %{user ID}. searchPattern can be nil; in this case
+ * all keys are returned.
+ * 
+ * If secretKeysOnly is YES, searches only for keys whose secret part is
+ * available.
+ * 
+ * This call also resets any pending key listing operation.
+ * 
+ * Can raise a #GPGException, even during enumeration.
+"*/
 {
     return [[[GPGKeyEnumerator alloc] initForContext:self searchPattern:searchPattern secretKeysOnly:secretKeysOnly] autorelease];
 }
 
 - (NSEnumerator *) trustListEnumeratorForSearchPattern:(NSString *)searchPattern maximumLevel:(int)maxLevel
+/*"
+ * Returns an enumerator of #GPGTrustItem instances.
+ * 
+ * searchPattern is a GnuPG %{user ID}. searchPattern cannot be nil nor empty.
+ * 
+ * Can raise a #GPGException, even during enumeration.
+"*/
 {
     return [[[GPGTrustItemEnumerator alloc] initForContext:self searchPattern:searchPattern maximumLevel:maxLevel] autorelease];
 }
@@ -399,6 +584,9 @@ static void progressCallback(void *object, const char *description, int type, in
 @implementation GPGContext(GPGExtended)
 
 - (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients
+/*"
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeData	outputData;
     GpgmeError	anError;
@@ -417,6 +605,9 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) decryptedData:(GPGData *)inputData
+/*"
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeData	outputData;
     GpgmeError	anError;
@@ -435,6 +626,15 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) signedData:(GPGData *)inputData signatureMode:(GPGSignatureMode)mode
+/*"
+ * Data will be signed using either the default key or the ones defined in
+ * context.
+ * 
+ * Note that settings done by #{-setArmor:} and #{-setTextMode:} are ignored for
+ * mode #GPGSignatureModeClear.
+ *
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeData	outputData;
     GpgmeError	anError;
@@ -453,6 +653,13 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) exportedKeysForRecipients:(GPGRecipients *)recipients
+/*"
+ * Returns recipients public keys, wrapped in a #GPGData instance.
+ * 
+ * Keys are exported from standard pubring file.
+ *
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeData	outputData;
     GpgmeError	anError;
@@ -617,3 +824,28 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 @end
+
+
+// We need to write this fake implementation (not compiled!)
+// just to force autodoc to take our comments in account!
+#ifdef FAKE_IMPLEMENTATION_FOR_AUTODOC
+@implementation NSObject(GPGContextDelegate)
+- (NSString *) context:(GPGContext *)context passphraseForDescription:(NSString *)description userInfo:(NSMutableDictionary *)userInfo
+/*"
+ * Description can be used as a prompt text (BUG: not yet localized).
+ * userInfo can be used to store contextual information. It is passed from one call to
+ * another with the values you put into. By default it is empty.
+"*/
+{
+}
+- (void) context:(GPGContext *)context progressingWithDescription:(NSString *)what type:(int)type current:(int)current total:(int)total
+/*"
+ * current is the amount done and total is amount to be done; a
+ * total of 0 indicates that the total amount is not known. 100/100 may be
+ * used to detect the end of operation.
+"*/
+{
+}
+@end
+#endif
+
