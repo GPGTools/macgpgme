@@ -1,7 +1,21 @@
 gpgme library
 =============
-In order to build this, you need GPGME 0.2.3 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.4h). To download and install it, proceed like this:
+In order to build this, you need GPGME 0.2.3 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
 
+On MacOS X 10.1:
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz.sig
+gpg --verify gpgme-0.2.3.tar.gz.sig
+gnutar xzf gpgme-0.2.3.tar.gz
+cd gpgme-0.2.3
+./configure
+mv libtool libtool.original
+sed < libtool.original "s%-undefined suppress%-prebind -F/System/Library/Frameworks/System.framework%" > libtool
+make
+sudo make install
+cd ..
+
+On MacOS X 10.0:
 wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz
 wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz.sig
 gpg --verify gpgme-0.2.3.tar.gz.sig
@@ -16,7 +30,18 @@ make
 sudo make install
 cd ..
 
-(MacOS X Server 1.x: you don't need to modify config.guess and config.sub, but you need to patch tests/mkdemodirs: "[ -d $name ] && rm -r $name" should become "[ -d $name ] && rm -r $name || true")
+On MacOS X Server 1.x:
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz.sig
+gpg --verify gpgme-0.2.3.tar.gz.sig
+gnutar xzf gpgme-0.2.3.tar.gz
+cd gpgme-0.2.3
+./configure
+mv tests/mkdemodirs tests/mkdemodirs.original
+sed < tests/mkdemodirs.original 's/\[ -d \$name \] \&\& rm -r \$name/\[ -d \$name \] \&\& rm -r \$name || true/' > tests/mkdemodirs
+make
+sudo make install
+cd ..
 
 
 Documentation generation
@@ -24,6 +49,17 @@ Documentation generation
 HTML documentation can be generated automatically from code, on installation. For this you need to have installed autodoc in /usr/local/bin/, and its templates in one of the searched locations (see AutoDoc documentation).
 To install AutoDoc, type the following commands in a terminal:
 
+On MacOS X 10.1:
+curl -O ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-P-b.tar.gz
+gnutar xzf AutoDoc-2.0b8-P-b.tar.gz
+sudo mkdir -p /usr/local/bin
+cd AutoDoc-2.0b8-P-b
+sudo cp -p autodoc /usr/local/bin/
+mkdir /Developer/AutoDoc/
+cp -pR HTMLTemplate.html LaTeXTemplate.latex RTFTemplate.rtf /Developer/AutoDoc/
+cd ..
+
+On MacOS X 10.0:
 wget ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-P-b.tar.gz
 gnutar xzf AutoDoc-2.0b8-P-b.tar.gz
 sudo mkdir -p /usr/local/bin
