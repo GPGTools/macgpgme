@@ -111,7 +111,7 @@
  *     <algo>anUnsignedInt</algo>
  *     <len>anUnsignedInt</len>
  *     <created>aTime</created>
- *     <expires>aTime</expires> (not yet implemented)
+ *     <expire>aTime</expire>
  *   </mainkey>
  *   <userid> (first userid is the primary one)
  *     <invalid/>
@@ -133,6 +133,7 @@
  *     <algo>anUnsignedInt</algo>
  *     <len>anUnsignedInt</len>
  *     <created>aTime</created>
+ *     <expire>aTime</expire>
  *   </subkey>
  * </GnupgKeyblock>}
 "*/
@@ -157,6 +158,7 @@
  * !{{
  * algo = 17; 
  * created = 2000-07-13 08:35:05 -0400; 
+ * expire = 2010-07-13 08:35:05 -0400; 
  * disabled = 0; 
  * expired = 0; 
  * fpr = C462FA84B8113501901020D26EF377F7BBD3B003; 
@@ -169,6 +171,7 @@
  * 		{
  *         algo = 16; 
  *         created = 2000-07-13 08:35:06 -0400; 
+ *         expire = 2010-07-13 08:35:06 -0400; 
  *         disabled = 0; 
  *         expired = 0; 
  *         fpr = ""; 
@@ -210,7 +213,7 @@
     NSMutableDictionary *key_dict = [NSMutableDictionary dictionary];
     NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
             *subkeys, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
-                *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
+                *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates, *sks_exp_dates;
     int i;
     
     [key_dict setObject: [NSNumber numberWithBool:[self hasSecretPart]] forKey:@"secret"];
@@ -223,7 +226,7 @@
     [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
     [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
     [key_dict setObject: [self creationDate] forKey:@"created"];
-    // Expiration date not yet implemented in GPGME 0.3.3; bug Werner about it ;-)
+    [key_dict setObject: [self expirationDate] forKey:@"expire"];
     [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
     uids = [self userIDs];
     uids_invalid_sts = [self userIDsValidityStatuses];
@@ -263,6 +266,7 @@
     sks_algos = [self subkeysAlgorithms];
     sks_lens = [self subkeysLengths];
     sks_cre_dates = [self subkeysCreationDates];
+    sks_exp_dates = [self subkeysExpirationDates];
     for (i = 0; i < [subkeys count]; i++)	{
         [[key_dict objectForKey:@"subkeys"] addObject: [NSMutableDictionary dictionary]];
         if ([sks_invalid_sts objectAtIndex:i])
@@ -292,6 +296,9 @@
         if ([sks_cre_dates objectAtIndex:i])
             [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
                 [sks_cre_dates objectAtIndex:i] forKey:@"created"];
+        if ([sks_exp_dates objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_exp_dates objectAtIndex:i] forKey:@"expire"];
     }
         
     return key_dict;
@@ -467,8 +474,6 @@
 - (NSCalendarDate *) expirationDate
 /*"
  * Returns %{main key} expiration date. Returns nil when not available or invalid.
- *
- * #Caution: this does not work currently.
 "*/
 {
     unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_EXPIRE, NULL, 0);
@@ -484,8 +489,6 @@
  * Returns an array of #NSCalendarDate instances. Array values can be
  * #{+[NSValue valueWithPointer:nil]} when corresponding creation date is not
  * available or invalid.
- *
- * #Caution: this does not work currently.
 "*/
 {
     int				i = 1;

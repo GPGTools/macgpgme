@@ -61,10 +61,25 @@ typedef enum {
     GPG_DiffieHellmanAlgorithm      = 21
 }GPGPublicKeyAlgorithm;
 
+
 /*"
  * Symetric key algorithms
+ * _{GPG_NoAlgorithm           Unencrypted data.}
+ * _{GPG_IDEAAlgorithm         .}
+ * _{GPG_TripleDESAlgorithm    aka 3DES or DES-EDE - 168 bit key derived from 192.}
+ * _{GPG_CAST5Algorithm        128 bit key.}
+ * _{GPG_BlowfishAlgorithm     128 bit key, 16 rounds.}
+ * _{GPG_SAFER_SK128Algorithm  13 rounds.}
+ * _{GPG_DES_SKAlgorithm       .}
+ * _{GPG_AES128Algorithm       aka Rijndael.}
+ * _{GPG_AES192Algorithm       aka Rijndael 192.}
+ * _{GPG_AES256Algorithm       aka Rijndael 256.}
+ * _{GPG_TwoFishAlgorithm      twofish 256 bit.}
+ * _{GPG_SkipjackAlgorithm     Experimental: skipjack.}
+ * _{GPG_TwoFish_OldAlgorithm  Experimental: twofish 128 bit.}
+ * _{GPG_DummyAlgorithm        No encryption at all.}
 "*/
-enum {
+typedef enum {
     GPG_NoAlgorithm          =   0, // Unencrypted data
     GPG_IDEAAlgorithm        =   1,
     GPG_TripleDESAlgorithm   =   2, // aka 3DES or DES-EDE - 168 bit key derived from 192
@@ -79,12 +94,20 @@ enum {
     GPG_SkipjackAlgorithm    = 101, // Experimental: skipjack
     GPG_TwoFish_OldAlgorithm = 102, // Experimental: twofish 128 bit
     GPG_DummyAlgorithm       = 110  // No encryption at all
-};
+}GPGSymetricKeyAlgorithm;
+
 
 /*"
  * Hash algorithms
+ * _{GPG_MD5HashAlgorithm             .}
+ * _{GPG_SHA_1HashAlgorithm           .}
+ * _{GPG_RIPE_MD160HashAlgorithm      .}
+ * _{GPG_DoubleWidthSHAHashAlgorithm  .}
+ * _{GPG_MD2HashAlgorithm             .}
+ * _{GPG_TIGER192HashAlgorithm        .}
+ * _{GPG_HAVALHashAlgorithm           5 pass, 160 bit.}
 "*/
-enum {
+typedef enum {
     GPG_MD5HashAlgorithm            = 1,
     GPG_SHA_1HashAlgorithm          = 2,
     GPG_RIPE_MD160HashAlgorithm     = 3,
@@ -92,7 +115,7 @@ enum {
     GPG_MD2HashAlgorithm            = 5,
     GPG_TIGER192HashAlgorithm       = 6,
     GPG_HAVALHashAlgorithm          = 7  // 5 pass, 160 bit
-};
+}GPGHashAlgorithm;
 
 
 @interface GPGKey : GPGObject <NSCopying> /*"NSObject"*/
@@ -123,6 +146,7 @@ enum {
 - (GPGPublicKeyAlgorithm) algorithm;
 - (unsigned int) length;
 - (NSCalendarDate *) creationDate;
+- (NSCalendarDate *) expirationDate;
 - (BOOL) isKeyRevoked;
 - (BOOL) isKeyInvalid;
 - (BOOL) hasKeyExpired;
@@ -140,6 +164,7 @@ enum {
 - (NSArray *) subkeysAlgorithms;
 - (NSArray *) subkeysLengths;
 - (NSArray *) subkeysCreationDates;
+- (NSArray *) subkeysExpirationDates;
 - (NSArray *) subkeysRevocationStatuses;
 - (NSArray *) subkeysValidityStatuses;
 - (NSArray *) subkeysExpirationStatuses;
@@ -148,12 +173,7 @@ enum {
 - (NSArray *) subkeysSigningCapabilities;
 - (NSArray *) subkeysCertificationCapabilities;
 
-// Not yet implemented in GPGME as of 0.3.3
-// Don't work on them, there's no way to get this info
-//- (NSCalendarDate *) expirationDate;
-//- (NSArray *) subkeysExpirationDates;
-
-// Not yet implemented in GPGME as of 0.3.3
+// Not yet implemented in GPGME as of 0.3.4
 // Don't work on them, there's no way to get this info
 //- (unsigned long) ownerTrust;
 
@@ -180,7 +200,7 @@ enum {
 - (NSArray *) userIDsValidityStatuses;
 
 
-// Not yet implemented in GPGME as of 0.3.3
+// Not yet implemented in GPGME as of 0.3.4
 // Don't work on them, there's no way to get this info
 //- (unsigned int) type;
 
