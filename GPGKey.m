@@ -164,6 +164,7 @@
  * fpr = C462FA84B8113501901020D26EF377F7BBD3B003; 
  * invalid = 0; 
  * keyid = 6EF377F7BBD3B003; 
+ * shortkeyid = BBD3B003; 
  * len = 1024; 
  * revoked = 0; 
  * secret = 1; 
@@ -212,7 +213,7 @@
 {
     NSMutableDictionary *key_dict = [NSMutableDictionary dictionary];
     NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
-            *subkeys, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
+            *subkeys, *sks_short_keyids, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
                 *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates, *sks_exp_dates;
     int i;
     
@@ -221,6 +222,7 @@
     [key_dict setObject: [NSNumber numberWithBool:[self isKeyRevoked]] forKey:@"revoked"];
     [key_dict setObject: [NSNumber numberWithBool:[self hasKeyExpired]] forKey:@"expired"];
     [key_dict setObject: [NSNumber numberWithBool:[self isKeyDisabled]] forKey:@"disabled"];
+    [key_dict setObject: [self shortKeyID] forKey: @"shortkeyid"];
     [key_dict setObject: [self keyID] forKey: @"keyid"];
     [key_dict setObject: [self fingerprint] forKey:@"fpr"];
     [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
@@ -259,6 +261,7 @@
     
     [key_dict setObject: [NSMutableArray array] forKey:@"subkeys"];
     subkeys = [self subkeysKeyIDs];  //keyids
+    sks_short_keyids = [self subkeysShortKeyIDs];
     sks_invalid_sts = [self subkeysValidityStatuses];
     sks_revoked_sts = [self subkeysRevocationStatuses];
     sks_expired_sts = [self subkeysExpirationStatuses];
@@ -282,6 +285,9 @@
         if ([sks_disabled_sts objectAtIndex:i])
             [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
                 [sks_disabled_sts objectAtIndex:i] forKey:@"disabled"];
+        if ([sks_short_keyids objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_short_keyids objectAtIndex:i] forKey:@"shortkeyid"];
         if ([subkeys objectAtIndex:i])
             [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
                 [subkeys objectAtIndex:i] forKey:@"keyid"];
@@ -348,6 +354,29 @@
 - (unsigned) secondaryUserIDsCount
 {
     return [[self subStringAttributesWithIdentifier:GPGME_ATTR_USERID maxCount:0] count];
+}
+
+- (NSString *) shortKeyID
+/*"
+ * Returns %{main key short (128 bit) key ID}.
+"*/
+{
+    return [[self keyID] substringFromIndex: 8];
+}
+
+- (NSArray *) subkeysShortKeyIDs
+/*"
+ * Returns an array of #NSString instances.
+"*/
+{
+    NSMutableArray *keyIDs = [self subkeysKeyIDs];
+    int i, count;
+
+    count = [keyIDs count];
+    for (i = 0; i < count; i++)
+        [keyIDs replaceObjectAtIndex: i withObject: [[keyIDs objectAtIndex: i] substringFromIndex: 8]];
+    
+    return keyIDs;
 }
 
 - (NSString *) keyID

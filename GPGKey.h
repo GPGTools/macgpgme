@@ -141,6 +141,7 @@ typedef enum {
 /*"
  * Main key
 "*/
+- (NSString *) shortKeyID;
 - (NSString *) keyID;
 - (NSString *) fingerprint;
 - (GPGPublicKeyAlgorithm) algorithm;
@@ -159,6 +160,7 @@ typedef enum {
 /*"
  * Sub keys
 "*/
+- (NSArray *) subkeysShortKeyIDs;
 - (NSArray *) subkeysKeyIDs;
 - (NSArray *) subkeysFingerprints;
 - (NSArray *) subkeysAlgorithms;
