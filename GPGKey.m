@@ -392,7 +392,7 @@
  * Returns an array of #NSString instances.
 "*/
 {
-    NSMutableArray *keyIDs = [self subkeysKeyIDs];
+    NSMutableArray *keyIDs = (NSMutableArray *)[self subkeysKeyIDs];
     int i, count;
 
     count = [keyIDs count];
