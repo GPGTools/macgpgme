@@ -15,7 +15,7 @@ patch -p1 < path/to/GPGME/gpgme.patch
 
 ./configure
 mv libtool libtool.original
-sed < libtool.original "s%-undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
+sed < libtool.original "s%-flat_namespace -undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
 make
 sudo make install
 sudo mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
