@@ -88,9 +88,16 @@ GPG_EXPORT NSString	* const GPGIdleNotification;
 /*"
  * Attributes
 "*/
-- (void) setArmor:(BOOL)armor;
-- (void) setTextMode:(BOOL)mode;
+- (void) setUsesArmor:(BOOL)armor;
+- (BOOL) usesArmor;
+- (void) setUsesTextMode:(BOOL)mode;
+- (BOOL) usesTextMode;
 - (void) setFastKeyListMode:(BOOL)fastMode;
+
+/*"
+ * Operation status
+"*/
+- (NSString *) xmlStatus;
 
 /*"
  * Callbacks

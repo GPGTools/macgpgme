@@ -125,6 +125,7 @@ static void idleFunction()
 - (id) init
 /*"
  * Designated initializer.
+ * Creates a new context to be used with most of the other GPGME.
  * 
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
@@ -137,12 +138,6 @@ static void idleFunction()
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
     self = [self initWithInternalRepresentation:_internalRepresentation];
-
-#warning We should also retain all objC resources created by ourself??
-    // According to gpgme_new() documentation:
-    // Create a new context to be used with most of the other GPGME
-    // functions.  Use gpgme_release_context() to release all resources
-    // Q: what are these resources??? Ask Werner...
 
     return self;
 }
@@ -240,17 +235,25 @@ static void idleFunction()
     return aString;
 }
 
-- (void) setArmor:(BOOL)armor
+- (void) setUsesArmor:(BOOL)armor
 /*"
-    Enables or disables the use of an %{ASCII armor} for all output.
-
-     Default value is NO.
-    "*/
+ * Enables or disables the use of an %{ASCII armor} for all output.
+ *
+ * Default value is NO.
+"*/
 {
     gpgme_set_armor(_context, armor);
 }
 
-- (void) setTextMode:(BOOL)mode
+- (BOOL) usesArmor
+/*"
+ * Returns whether context uses ASCII armor or not. Default value is NO.
+"*/
+{
+    return gpgme_get_armor(_context) != 0;
+}
+
+- (void) setUsesTextMode:(BOOL)mode
 /*"
  * Enables or disables the use of the special %textmode. Textmode is for
  * example used for MIME (RFC2015) signatures.
@@ -259,6 +262,14 @@ static void idleFunction()
 "*/
 {
     gpgme_set_textmode(_context, mode);
+}
+
+- (BOOL) usesTextMode
+/*"
+ * Returns whether context uses textmode or not. Default value is NO.
+"*/
+{
+    return gpgme_get_textmode(_context) != 0;
 }
 
 - (void) setFastKeyListMode:(BOOL)fastMode
@@ -272,12 +283,64 @@ static void idleFunction()
     gpgme_set_keylist_mode(_context, !!fastMode);
 }
 
+- (NSString *) xmlStatus
+/*"
+ * Returns information about the last operation, as an XML string.
+ * Returns nil if there is no previous
+ * operation available or the operation has not yet finished.
+ *
+ * Here is a sample information we return:
+ * !{<GnupgOperationInfo>
+ *   <signature>
+ *     <detached/> <!-- or cleartext or standard -->
+ *     <algo>17</algo>
+ *     <hashalgo>2</hashalgo>
+ *     <micalg>pgp-sha1</micalg>
+ *     <sigclass>01</sigclass>
+ *     <created>9222222</created>
+ *     <fpr>121212121212121212</fpr>
+ *   </signature>
+ * </GnupgOperationInfo>}
+"*/
+#warning See sign.c for more info on format
+{
+    char	*aCString = gpgme_get_op_info(_context, 0);
+
+    if(aCString != NULL){
+        NSString	*aString = [NSString stringWithUTF8String:aCString];
+
+        free(aCString);
+
+        return aString;
+    }
+    else
+        return nil;
+}
+
+- (NSDictionary *) status
+{
+    char			*aCString = gpgme_get_op_info(_context, 0);
+    NSDictionary	*aDictionary = nil;
+
+    if(aCString != NULL){
+        aDictionary = [[GPGXMLParser parsedDictionaryFromCString:aCString] objectForKey:@"GnupgOperationInfo"];
+#warning Replace elements
+        // signature -> signatures (array)
+        // algo -> NSNumber
+        // hashalgo -> NSNumber
+        // created -> NSCalendarDate
+        free(aCString);
+    }
+
+    return aDictionary;
+}
+
 static const char *passphraseCallback(void *object, const char *description, void *r_hd)
 {
     NSString	*aDescription;
     NSString	*aPassphrase;
 
-    NSCAssert(r_hd != NULL, @"passphraseCallback's r_hd is NULL?!");
+    NSCAssert(r_hd != NULL, @"### passphraseCallback's r_hd is NULL?!");
     if(description == NULL){
         // We can now release resources associated with returned value
         if(*((void **)r_hd) != NULL){
@@ -309,7 +372,7 @@ static const char *passphraseCallback(void *object, const char *description, voi
 
 static void progressCallback(void *object, const char *description, int type, int current, int total)
 {
-#warning What is this <type> parameter???
+    // The <type> parameter is the letter printed during key generation 
     NSString	*aDescription = nil;
 
     if(description != NULL)
@@ -341,6 +404,8 @@ static void progressCallback(void *object, const char *description, int type, in
  * This method allows a delegate to update a progress indicator.
  * For details on the progress events, see the entry for the PROGRESS
  * status in the file doc/DETAILS of the GnuPG distribution.
+ *
+ * Currently it is used only during key generation.
  *
  * Delegate must respond to #context:progressingWithDescription:type:current:total:.
  * Delegate is not retained.
@@ -435,7 +500,7 @@ static void progressCallback(void *object, const char *description, int type, in
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 
-    NSAssert(aGpgmeKey != NULL, @"No gpgmeKey but no error?!");
+    NSAssert(aGpgmeKey != NULL, @"### No gpgmeKey but no error?!");
     
     return [[[GPGKey alloc] initWithInternalRepresentation:aGpgmeKey] autorelease];
 }
@@ -490,7 +555,7 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) importKeyData:(GPGData *)keyData
 /*"
- * Imports keys into default pubring file.
+ * Imports all key material into the key database.
  * 
  * Can raise a #GPGException.
 "*/
@@ -507,6 +572,11 @@ static void progressCallback(void *object, const char *description, int type, in
 #if 0
 - (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
 /*"
+ * Generates a new key and stores the key in the default keyrings if
+ * both publicKeyPtr and secretKeyPtr are NULL. If publicKeyPtr and secretKeyPtr are
+ * given, the newly created key will be returned in these data
+ * objects.
+ *
  * !{<GnupgKeyParms format="internal">
  *   Key-Type: DSA
  *   Key-Length: 1024
@@ -534,6 +604,9 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) deleteKey:(GPGKey *)key evenIfSecretKey:(BOOL)allowSecret
 /*"
+ * Deletes the given key from the key database. To delete a secret key
+ * along with the public key, allowSecret must be YES.
+ *
  * Can raise a #GPGException.
 "*/
 {
@@ -631,7 +704,7 @@ static void progressCallback(void *object, const char *description, int type, in
  * Data will be signed using either the default key or the ones defined in
  * context.
  * 
- * Note that settings done by #{-setArmor:} and #{-setTextMode:} are ignored for
+ * Note that settings done by #{-setUsesArmor:} and #{-setUsesTextMode:} are ignored for
  * mode #GPGSignatureModeClear.
  *
  * Can raise a #GPGException.
@@ -770,7 +843,7 @@ static void progressCallback(void *object, const char *description, int type, in
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 
-    NSAssert(aKey != NULL, @"Returned key is NULL, but no error?!");
+    NSAssert(aKey != NULL, @"### Returned key is NULL, but no error?!");
 
     return [[[GPGKey alloc] initWithInternalRepresentation:aKey] autorelease];
 }
@@ -812,14 +885,15 @@ static void progressCallback(void *object, const char *description, int type, in
     GpgmeTrustItem	aTrustItem;
     GpgmeError		anError = gpgme_op_trustlist_next([context gpgmeContext], &aTrustItem);
 
-#warning Does it really return a GPGME_EOF?
+    // Q: Does it really return a GPGME_EOF?
+    // Answer from Werner: "It should, but well I may have to change things. Don't spend too much time on it yet."
     if(anError == GPGME_EOF)
         return nil;
 
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 
-    NSAssert(aTrustItem != NULL, @"Returned trustItem is NULL, but no error?!");
+    NSAssert(aTrustItem != NULL, @"### Returned trustItem is NULL, but no error?!");
 
     return [[[GPGTrustItem alloc] initWithInternalRepresentation:aTrustItem] autorelease];
 }
@@ -844,6 +918,8 @@ static void progressCallback(void *object, const char *description, int type, in
  * current is the amount done and total is amount to be done; a
  * total of 0 indicates that the total amount is not known. 100/100 may be
  * used to detect the end of operation.
+ *
+ * type is the letter printed during key generation.
 "*/
 {
 }
