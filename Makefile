@@ -26,7 +26,7 @@ OTHERSRCS = h.template m.template Makefile Makefile.postamble\
 
 MAKEFILEDIR = $(MAKEFILEPATH)/pb_makefiles
 CURRENTLY_ACTIVE_VERSION = YES
-DEPLOY_WITH_VERSION_NAME = 0.3.0
+DEPLOY_WITH_VERSION_NAME = 0.3.3
 CODE_GEN_STYLE = DYNAMIC
 MAKEFILE = framework.make
 NEXTSTEP_INSTALLDIR = /Library/Frameworks
