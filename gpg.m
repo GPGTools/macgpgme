@@ -27,9 +27,11 @@
 #import "gpg.h"
 
 const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd);
-id passphrase_callback_target;
 
 @implementation GPG
+
+id passphrase_callback_target;
+
 - (id)init
 {
     int err = gpgme_new (&context);
@@ -91,7 +93,7 @@ id passphrase_callback_target;
 {
     [passphrase_callback_target autorelease];
     passphrase_callback_target = [target retain];
-    gpgme_set_passphrase_cb(context, _gpgPassphraseCB, self);
+    gpgme_set_passphrase_cb(context, _gpgPassphraseCB, NULL);
 }
 
 - (NSString *)getUserKeyAsXML
@@ -172,7 +174,7 @@ const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd)
     //return [ passphrase cString ];
     
     //cleaned things up and made it all one line --redbird
-    return [[[NSString alloc] initWithString:passphrase_callback_target] cString];
+    return [[[NSString alloc] initWithString:[passphrase_callback_target passphraseCB]] cString];
 }
 
 @end
