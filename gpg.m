@@ -26,7 +26,9 @@
 
 #import "gpg.h"
 
-id passphrase_callback_target;
+//id passphrase_callback_target;
+
+const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd);
 
 @implementation GPG
 - init
@@ -79,7 +81,12 @@ id passphrase_callback_target;
 {
     [passphrase_callback_target autorelease];
     passphrase_callback_target = [target retain];
-    gpgme_set_passphrase_cb(context, [self passphraseCB], nil);
+    gpgme_set_passphrase_cb(context, _gpgPassphraseCB, self);
+}
+
+- (id)passphraseCBTarget
+{
+    return passphrase_callback_target;
 }
 
 - (NSString *)getUserKeyAsXML
@@ -87,6 +94,23 @@ id passphrase_callback_target;
     return [[NSString alloc] initWithCString:gpgme_key_get_as_xml(user_key)];
 }
 
+//
+// This being the function that GPGME will actually call to get the passphrase
+//  cb_value <-- user data, hopefully a pointer to the GPG object
+const char *_gpgPassphraseCB(void *cb_value, const char *desc, void *r_hd)
+{
+    GPG *gpgObj = (GPG*)cb_value;
+    
+    // Fetch the target object and call it's CB...
+    // TODO: Find out about and support the other arguments
+    NSString *passphrase = [ [ gpgObj passphraseCBTarget ] passphraseCB ];
+    
+    // TODO: Convert the passphrase to const char* from NSString (too lazy to look this up)
+    //  Also, we need to make sure that our passphrase is deallocated later
+    //  May also want to support the keyring internally here.
+    return [ passphrase cString ];
+}
+    
 /*- (NSString *)clearSign:(NSString *)data
 {
     GpgmeData indata, outdata;
@@ -112,9 +136,9 @@ id passphrase_callback_target;
     return str;
 }*/
 
-+ (const char *)passphraseCB
-{
-    return [[passphrase_callback_target passphraseCB] cString];
-}
+//+ (const char *)passphraseCB
+//{
+//    return [[passphrase_callback_target passphraseCB] cString];
+//}
 
 @end
