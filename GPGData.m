@@ -115,7 +115,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 {
     // Returns GPGME_No_Error if it could read anything, else any other value.
     // In case of rewinding (destinationBuffer = NULL), returns GPGME_No_Error if implemented, else any other value.
-    volatile NSData	*readData;
+    volatile NSData	*readData = nil;
     
     NSCParameterAssert(destinationBufferSize != 0 || (destinationBuffer == NULL && readLengthPtr == NULL));
 
@@ -256,7 +256,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 
 - (id) copyWithZone:(NSZone *)zone
 {
-    GPGData	*aCopy;
+    GPGData	*aCopy = nil;
     
     switch([self type]){
         case GPGDataTypeNone:
@@ -481,6 +481,37 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
     
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+}
+
+- (id) initWithString:(NSString *)string
+/*"
+ * Convenience method.
+ * Gets data from string, and invokes #{-initWithData:}.
+ * Type is set to #GPGDataTypeData.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
+{
+    NSData	*data = [string dataUsingEncoding:NSUTF8StringEncoding];
+
+    return [self initWithData:data];
+}
+
+- (NSString *) string
+/*"
+ * Convenience method. Returns a copy of all data as string.
+ * It rewinds receiver, then reads data
+ * until EOF, and returns a string initialized with it.
+ *
+ * Invoking this method has sense only when you know
+ * that data corresponds to a string!
+ *
+ * Can raise a #GPGException.
+"*/
+{
+    NSData	*data = [self data];
+
+    return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 }
 
 @end
