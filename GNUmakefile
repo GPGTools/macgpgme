@@ -17,11 +17,12 @@ FRAMEWORK_NAME = GPGME
 CURRENT_VERSION_NAME = 0.3.4
 
 GPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
-           GPGObject.m GPGRecipients.m GPGTrustItem.m
+           GPGObject.m GPGRecipients.m GPGTrustItem.m GPGPrettyInfo.m\
+		   LocalizableStrings.m
 
 GPGME_HEADER_FILES=GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
           GPGExceptions.h GPGInternals.h GPGKey.h GPGME.h GPGObject.h\
-          GPGRecipients.h GPGTrustItem.h
+          GPGRecipients.h GPGTrustItem.h GPGPrettyInfo.h LocalizableStrings.h
 
 ADDITIONAL_OBJCFLAGS += -I../
 
