@@ -116,10 +116,10 @@
 				F5330347012FC85C01000001,
 			);
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 4;
-				DYLIB_CURRENT_VERSION = 4;
+				DYLIB_COMPATIBILITY_VERSION = 5;
+				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 0.3.3;
+				FRAMEWORK_VERSION = 0.3.4;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				IMPLICITLY_INCLUDED_HEADERS = /usr/local/include/gpgme.h;
 				INSTALL_PATH = Library/Frameworks;
@@ -157,11 +157,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.3</string>
+	<string>0.3.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.3.3</string>
+	<string>0.3.4</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
@@ -617,7 +617,7 @@
 			neededFileNames = (
 			);
 			shellPath = /bin/sh;
-			shellScript = "sh make-documentation.sh $SYMROOT/$PRODUCT_NAME.framework/Resources/English.lproj/Documentation\n";
+			shellScript = "sh make-documentation.sh \"$ACTION\" \"$SYMROOT/$PRODUCT_NAME.framework/Resources/English.lproj/Documentation\"\n";
 		};
 		F53E87C40202065B01A80016 = {
 			fileRef = 1058C7B1FEA5585E11CA2CBB;
