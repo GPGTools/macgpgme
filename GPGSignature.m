@@ -23,11 +23,11 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import "GPGSignature.h"
-#import "GPGInternals.h"
-#import "GPGPrettyInfo.h"
-#import <Foundation/Foundation.h>
-#import <gpgme.h>
+#include <GPGME/GPGSignature.h>
+#include <GPGME/GPGInternals.h>
+#include <GPGME/GPGPrettyInfo.h>
+#include <Foundation/Foundation.h>
+#include <gpgme.h>
 
 
 #define _context	((GPGContext *)_internalRepresentation)

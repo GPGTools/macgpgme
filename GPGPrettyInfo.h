@@ -5,7 +5,7 @@
 //  Created by Gordon Worley on Tue Jun 18 2002.
 //
 //
-//  Copyright (C) 2001-2002 Mac GPG Project.
+//  Copyright (C) 2001-2003 Mac GPG Project.
 //
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -23,13 +23,28 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import <Foundation/Foundation.h>
+#ifndef GPGPRETTYINFO_H
+#define GPGPRETTYINFO_H
 
-#import "GPGKey.h"
-#import "GPGRecipients.h"
-#import "GPGDefines.h"
+#include <Foundation/Foundation.h>
+
+#include <GPGME/GPGKey.h>
+#include <GPGME/GPGRecipients.h>
+#include <GPGME/GPGDefines.h>
+
+#ifdef __cplusplus
+extern "C" {
+#if 0 /* just to make Emacs auto-indent happy */
+}
+#endif
+#endif
 
 GPG_EXPORT NSString * GPGPublicKeyAlgorithmDescription(GPGPublicKeyAlgorithm value);
 GPG_EXPORT NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymmetricKeyAlgorithm value);
 GPG_EXPORT NSString * GPGHashAlgorithmDescription(GPGHashAlgorithm value);
 GPG_EXPORT NSString * GPGValidityDescription(GPGValidity value);
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* GPGPRETTYINFO_H */

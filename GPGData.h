@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2002 Mac GPG Project.
+//  Copyright (C) 2001-2003 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -23,7 +23,17 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import <GPGME/GPGObject.h>
+#ifndef GPGDATA_H
+#define GPGDATA_H
+
+#include <GPGME/GPGObject.h>
+
+#ifdef __cplusplus
+extern "C" {
+#if 0 /* just to make Emacs auto-indent happy */
+}
+#endif
+#endif
 
 
 @class NSData;
@@ -114,3 +124,8 @@ typedef enum {
 @interface NSObject(GPGDataSource)
 - (NSData *) data:(GPGData *)data readLength:(unsigned int)maxLength;
 @end
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* GPGDATA_H */

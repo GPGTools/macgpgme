@@ -24,9 +24,9 @@
 //  <davelopper@users.sourceforge.net>.
 //
 
-#import "Controller.h"
-#import <GPGME/GPGME.h>
-#import <GPGME/GPGEngine.h>
+#include "Controller.h"
+#include <GPGME/GPGME.h>
+#include <GPGME/GPGEngine.h>
 
 
 @implementation Controller

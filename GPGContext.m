@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2002 Mac GPG Project.
+//  Copyright (C) 2001-2003 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -23,17 +23,17 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import "GPGContext.h"
-#import "GPGData.h"
-#import "GPGExceptions.h"
-#import "GPGInternals.h"
-#import "GPGKey.h"
-#import "GPGRecipients.h"
-#import "GPGSignature.h"
-#import "GPGTrustItem.h"
-#import <Foundation/Foundation.h>
-#import <time.h> /* Needed for GNUstep */
-#import <gpgme.h>
+#include <GPGME/GPGContext.h>
+#include <GPGME/GPGData.h>
+#include <GPGME/GPGExceptions.h>
+#include <GPGME/GPGInternals.h>
+#include <GPGME/GPGKey.h>
+#include <GPGME/GPGRecipients.h>
+#include <GPGME/GPGSignature.h>
+#include <GPGME/GPGTrustItem.h>
+#include <Foundation/Foundation.h>
+#include <time.h> /* Needed for GNUstep */
+#include <gpgme.h>
 
 
 #define _context	((GpgmeCtx)_internalRepresentation)

@@ -23,8 +23,18 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import <Foundation/NSObject.h>
-#import <GPGME/GPGKey.h>
+#ifndef GPGSIGNATURE_H
+#define GPGSIGNATURE_H
+
+#include <Foundation/Foundation.h>
+#include <GPGME/GPGKey.h>
+
+#ifdef __cplusplus
+extern "C" {
+#if 0 /* just to make Emacs auto-indent happy */
+}
+#endif
+#endif
 
 
 /*"
@@ -113,3 +123,8 @@ typedef enum {
 - (GPGSignatureSummaryMask) summary;
 
 @end
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* GPGSIGNATURE_H */

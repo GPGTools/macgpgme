@@ -24,7 +24,17 @@
 //  <davelopper@users.sourceforge.net>.
 //
 
-#import <AppKit/AppKit.h>
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
+
+#include <AppKit/AppKit.h>
+
+#ifdef __cplusplus
+extern "C" {
+#if 0 /* just to make Emacs auto-indent happy */
+}
+#endif
+#endif
 
 @interface Controller : NSObject
 {
@@ -98,3 +108,8 @@
 - (IBAction) cancel:(id)sender;
 
 @end
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* CONTROLLER_H */

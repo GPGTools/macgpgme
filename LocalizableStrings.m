@@ -21,7 +21,7 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import "LocalizableStrings.h"
+#include <GPGME/LocalizableStrings.h>
 
 NSString * const GPGUnknownString = @"GPGUnknownString";
 NSString * const GPGValidityUndefinedString = @"GPGValidityUndefinedString";

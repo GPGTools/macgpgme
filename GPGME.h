@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2002 Mac GPG Project.
+//  Copyright (C) 2001-2003 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -23,16 +23,21 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import <Foundation/Foundation.h>
+#ifndef GPGME_H
+#define GPGME_H
 
-#import <GPGME/GPGDefines.h>
-#import <GPGME/GPGContext.h>
-#import <GPGME/GPGData.h>
-#import <GPGME/GPGEngine.h>
-#import <GPGME/GPGExceptions.h>
-#import <GPGME/GPGKey.h>
-#import <GPGME/GPGObject.h>
-#import <GPGME/GPGRecipients.h>
-#import <GPGME/GPGSignature.h>
-#import <GPGME/GPGTrustItem.h>
-#import <GPGME/GPGPrettyInfo.h>
+#include <Foundation/Foundation.h>
+
+#include <GPGME/GPGDefines.h>
+#include <GPGME/GPGContext.h>
+#include <GPGME/GPGData.h>
+#include <GPGME/GPGEngine.h>
+#include <GPGME/GPGExceptions.h>
+#include <GPGME/GPGKey.h>
+#include <GPGME/GPGObject.h>
+#include <GPGME/GPGRecipients.h>
+#include <GPGME/GPGSignature.h>
+#include <GPGME/GPGTrustItem.h>
+#include <GPGME/GPGPrettyInfo.h>
+
+#endif /* GPGME_H */

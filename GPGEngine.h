@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2002 Mac GPG Project.
+//  Copyright (C) 2001-2003 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -23,7 +23,17 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import <GPGME/GPGDefines.h>
+#ifndef GPGENGINE_H
+#define GPGENGINE_H
+
+#include <GPGME/GPGDefines.h>
+
+#ifdef __cplusplus
+extern "C" {
+#if 0 /* just to make Emacs auto-indent happy */
+}
+#endif
+#endif
 
 
 @class NSString;
@@ -191,3 +201,8 @@ GPG_EXPORT NSString	*GPGEngineInfoAsXMLString();
  * This string can be used to output a diagnostic message to the user.
 "*/
 GPG_EXPORT NSString	*GPGErrorDescription(GPGError error);
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* GPGENGINE_H */

@@ -21,7 +21,17 @@
 //  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
-#import <Foundation/Foundation.h>
+#ifndef LOCALIZABLESTRINGS_H
+#define LOCALIZABLESTRINGS_H
+
+#include <Foundation/Foundation.h>
+
+#ifdef __cplusplus
+extern "C" {
+#if 0 /* just to make Emacs auto-indent happy */
+}
+#endif
+#endif
 
 extern NSString * const GPGUnknownString;
 extern NSString * const GPGValidityUndefinedString;
@@ -59,3 +69,8 @@ extern NSString * const GPGTwoFishAlgorithmString;
 extern NSString * const GPGSkipjackAlgorithmString;
 extern NSString * const GPGTwoFishOldAlgorithmString;
 extern NSString * const GPGDummyAlgorithmString;
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* LOCALIZABLESTRINGS_H */
