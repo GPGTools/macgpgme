@@ -66,6 +66,7 @@
     
     if(fingerprint != nil)
         return [fingerprint hash];
+    // WARNING: we don't take in account if key is secret or not!!!
     return [super hash];
 }
 
@@ -80,7 +81,7 @@
         if(fingerprint != nil){
             NSString	*otherFingerprint = [anObject fingerprint];
         
-            if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint])
+            if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint] /*&& [self hasSecretPart] == [anObject hasSecretPart]*/)
                 return YES;
         }
     }
@@ -90,10 +91,52 @@
 - (id) copyWithZone:(NSZone *)zone
 /*"
  * Returns the same instance, retained. #GPGKey instances are (currently) immutable.
+ *
+ * #WARNING: zone is not taken in account.
 "*/
 {
     // Implementation is useful to allow use of GPGKey instances as keys in NSMutableDictionary instances.
     return [self retain];
+}
+
+- (GPGKey *) publicKey
+/*"
+ * If key is the public key, returns self, else returns the corresponding secret key
+ * if there is one, else nil.
+"*/
+{
+    if(![self hasSecretPart])
+        return self;
+    else{
+        GPGContext	*aContext = [[GPGContext alloc] init];
+        GPGKey		*aKey;
+
+        aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:NO] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
+        [aKey retain];
+        [aContext release];
+
+        return [aKey autorelease];
+    }
+}
+
+- (GPGKey *) secretKey
+/*"
+ * If key is the secret key, returns self, else returns the corresponding public key
+ * if there is one, else nil.
+"*/
+{
+    if([self hasSecretPart])
+        return self;
+    else{
+        GPGContext	*aContext = [[GPGContext alloc] init];
+        GPGKey		*aKey;
+
+        aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:YES] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
+        [aKey retain];
+        [aContext release];
+
+        return [aKey autorelease];
+    }
 }
 
 - (NSString *) descriptionAsXMLString
@@ -113,6 +156,9 @@
  *     <len>anUnsignedInt</len>
  *     <created>aTime</created>
  *     <expire>aTime</expire>
+ *     <serial>issuerSerial</serial>
+ *     <issuer>issuerName</issuer>
+ *     <chainid>chainID</chainid>
  *   </mainkey>
  *   <userid> (first userid is the primary one)
  *     <invalid/>
@@ -149,6 +195,46 @@
     return aString;
 }
 
+/*
+- (NSDictionary *) dictionaryRepresentationForUserIDAtIndex:(unsigned)index
+{
+    int					i;
+    unsigned			userIDCount = [self secondaryUserIDsCount] + 1;
+    NSMutableDictionary	*dictionaryRepresentation;
+
+    NSParameterAssert(index < userIDCount);
+    
+    dictionaryRepresentation = [NSMutableDictionary dictionary];
+    //    uids = [self userIDs];
+    //    uids_invalid_sts = [self userIDsValidityStatuses];
+    //    uids_revoked_sts = [self userIDsRevocationStatuses];
+    //    uids_names = [self names];
+    //    uids_emails = [self emails];
+    //    uids_comments = [self comments];
+        id					aValue;
+
+        [userIDDictionaryRepresentations addObject:userIDDictionaryRepresentation];
+        aValue = [uids_invalid_sts objectAtIndex:i];
+        if(aValue != nil)
+            [aUserIDDictionaryRepresentation setObject:aValue forKey:@"invalid"];
+        if ([uids_revoked_sts objectAtIndex:i])
+            [aUserIDDictionaryRepresentation setObject:
+             [uids_revoked_sts objectAtIndex:i] forKey:@"revoked"];
+        if ([uids objectAtIndex:i])
+            [aUserIDDictionaryRepresentation setObject:
+                         [uids objectAtIndex:i] forKey:@"raw"];
+        if ([uids_names objectAtIndex:i])
+            [aUserIDDictionaryRepresentation setObject:
+                   [uids_names objectAtIndex:i] forKey:@"name"];
+        if ([uids_emails objectAtIndex:i])
+            [aUserIDDictionaryRepresentation setObject:
+                  [uids_emails objectAtIndex:i] forKey:@"email"];
+        if ([uids_comments objectAtIndex:i])
+            [aUserIDDictionaryRepresentation setObject:
+                [uids_comments objectAtIndex:i] forKey:@"comment"];
+}
+*/
+
 - (NSDictionary *) dictionaryRepresentation
 /*"
  * #Caution:  if the user changes libgpgme.a out from under GPGME.framework
@@ -168,7 +254,11 @@
  * shortkeyid = BBD3B003; 
  * len = 1024; 
  * revoked = 0; 
- * secret = 1; 
+ * secret = 1;
+ * issuerSerial = XX;
+ * issuerName = XX;
+ * chainID = XX;
+ * ownertrust = 1;
  * subkeys = (
  * 		{
  *         algo = 16; 
@@ -233,6 +323,13 @@
         [key_dict setObject: [self creationDate] forKey:@"created"];
     if ([self expirationDate])
         [key_dict setObject: [self expirationDate] forKey:@"expire"];
+    if ([self issuerSerial])
+        [key_dict setObject: [self issuerSerial] forKey:@"issuerSerial"];
+    if ([self issuerName])
+        [key_dict setObject: [self issuerName] forKey:@"issuerName"];
+    if ([self chainID])
+        [key_dict setObject: [self chainID] forKey:@"chainID"];
+    [key_dict setObject: [NSNumber numberWithInt:[self ownerTrust]] forKey:@"ownertrust"];
     [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
     uids = [self userIDs];
     uids_invalid_sts = [self userIDsValidityStatuses];
@@ -318,21 +415,29 @@
     return key_dict;
 }
 
-+ (NSString *) algorithmDescription: (GPGPublicKeyAlgorithm)value
++ (NSString *) algorithmDescription:(GPGPublicKeyAlgorithm)value
+/*"
+ * Returns a localized description of the %{public key algorithm} value.
+"*/
 {
     return GPGPublicKeyAlgorithmDescription(value);
 }
 
-+ (NSString *) validityDescription: (GPGValidity)value
++ (NSString *) validityDescription:(GPGValidity)value
+/*"
+ * Returns a localized description of the %validity value.
+"*/
 {
     return GPGValidityDescription(value);
 }
 
-+ (NSString *) ownerTrustDescription: (GPGValidity)value
++ (NSString *) ownerTrustDescription:(GPGValidity)value
+/*"
+ * Returns a localized description of the %{owner trust} value.
+"*/
 {
     return GPGValidityDescription(value);
 }
-
 
 - (NSString *) mainStringAttributeWithIdentifier:(GpgmeAttr)identifier
 {
@@ -384,7 +489,7 @@
  * Returns %{main key short (128 bit) key ID}.
 "*/
 {
-    return [[self keyID] substringFromIndex: 8];
+    return [[self keyID] substringFromIndex:8];
 }
 
 - (NSArray *) subkeysShortKeyIDs
@@ -392,12 +497,12 @@
  * Returns an array of #NSString instances.
 "*/
 {
-    NSMutableArray *keyIDs = (NSMutableArray *)[self subkeysKeyIDs];
-    int i, count;
+    NSMutableArray	*keyIDs = [NSMutableArray arrayWithArray:[self subkeysKeyIDs]];
+    int				i, count;
 
     count = [keyIDs count];
-    for (i = 0; i < count; i++)
-        [keyIDs replaceObjectAtIndex: i withObject: [[keyIDs objectAtIndex: i] substringFromIndex: 8]];
+    for (i = count - 1; i >= 0; i--)
+        [keyIDs replaceObjectAtIndex:i withObject:[[keyIDs objectAtIndex:i] substringFromIndex:8]];
     
     return keyIDs;
 }
@@ -468,6 +573,23 @@
     return attributes;
 }
 
+- (NSArray *) subkeysAlgorithmDescriptions
+/*"
+ * Returns an array of #NSString instances.
+"*/
+{
+    int				i = 1;
+    unsigned int	aValue, maxCount = [self subkeysCount];
+    NSMutableArray	*attributes = [NSMutableArray array];
+
+    for(i = 1; i <= maxCount; i++){
+        aValue = (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_ALGO, NULL, i);
+        [attributes addObject:[GPGKey algorithmDescription:aValue]];
+    }
+
+    return attributes;
+}
+
 - (unsigned int) length
 /*"
  * Returns %{main key} length, in bits.
@@ -531,7 +653,8 @@
 
 - (NSCalendarDate *) expirationDate
 /*"
- * Returns %{main key} expiration date. Returns nil when not available or invalid.
+ * Returns %{main key} expiration date. Returns nil when there is none
+ * or is not available or is invalid.
 "*/
 {
     unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_EXPIRE, NULL, 0);
@@ -545,10 +668,11 @@
 - (NSArray *) subkeysExpirationDates
 /*"
  * Returns an array of #NSCalendarDate instances. Array values can be
- * #{+[NSValue valueWithPointer:nil]} when corresponding creation date is not
- * available or invalid.
+ * #{+[NSValue valueWithPointer:nil]} when corresponding expiration date
+ * does not exist, is not available or is invalid.
 "*/
 {
+#warning BUG? Seems that expiration date is never returned by gpgme for subkeys
     int				i = 1;
     unsigned long	aValue;
     unsigned		maxCount = [self subkeysCount];
@@ -567,44 +691,20 @@
 
 - (GPGValidity) ownerTrust
 /*"
- * #CAUTION: not yet working.
+ * Returns %{owner trust}.
 "*/
 {
-#if 0
-    const char	*aCString = gpgme_key_get_string_attr(_key, GPGME_ATTR_OTRUST, NULL, 0);
+    unsigned long	aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_OTRUST, NULL, 0);
 
-    NSAssert(aCString != NULL, @"### Invalid key.");
-    if(aCString != NULL){
-        NSAssert1(strlen(aCString) == 1, @"### We cannot decode this ownerTrust value: %s", aCString);
-
-        return [self validityFromCharacter:aCString[0]];
-    }
-#endif
-    return GPGValidityUnknown;
+    return aValue;
 }
 
 - (NSString *) ownerTrustDescription
-{
-    return GPGValidityDescription([self ownerTrust]);
-}
-
-- (NSArray *) subkeysOwnerTrusts
 /*"
- * Returns an array of #NSNumber instances.
- *
- * #CAUTION: not yet working.
+ * Returns a localized description of the %{owner trust}.
 "*/
 {
-    int				i = 1;
-    unsigned int	aValue, maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 1; i <= maxCount; i++){
-        aValue = (unsigned int)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_OTRUST, NULL, i);
-        [attributes addObject:[NSNumber numberWithUnsignedInt:aValue]];
-    }
-
-    return attributes;
+    return GPGValidityDescription([self ownerTrust]);
 }
 
 - (NSString *) userID
@@ -713,6 +813,25 @@
     for(i = 0; i <= maxCount; i++){
         aValue = (GPGValidity)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_VALIDITY, NULL, i);
         [attributes addObject:[NSNumber numberWithInt:aValue]];
+    }
+
+    return attributes;
+}
+
+- (NSArray *) validityDescriptions
+/*"
+ * Returns the %{primary user ID} validity, followed by other
+ * %{user IDs} validities, as #NSString instances.
+"*/
+{
+    int				i = 0;
+    GPGValidity		aValue;
+    unsigned		maxCount = [self secondaryUserIDsCount];
+    NSMutableArray	*attributes = [NSMutableArray array];
+
+    for(i = 0; i <= maxCount; i++){
+        aValue = (GPGValidity)gpgme_key_get_ulong_attr(_key, GPGME_ATTR_VALIDITY, NULL, i);
+        [attributes addObject:[GPGKey validityDescription:aValue]];
     }
 
     return attributes;
@@ -1006,6 +1125,30 @@
     }
     
     return attributes;
+}
+
+- (NSString *) issuerSerial
+/*"
+ * Returns the %{issuer serial} (only for S/MIME).
+"*/
+{
+    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_SERIAL];
+}
+
+- (NSString *) issuerName
+/*"
+ * Returns the %{issuer name} (only for S/MIME).
+"*/
+{
+    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_ISSUER];
+}
+
+- (NSString *) chainID
+/*"
+ * Returns the %{chain ID} (only for S/MIME).
+"*/
+{
+    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_CHAINID];
 }
 
 @end

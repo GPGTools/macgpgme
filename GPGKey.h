@@ -63,7 +63,7 @@ typedef enum {
 
 
 /*"
- * Symetric key algorithms
+ * Symmetric key algorithms
  * _{GPG_NoAlgorithm           Unencrypted data.}
  * _{GPG_IDEAAlgorithm         .}
  * _{GPG_TripleDESAlgorithm    aka 3DES or DES-EDE - 168 bit key derived from 192.}
@@ -94,7 +94,7 @@ typedef enum {
     GPG_SkipjackAlgorithm    = 101, // Experimental: skipjack
     GPG_TwoFish_OldAlgorithm = 102, // Experimental: twofish 128 bit
     GPG_DummyAlgorithm       = 110  // No encryption at all
-}GPGSymetricKeyAlgorithm;
+}GPGSymmetricKeyAlgorithm;
 
 
 /*"
@@ -124,6 +124,12 @@ typedef enum {
 
 - (unsigned) hash;
 - (BOOL) isEqual:(id)anObject;
+
+/*"
+ * Public and secret keys
+"*/
+- (GPGKey *) publicKey;
+- (GPGKey *) secretKey;
 
 /*"
  * Description
@@ -160,6 +166,11 @@ typedef enum {
 - (BOOL) mainKeyCanEncrypt;
 - (BOOL) mainKeyCanSign;
 - (BOOL) mainKeyCanCertify;
+- (GPGValidity) ownerTrust;
+- (NSString *) ownerTrustDescription;
+- (NSString *) issuerSerial;
+- (NSString *) issuerName;
+- (NSString *) chainID;
 
 /*"
  * Sub keys
@@ -168,6 +179,7 @@ typedef enum {
 - (NSArray *) subkeysKeyIDs;
 - (NSArray *) subkeysFingerprints;
 - (NSArray *) subkeysAlgorithms;
+- (NSArray *) subkeysAlgorithmDescriptions;
 - (NSArray *) subkeysLengths;
 - (NSArray *) subkeysCreationDates;
 - (NSArray *) subkeysExpirationDates;
@@ -178,11 +190,6 @@ typedef enum {
 - (NSArray *) subkeysEncryptionCapabilities;
 - (NSArray *) subkeysSigningCapabilities;
 - (NSArray *) subkeysCertificationCapabilities;
-
-// Not yet implemented in GPGME as of 0.3.4
-// Don't work on them, there's no way to get this info
-//- (unsigned long) ownerTrust;
-//- (NSString *) ownerTrustDescription;
 
 /*"
  * Primary user ID
@@ -204,10 +211,11 @@ typedef enum {
 - (NSArray *) emails;
 - (NSArray *) comments;
 - (NSArray *) validities;
+- (NSArray *) validityDescriptions;
 - (NSArray *) userIDsRevocationStatuses;
 - (NSArray *) userIDsValidityStatuses;
 
-// Not yet implemented in GPGME as of 0.3.4
+// Not yet implemented in GPGME as of 0.3.8
 // Don't work on them, there's no way to get this info
 //- (unsigned int) type;
 
