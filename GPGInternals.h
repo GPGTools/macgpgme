@@ -51,5 +51,5 @@
 
 
 @interface GPGSignature(GPGInternals)
-- (id) initWithGpgmeContext:(GpgmeCtx)ctx index:(unsigned)index;
+- (id) initWithContext:(GPGContext *)ctx index:(unsigned)index;
 @end
