@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001 Mac GPG Project.
+//  Copyright (C) 2001-2002 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -31,6 +31,15 @@
 @class NSString;
 
 
+/*"
+ * The #GPGDataType type specifies the type of a #GPGData instances.
+ * The following data types are available:
+ * _{GPGDataTypeNone        This specifies that the type is not yet determined.}
+ * _{GPGDataTypeData        This specifies that the data is stored in memory.}
+ * _{GPGDataTypeFileHandle  This type is not implemented.}
+ * _{GPGDataTypeFile        This type is not implemented.}
+ * _{GPGDataTypeDataSource  This type specifies that the data is provided by a data source implemented by the user.}
+"*/
 typedef enum {
     GPGDataTypeNone       = 0,
     GPGDataTypeData       = 1,
@@ -46,7 +55,7 @@ typedef enum {
     NSMutableData	*_retainedData;
 }
 
-/*"Initializers"*/
+/*"Creating data buffers"*/
 - (id) init;
 - (id) initWithData:(NSData *)someData;
 - (id) initWithDataNoCopy:(NSMutableData *)someData;
@@ -57,10 +66,14 @@ typedef enum {
 
 /*"Attributes"*/
 - (NSData *) data;
+- (unsigned long long) length;
+- (NSData *) availableData;
+- (unsigned long long) availableDataLength;
+- (BOOL) isAtEnd;
 
 - (GPGDataType) type;
 
-/*"Operations"*/
+/*"Manipulating data buffers"*/
 - (void) rewind;
 
 - (NSData *) readDataOfLength:(unsigned int)length;
