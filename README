@@ -17,6 +17,7 @@ mv libtool libtool.original
 sed < libtool.original "s%-undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
 make
 sudo make install
+sudo mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
 cd ..
 
 On MacOS X Server 1.x (Rhapsody):
@@ -31,14 +32,20 @@ patch -p1 < path/to/gpgme.patch
 
 ./configure
 make
-su root make install
+su root
+  make install
+  mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
+exit
 cd ..
+
+Note that now the dynamic library libgpgme.dylib is renamed to avoid it's use! If you linked GPGME against the dylib (if there are both a static and dynamic version of the same library, the linker uses the dynamic one), then you must install the dylib on user's computer. To avoid this, it's preferrable to rename it to void its use, and link against the static version.
+
 
 Installing GPGME framework (OR: Using It In Your Code)
 =======================================================
 
 In order to do anything useful with this framework you must install it. There are now 4 build styles, 2 of them are for stand-alone framework, the 2 others are for embedding the framework in your application (these are the ones you should use).
-So, compile the framework using the EmbDevelopment or EmbDeployment Build Styles, then add a Copy Phase in your application's project to copy the GPGME.framework (located in your build products directory) in the Frameworks subdirectory of your application. See GPGTester settings to get an example or read Inside Mac OS X: System Overview.
+So, compile the framework using the EmbDevelopment or EmbDeployment Build Styles, then add a Copy Phase in your application's project to copy the GPGME.framework (located in your build products directory) in the Frameworks subdirectory of your application. See GPGTester settings to get an example or read Project Builder's help about frameworks.
 
 If you prefer to have a standalone installed version of GPGME.framework (why would you do?), then use the Development or Deployment Build Styles. 
 /Library/Frameworks is the default install location.
