@@ -35,6 +35,17 @@
 
 
 /*"
+ * Values returned by #-type
+ * _{GPG_PGPKey   PGP key}
+ * _{GPG_X509Key  X.509 key}
+"*/
+typedef enum {
+    GPG_PGPKey = 0,
+    GPG_X509Key = 1
+}GPGKeyType;
+
+
+/*"
  * Algorithm numerical values (taken from OpenPGP, RFC2440)
 "*/
 /*"
@@ -166,6 +177,7 @@ typedef enum {
 - (NSString *) shortKeyID;
 - (NSString *) keyID;
 - (NSString *) fingerprint;
+- (NSString *) formattedFingerprint;
 - (GPGPublicKeyAlgorithm) algorithm;
 - (NSString *) algorithmDescription;
 - (unsigned int) length;
@@ -191,6 +203,7 @@ typedef enum {
 - (NSArray *) subkeysShortKeyIDs;
 - (NSArray *) subkeysKeyIDs;
 - (NSArray *) subkeysFingerprints;
+- (NSArray *) subkeysFormattedFingerprints;
 - (NSArray *) subkeysAlgorithms;
 - (NSArray *) subkeysAlgorithmDescriptions;
 - (NSArray *) subkeysLengths;
@@ -228,8 +241,10 @@ typedef enum {
 - (NSArray *) userIDsRevocationStatuses;
 - (NSArray *) userIDsValidityStatuses;
 
-// Not yet implemented in GPGME as of 0.3.8
-// Don't work on them, there's no way to get this info
-//- (unsigned int) type;
+/*"
+ * Key type
+"*/
+- (GPGKeyType) type;
+- (NSString *) typeDescription;
 
 @end
