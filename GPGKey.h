@@ -90,7 +90,7 @@ enum {
 }
 
 - (NSString *) xmlDescription;
-//- (NSDictionary *) dictionaryRepresentation;
+- (NSDictionary *) dictionaryRepresentation;
 // Uses the same keys as in XML representation, but places
 // subkeys in an array keyed by "subkeys", and userIDs
 // in an array keyed by "userids". Optional/boolean values are

@@ -99,6 +99,34 @@
     return aString;
 }
 
+- (NSDictionary *) dictionaryRepresentation
+// Uses the same keys as in XML representation, but places
+// subkeys in an array keyed by "subkeys", and userIDs
+// in an array keyed by "userids". Optional/boolean values are
+// represented as NSNumbers. Time values are represented
+// as NSCalendarDates
+{
+    NSMutableDictionary *key_dict = [[NSMutableDictionary alloc] init];
+    
+    [key_dict setObject: [self hasSecretPart] forKey:"@secret"];
+    [key_dict setObject: [self isKeyInvalid] forKey:"@invalid"];
+    [key_dict setObject: [self isKeyRevoked] forKey:"@revoked"];
+    [key_dict setObject: [self hasKeyExpired] forKey:"@expired"];
+    [key_dict setObject: [self isKeyDisabled] forKey:"@disabled"];
+    [key_dict setObject: [self keyID] forKey: @"keyid"];
+    [key_dict setObject: [self fingerprint] forKey:"@fpr"];
+    [key_dict setObject: [self algorithm] forKey:"@algo"];
+    [key_dict setObject: [self length] forKey:"@len"];
+    [key_dict setObject: [self creationDate] forKey:"@created"];
+    //expired not yet implimented in GPGME 0.2.2; but Werner about it ;-)
+    //todo:  subkeys and userids
+    [key_dict setObject: [[NSMutableArray alloc] init] forKey:"@userids"];
+    [key_dict setObject: [[NSMutableArray alloc] init] forKey:"@subkeys"];
+    //can mutablearrays be edited in place in a dictionary?
+    
+    return [[NSDictionary alloc] initWithDictionary: key_dict copyItems: YES];
+}
+
 - (NSString *) mainStringAttributeWithIdentifier:(GpgmeAttr)identifier
 {
     const char	*aCString = gpgme_key_get_string_attr(_key, identifier, NULL, 0);
