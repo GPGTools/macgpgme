@@ -1,0 +1,45 @@
+diff -ur /tmp/gpgme-0.3.0/gpgme/engine.c gpgme-0.3.0/gpgme/engine.c
+--- /tmp/gpgme-0.3.0/gpgme/engine.c	Wed Dec 19 01:20:02 2001
++++ gpgme-0.3.0/gpgme/engine.c	Sat Feb  2 17:24:28 2002
+@@ -25,6 +25,7 @@
+ #include <time.h>
+ #include <sys/types.h>
+ #include <assert.h>
++#include <string.h>
+ 
+ #include "gpgme.h"
+ #include "util.h"
+diff -ur /tmp/gpgme-0.3.0/gpgme/version.c gpgme-0.3.0/gpgme/version.c
+--- /tmp/gpgme-0.3.0/gpgme/version.c	Wed Dec 19 01:20:03 2001
++++ gpgme-0.3.0/gpgme/version.c	Sat Feb  2 17:16:46 2002
+@@ -33,7 +33,6 @@
+ #include "key.h" /* for key_cache_init */
+ #include "io.h"
+ 
+-static const char *get_engine_info (void);
+ 
+ static void
+ do_subsystem_inits (void)
+diff -ur /tmp/gpgme-0.3.0/tests/gpg/mkdemodirs gpgme-0.3.0/tests/gpg/mkdemodirs
+--- /tmp/gpgme-0.3.0/tests/gpg/mkdemodirs	Tue Oct 16 23:08:55 2001
++++ gpgme-0.3.0/tests/gpg/mkdemodirs	Mon Dec 24 11:30:04 2001
+@@ -25,7 +25,7 @@
+ echo -n "Creating:"
+ for name in $NAMES; do
+     echo -n " $name"
+-    [ -d $name ] && rm -r $name
++    [ -d $name ] && rm -r $name || true
+     mkdir $name
+     $GPGDEMO --export-secret-key -o - $name > $name/Secret.gpg
+     $GPG --homedir $name --allow-secret-key-import --import $name/Secret.gpg
+diff -ur /tmp/gpgme-0.3.0/tests/gpg/t-decrypt-verify.c gpgme-0.3.0/tests/gpg/t-decrypt-verify.c
+--- /tmp/gpgme-0.3.0/tests/gpg/t-decrypt-verify.c	Thu Nov 22 03:47:07 2001
++++ gpgme-0.3.0/tests/gpg/t-decrypt-verify.c	Sat Feb  2 17:17:39 2002
+@@ -24,7 +24,6 @@
+ #include <string.h>
+ #include <assert.h>
+ #include <errno.h>
+-#include <mcheck.h>
+ 
+ #include <gpgme.h>
+ 
