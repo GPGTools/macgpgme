@@ -272,7 +272,7 @@ static void progressCallback(void *object, const char *description, int type, in
  * Returns nil if there is no previous
  * operation available or the operation has not yet finished.
  *
- * Here is a sample information we return:
+ * Here is a sample information that might be returned:
  *
  * !{<GnupgOperationInfo>
  *   <signature>
@@ -285,6 +285,9 @@ static void progressCallback(void *object, const char *description, int type, in
  *     <fpr>121212121212121212</fpr>
  *   </signature>
  * </GnupgOperationInfo>}
+ *
+ * Currently the only operations that return additional information
+ * are encrypt and sign.
 "*/
 #warning See gpgme.c for more info on format
 // We should provide a class GPGContextStatus whose instances
@@ -484,10 +487,9 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) cancelOperation
 /*"
- * Cancels the current operation. It is not guaranteed that it will work for
- * all kinds of operations. It is especially useful in a passphrase callback
- * to stop the system from asking another time for the passphrase, or to stop
- * asynchronous operations.
+ * Tries to cancel the pending operation. It is not guaranteed that it will work under
+ * under all circumstances. Its current primary purpose is to prevent
+ * asking for a passphrase again in the passphrase callback.
 "*/
 {
     gpgme_cancel(_context);
@@ -501,6 +503,8 @@ static void progressCallback(void *object, const char *description, int type, in
  *
  * Returns the context of the finished request or nil if hang is NO
  * and no request has finished.
+ *
+ * #Caution: not yet working
 "*/
 {
     GpgmeCtx	returnedCtx = gpgme_wait(NULL, hang);
@@ -517,13 +521,21 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (BOOL) wait:(BOOL)hang
 /*"
- * Waits for a finished request for context.
- * When hang is YES the method will wait, otherwise
- * it will return immediately when there is no pending finished request.
+ * Continues the pending operation within the context.
+ * In particular, it ensures the data exchange between
+ * GPGME and the crypto backend and watches over the run time
+ * status of the backend process.
+ *
+ * If hang is YES the method does not return until the operation
+ * is completed or cancelled. Otherwise the method will not block
+ * for a long time.
+ *
  * If hang is YES, a #GPGIdleNotification may be posted.
  *
  * Returns YES if there is a finished request for context or NO if hang is NO
  * and no request (for context) has finished.
+ *
+ * #Caution: does not work yet.
 "*/
 {
     GpgmeCtx	returnedCtx = gpgme_wait(_context, hang);
@@ -760,7 +772,7 @@ static void progressCallback(void *object, const char *description, int type, in
 /*"
  * Encrypts the plaintext in inputData for the recipients and
  * returns the ciphertext. The type of the ciphertext created is determined
- * by the ASCII and text mode attributes set for the context.
+ * by the %{ASCII armor} and %{text mode} attributes set for the context.
  *
  * One plaintext can be encrypted for several %recipients at the same time.
  * The list of %recipients is created independently of any context,
@@ -791,9 +803,11 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (GPGData *) exportedKeysForRecipients:(GPGRecipients *)recipients
 /*"
- * Returns recipients public keys, wrapped in a #GPGData instance.
+ * Extracts the public keys of the user IDs in recipients and returns
+ * them. The type of the public keys returned is determined by the %{ASCII armor}
+ * attribute set for the context.
  * 
- * Keys are exported from standard pubring file.
+ * Keys are exported from standard key ring.
  *
  * Can raise a #GPGException.
 "*/
@@ -816,9 +830,15 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) importKeyData:(GPGData *)keyData
 /*"
- * Imports all key material into the key database.
+ * Adds the keys in keyData to the key ring of the crypto engine used
+ * by the context. The format of keydata content can be %{ASCII armored},
+ * for example, but the details are specific to the crypto engine.
+ * More information about the import is available with #{-statusAsXMLString}.
+ * #Caution: not yet working.
  * 
- * Can raise a #GPGException.
+ * Can raise a #GPGException:
+ * _{GPGErrorNoData  keydata is an empty buffer.}
+ * Others exceptions could be raised too.
 "*/
 {
     GpgmeError	anError = gpgme_op_import(_context, [keyData gpgmeData]);
@@ -834,11 +854,16 @@ static void progressCallback(void *object, const char *description, int type, in
 - (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
 //- (void) generateKeyFromDictionary:(NSDictionary *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
 /*"
- * Generates a new key and stores the key in the default keyrings if
- * both publicKeyPtr and secretKeyPtr are NULL. If publicKeyPtr and secretKeyPtr are
- * given, the newly created key will be returned in these data
- * objects.
+ * Generates a new key pair and puts it into the standard key ring if
+ * both publicKeyPtr and secretKeyPtr are NULL.
+ * Method returns immediately after starting the operation, and does not wait for
+ * it to complete. publicKeyPtr and secretKeyPtr are reserved for later use and should be NULL.
+ * The method should return the public and secret keys in publicKeyPtr and secretKeyPtr,
+ * but this is not implemented yet.
  *
+ * The params string specifies parameters for the key in XML format.
+ * The details about the format of params are specific to the crypto engine
+ * use by the context. Here's an example for #GnuPG as the crypto engine:
  * !{<GnupgKeyParms format="internal">
  *   Key-Type: DSA
  *   Key-Length: 1024
@@ -850,14 +875,18 @@ static void progressCallback(void *object, const char *description, int type, in
  *   Expire-Date: 0
  *   Passphrase: abc
  * </GnupgKeyParms>}
- * Strings should be given in UTF-8 encoding. The format we support for now
- * "internal". The content of the !{<GnupgKeyParms>} container is passed
+ * Strings should be given in UTF-8 encoding. The format supportted for now
+ * is "internal". The content of the !{<GnupgKeyParms>} container is passed
  * verbatim to GnuPG. Control statements (e.g. pubring) are not allowed.
  * Key is generated in standard secring/pubring files if both secretKeyPtr
  * and publicKeyPtr are NULL, else newly created key is returned but not stored
  * Currently cannot return generated secret/public keys.
  *
- * Can raise a #GPGException.
+ * Can raise a #GPGException:
+ * _{GPGErrorInvalidValue  params is not a valid XML string.}
+ * _{GPGErrorNotSupported  publicKeyPtr or secretKeyPtr is not NULL.}
+ * _{GPGErrorGeneralError  No key was created by the engine.}
+ * Others exceptions could be raised too.
 "*/
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:GPGContextKey]];
@@ -866,10 +895,13 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) deleteKey:(GPGKey *)key evenIfSecretKey:(BOOL)allowSecret
 /*"
- * Deletes the given key from the key database. To delete a secret key
- * along with the public key, allowSecret must be YES.
+ * Deletes the given key from the standard key ring of the crypto engine used by the context.
+ * To delete a secret key along with the public key, allowSecret must be YES,
+ * else only the public key is deleted.
  *
- * Can raise a #GPGException.
+ * Can raise a #GPGException:
+ * _{GPGErrorInvalidKey  key could not be found in the key ring.}
+ * _{GPGErrorConflict    Secret key for key is available, but allowSecret is NO.}
 "*/
 {
 #warning BUG: it seems it doesn't work yet...

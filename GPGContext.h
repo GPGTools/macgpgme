@@ -73,8 +73,8 @@ typedef enum {
 
 
 /*"
- * Posted when a call to #{+waitOnAnyRequest:} or #{wait:} is done with argument
- * YES and there is a pending request.
+ * Posted whenever GPGME thinks that it is idle and time can be better
+ * spent elsewhere.
  * 
  * Object is nil; no userInfo.
 "*/
