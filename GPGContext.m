@@ -1182,7 +1182,6 @@ static void progressCallback(void *object, const char *description, int type, in
  * #WARNING: this does not work with gpg 1.0.7 and previous versions.
 "*/
 {
-#warning BUG: it seems it doesn't work yet...
     GpgmeError	anError = gpgme_op_delete(_context, [key gpgmeKey], allowSecret);
 
     if(anError != GPGME_No_Error)

@@ -2,6 +2,7 @@
 {
 	0867D690FE84028FC02AAC07 = {
 		activeBuildStyle = F550BC480201F10201A80016;
+		activeExecutable = F524982B020C67A001717871;
 		activeTarget = 0867D69CFE84028FC02AAC07;
 		addToTargets = (
 			0867D69CFE84028FC02AAC07,
@@ -9,91 +10,192 @@
 		breakpoints = (
 			F5C8211D02FF6A7301000104,
 		);
+		executables = (
+			F524982B020C67A001717871,
+		);
 		perUserDictionary = {
-			PBXWorkspaceConfiguration = {
-				ContentSize = "{1024, 674}";
-				LeftSlideOut = {
-					ActiveTab = 0;
-					Frame = "{{0, 23}, {1024, 651}}";
-					Split0 = {
-						ActiveTab = 2;
-						Frame = "{{220, 0}, {804, 651}}";
+			PBXPerProjectTemplateStateSaveDate = 58680736;
+			PBXWorkspaceContents = (
+				{
+					LeftSlideOut = {
 						Split0 = {
-							Frame = "{{0, 216}, {804, 435}}";
+							Split0 = {
+								NavContent0 = {
+									bookmark = F5ACB0CB035A1C36012884B0;
+									history = (
+										F5ACB0C8035A1C36012884B0,
+										F5ACB0C9035A1C36012884B0,
+									);
+									prevStack = (
+										F5ACB0CA035A1C36012884B0,
+									);
+								};
+								NavCount = 1;
+								NavGeometry0 = {
+									Frame = "{{0, 0}, {740, 372}}";
+									NavBarVisible = YES;
+								};
+							};
+							SplitCount = 1;
+							Tab0 = {
+								Debugger = {
+									Split0 = {
+										SplitCount = 2;
+									};
+									SplitCount = 1;
+									TabCount = 2;
+								};
+								LauncherConfigVersion = 7;
+							};
+							Tab1 = {
+								LauncherConfigVersion = 3;
+								Runner = {
+								};
+							};
+							TabCount = 4;
+						};
+						SplitCount = 1;
+						Tab1 = {
+							OptionsSetName = "Hierarchy, all classes";
+						};
+						TabCount = 5;
+					};
+				},
+			);
+			PBXWorkspaceGeometries = (
+				{
+					ContentSize = "{1024, 684}";
+					LeftSlideOut = {
+						ActiveTab = 0;
+						Collapsed = NO;
+						Frame = "{{0, 23}, {1024, 661}}";
+						Split0 = {
+							ActiveTab = 3;
+							Collapsed = NO;
+							Frame = "{{284, 0}, {740, 661}}";
+							Split0 = {
+								Frame = "{{0, 289}, {740, 372}}";
+							};
+							SplitCount = 1;
+							Tab0 = {
+								Debugger = {
+									Collapsed = NO;
+									Frame = "{{0, 0}, {572, 214}}";
+									Split0 = {
+										Frame = "{{0, 24}, {572, 190}}";
+										Split0 = {
+											Frame = "{{0, 0}, {279, 190}}";
+										};
+										Split1 = {
+											DebugVariablesTableConfiguration = (
+												Name,
+												123,
+												Value,
+												85,
+												Summary,
+												62.123,
+											);
+											Frame = "{{288, 0}, {284, 190}}";
+										};
+										SplitCount = 2;
+									};
+									SplitCount = 1;
+									Tab0 = {
+										Frame = "{{0, 0}, {100, 50}}";
+									};
+									Tab1 = {
+										Frame = "{{0, 0}, {100, 50}}";
+									};
+									TabCount = 2;
+									TabsVisible = YES;
+								};
+								Frame = "{{0, 0}, {572, 214}}";
+								LauncherConfigVersion = 7;
+							};
+							Tab1 = {
+								Frame = "{{0, 0}, {572, 125}}";
+								LauncherConfigVersion = 3;
+								Runner = {
+									Frame = "{{0, 0}, {572, 125}}";
+								};
+							};
+							Tab2 = {
+								BuildMessageFrame = "{{0, 0}, {574, 120}}";
+								BuildTranscriptFrame = "{{0, 129}, {574, 0}}";
+								Frame = "{{0, 0}, {572, 127}}";
+							};
+							Tab3 = {
+								Frame = "{{0, 0}, {740, 265}}";
+							};
+							TabCount = 4;
+							TabsVisible = YES;
 						};
 						SplitCount = 1;
 						Tab0 = {
-							Debugger = {
-								Frame = "{{0, 0}, {484, 208}}";
-								Split0 = {
-									Frame = "{{0, 25}, {484, 183}}";
-									Split0 = {
-										Frame = "{{0, 0}, {236, 183}}";
-									};
-									Split1 = {
-										Frame = "{{245, 0}, {239, 183}}";
-									};
-									SplitCount = 2;
-								};
-								SplitCount = 1;
-								Tab0 = {
-									Frame = "{{0, 0}, {100, 50}}";
-								};
-								Tab1 = {
-									Frame = "{{0, 0}, {100, 50}}";
-								};
-								TabCount = 2;
-							};
-							Frame = "{{0, 0}, {484, 208}}";
-							LauncherConfigVersion = 4;
+							Frame = "{{0, 0}, {260, 661}}";
+							GroupTreeTableConfiguration = (
+								TargetStatusColumn,
+								18,
+								MainColumn,
+								227,
+							);
 						};
 						Tab1 = {
-							Frame = "{{0, 0}, {484, 208}}";
-							LauncherConfigVersion = 3;
-							Runner = {
-								Frame = "{{0, 0}, {484, 208}}";
-							};
+							ClassesFrame = "{{0, 0}, {247, 330}}";
+							ClassesTreeTableConfiguration = (
+								PBXBookColumnIdentifier,
+								20,
+								PBXClassColumnIdentifier,
+								204,
+							);
+							Frame = "{{0, 0}, {245, 549}}";
+							MembersFrame = "{{0, 339}, {247, 210}}";
+							MembersTreeTableConfiguration = (
+								PBXBookColumnIdentifier,
+								20,
+								PBXMethodColumnIdentifier,
+								203,
+							);
 						};
 						Tab2 = {
-							BuildMessageFrame = "{{0, 0}, {806, 137}}";
-							BuildTranscriptFrame = "{{0, 146}, {806, 48}}";
-							Frame = "{{0, 0}, {804, 192}}";
+							Frame = "{{0, 0}, {226, 549}}";
 						};
 						Tab3 = {
-							Frame = "{{0, 0}, {804, 295}}";
+							Frame = "{{0, 0}, {191, 549}}";
+							TargetTableConfiguration = (
+								ActiveObject,
+								16,
+								ObjectNames,
+								202.296,
+							);
 						};
-						TabCount = 4;
-					};
-					SplitCount = 1;
-					Tab0 = {
-						Frame = "{{0, 0}, {196, 651}}";
-					};
-					Tab1 = {
-						ClassesFrame = "{{0, 0}, {202, 368}}";
-						Frame = "{{0, 0}, {200, 607}}";
-						MembersFrame = "{{0, 377}, {202, 230}}";
-						OptionsSetName = "Hierarchy, all classes";
-					};
-					Tab2 = {
-						Frame = "{{0, 0}, {200, 607}}";
-					};
-					Tab3 = {
-						Frame = "{{0, 0}, {200, 651}}";
-						Split0 = {
-							Frame = "{{0, 0}, {200, 316}}";
+						Tab4 = {
+							BreakpointsTreeTableConfiguration = (
+								breakpointColumn,
+								138,
+								enabledColumn,
+								31,
+							);
+							Frame = "{{0, 0}, {191, 549}}";
 						};
-						Split1 = {
-							Frame = "{{0, 325}, {200, 326}}";
-						};
-						SplitCount = 2;
+						TabCount = 5;
+						TabsVisible = YES;
 					};
-					Tab4 = {
-						Frame = "{{0, 0}, {250, 100}}";
-					};
-					TabCount = 5;
-				};
-				WindowLocation = "{0, 10}";
-			};
+					StatusViewVisible = YES;
+					Template = F5F68CF101725D4C0D7A8F4C;
+					ToolbarVisible = YES;
+					WindowLocation = "{0, 0}";
+				},
+			);
+			PBXWorkspaceStateSaveDate = 58680736;
+		};
+		perUserProjectItems = {
+			F5ACB0C8035A1C36012884B0 = F5ACB0C8035A1C36012884B0;
+			F5ACB0C9035A1C36012884B0 = F5ACB0C9035A1C36012884B0;
+			F5ACB0CA035A1C36012884B0 = F5ACB0CA035A1C36012884B0;
+			F5ACB0CB035A1C36012884B0 = F5ACB0CB035A1C36012884B0;
+		};
+		projectwideBuildSettings = {
 		};
 		wantsIndex = 1;
 		wantsSCM = -1;
@@ -116,6 +218,7 @@
 		environmentEntries = (
 		);
 		isa = PBXExecutable;
+		name = GPGTester;
 		shlibInfoDictList = (
 		);
 		sourceDirectories = (
@@ -128,14 +231,61 @@
 	};
 	F550BC400201F10201A80016 = {
 		activeExec = 0;
-		targetExecs = {
-			macosx = (
-				F524982B020C67A001717871,
-			);
-		};
+		executables = (
+			F524982B020C67A001717871,
+		);
 	};
 	F550BC6A0201F88D01A80016 = {
 		activeExec = 0;
+	};
+	F5ACB0C8035A1C36012884B0 = {
+		fRef = 0BD1790F012998187F000001;
+		isa = PBXTextBookmark;
+		name = "gpgme.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 931;
+		vrLoc = 0;
+	};
+	F5ACB0C9035A1C36012884B0 = {
+		fRef = F5ACB0CC035A1C36012884B0;
+		isa = PBXTextBookmark;
+		rLen = 11;
+		rLoc = 6805;
+		rType = 0;
+	};
+	F5ACB0CA035A1C36012884B0 = {
+		fRef = 0BD1790F012998187F000001;
+		isa = PBXTextBookmark;
+		name = "gpgme.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 931;
+		vrLoc = 0;
+	};
+	F5ACB0CB035A1C36012884B0 = {
+		fRef = F5ACB0CD035A1C36012884B0;
+		isa = PBXTextBookmark;
+		name = "GPGEngine.h: 122";
+		rLen = 0;
+		rLoc = 6793;
+		rType = 0;
+		vrLen = 1061;
+		vrLoc = 6207;
+	};
+	F5ACB0CC035A1C36012884B0 = {
+		isa = PBXFileReference;
+		name = GPGEngine.h;
+		path = /Users/redbird/Development/macgpgcvs/GPGME/build/GPGME.framework/Versions/0.3.8/Headers/GPGEngine.h;
+		refType = 0;
+	};
+	F5ACB0CD035A1C36012884B0 = {
+		isa = PBXFileReference;
+		name = GPGEngine.h;
+		path = /Users/redbird/Development/macgpgcvs/GPGME/build/GPGME.framework/Versions/0.3.8/Headers/GPGEngine.h;
+		refType = 0;
 	};
 	F5C8211D02FF6A7301000104 = {
 		fileReference = 0BD178D101298E177F000001;
