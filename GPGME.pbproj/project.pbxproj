@@ -77,6 +77,7 @@
 				Spanish,
 				Swedish,
 				Italian,
+				Danish,
 			);
 			mainGroup = 0867D691FE84028FC02AAC07;
 			productRefGroup = 034768DFFF38A50411DB9C8B;
@@ -266,6 +267,7 @@
 				F5A699FC0306A54D01000104,
 				F5A699FD0306A54D01000104,
 				7FA06EA603E842E1002884EA,
+				7F7B9541042B59C40028F28B,
 			);
 			isa = PBXVariantGroup;
 			name = InfoPlist.strings;
@@ -655,6 +657,18 @@
 //7F2
 //7F3
 //7F4
+		7F7B9541042B59C40028F28B = {
+			isa = PBXFileReference;
+			name = Danish;
+			path = Danish.lproj/InfoPlist.strings;
+			refType = 4;
+		};
+		7F7B9542042B59C40028F28B = {
+			isa = PBXFileReference;
+			name = Danish;
+			path = Danish.lproj/Localizable.strings;
+			refType = 4;
+		};
 		7FA06EA603E842E1002884EA = {
 			isa = PBXFileReference;
 			name = Italian;
@@ -1138,6 +1152,7 @@
 				F5A699FF0306A54D01000104,
 				F5A69A000306A54D01000104,
 				7FA06EA703E842E1002884EA,
+				7F7B9542042B59C40028F28B,
 			);
 			isa = PBXVariantGroup;
 			name = Localizable.strings;
