@@ -51,22 +51,6 @@
 //032
 //033
 //034
-//050
-//051
-//052
-//053
-//054
-		05363207011BF5107F000001 = {
-			fileRef = F5F45A490119BC4201000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-//050
-//051
-//052
-//053
-//054
 //080
 //081
 //082
@@ -87,21 +71,21 @@
 		};
 		0867D691FE84028FC02AAC07 = {
 			children = (
-				F5F59DDE0126CBA601000001,
+				0BD1790F012998187F000001,
 				08FB77AEFE84172EC02AAC07,
 				089C1665FE841158C02AAC07,
 				0867D69AFE84028FC02AAC07,
 				034768DFFF38A50411DB9C8B,
 			);
 			isa = PBXGroup;
-			name = GPGME;
+			name = GPG;
 			refType = 4;
 		};
 		0867D69AFE84028FC02AAC07 = {
 			children = (
-				F5F45A490119BC4201000001,
 				1058C7B0FEA5585E11CA2CBB,
 				1058C7B2FEA5585E11CA2CBB,
+				0BD178F601298EEC7F000001,
 			);
 			isa = PBXGroup;
 			name = "External Frameworks and Libraries";
@@ -125,12 +109,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = A;
-				HEADER_SEARCH_PATHS = "";
+				FRAMEWORK_VERSION = 0.2.2;
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OPTIMIZATION_CFLAGS = "";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DBUILDINGGPG";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = GPGME;
 				SECTORDER_FLAGS = "";
@@ -142,7 +126,7 @@
 			isa = PBXFrameworkTarget;
 			name = GPGME;
 			productInstallPath = "$(HOME)/Library/Frameworks";
-			productName = GPGME;
+			productName = GPG;
 			productReference = 034768E0FF38A50411DB9C8B;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist SYSTEM \"file://localhost/System/Library/DTDs/PropertyList.dtd\">
@@ -158,12 +142,16 @@
 	<string></string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string></string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.2.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.1d1</string>
+	<string>0.2.2</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
@@ -174,10 +162,17 @@
 		0867D69DFE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
 			files = (
-				F5F004E8011733AA01000001,
-				F5F004E9011733AA01000001,
-				F5F004EA011733AA01000001,
-				F5F45A4D0119C49101000001,
+				0BD178E201298E177F000001,
+				0BD178E301298E177F000001,
+				0BD178E401298E177F000001,
+				0BD178E501298E177F000001,
+				0BD178E601298E177F000001,
+				0BD178E701298E177F000001,
+				0BD178E801298E177F000001,
+				0BD178E901298E177F000001,
+				0BD178EA01298E177F000001,
+				0BD178EB01298E177F000001,
+				0BD178EC01298E177F000001,
 			);
 			isa = PBXHeadersBuildPhase;
 			name = Headers;
@@ -193,9 +188,14 @@
 		0867D69FFE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
 			files = (
-				F5F004EB011733AA01000001,
-				F5F004EC011733AA01000001,
-				F5F45A4E0119C49101000001,
+				0BD178ED01298E177F000001,
+				0BD178EE01298E177F000001,
+				0BD178EF01298E177F000001,
+				0BD178F001298E177F000001,
+				0BD178F101298E177F000001,
+				0BD178F201298E177F000001,
+				0BD178F301298E177F000001,
+				0BD178F401298E177F000001,
 			);
 			isa = PBXSourcesBuildPhase;
 			name = Sources;
@@ -203,8 +203,8 @@
 		0867D6A0FE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
 			files = (
-				1058C7B3FEA5585E11CA2CBB,
-				05363207011BF5107F000001,
+				0BD178F501298E177F000001,
+				0BD178F701298EEC7F000001,
 			);
 			isa = PBXFrameworksBuildPhase;
 			name = "Frameworks & Libraries";
@@ -253,9 +253,25 @@
 		};
 		08FB77AEFE84172EC02AAC07 = {
 			children = (
-				F5F45A4C0119C49101000001,
-				F5F004E4011733AA01000001,
-				F5F004E6011733AA01000001,
+				0BD178CF01298E177F000001,
+				0BD178D001298E177F000001,
+				0BD178D101298E177F000001,
+				0BD178D201298E177F000001,
+				0BD178D301298E177F000001,
+				0BD178D401298E177F000001,
+				0BD178D501298E177F000001,
+				0BD178D601298E177F000001,
+				0BD178D701298E177F000001,
+				0BD178D801298E177F000001,
+				0BD178D901298E177F000001,
+				0BD178DA01298E177F000001,
+				0BD178DB01298E177F000001,
+				0BD178DC01298E177F000001,
+				0BD178DD01298E177F000001,
+				0BD178DE01298E177F000001,
+				0BD178DF01298E177F000001,
+				0BD178E001298E177F000001,
+				0BD178E101298E177F000001,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -266,6 +282,282 @@
 //082
 //083
 //084
+//0B0
+//0B1
+//0B2
+//0B3
+//0B4
+		0BD178CF01298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPG.h;
+			refType = 4;
+		};
+		0BD178D001298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGContext.h;
+			refType = 4;
+		};
+		0BD178D101298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGContext.m;
+			refType = 4;
+		};
+		0BD178D201298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGData.h;
+			refType = 4;
+		};
+		0BD178D301298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGData.m;
+			refType = 4;
+		};
+		0BD178D401298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGDefines.h;
+			refType = 4;
+		};
+		0BD178D501298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGEngine.h;
+			refType = 4;
+		};
+		0BD178D601298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGEngine.m;
+			refType = 4;
+		};
+		0BD178D701298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGExceptions.h;
+			refType = 4;
+		};
+		0BD178D801298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGExceptions.m;
+			refType = 4;
+		};
+		0BD178D901298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGInternals.h;
+			refType = 4;
+		};
+		0BD178DA01298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGKey.h;
+			refType = 4;
+		};
+		0BD178DB01298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGKey.m;
+			refType = 4;
+		};
+		0BD178DC01298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGObject.h;
+			refType = 4;
+		};
+		0BD178DD01298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGObject.m;
+			refType = 4;
+		};
+		0BD178DE01298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGRecipients.h;
+			refType = 4;
+		};
+		0BD178DF01298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGRecipients.m;
+			refType = 4;
+		};
+		0BD178E001298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGTrustItem.h;
+			refType = 4;
+		};
+		0BD178E101298E177F000001 = {
+			isa = PBXFileReference;
+			path = GPGTrustItem.m;
+			refType = 4;
+		};
+		0BD178E201298E177F000001 = {
+			fileRef = 0BD178CF01298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178E301298E177F000001 = {
+			fileRef = 0BD178D001298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178E401298E177F000001 = {
+			fileRef = 0BD178D201298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178E501298E177F000001 = {
+			fileRef = 0BD178D401298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178E601298E177F000001 = {
+			fileRef = 0BD178D501298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178E701298E177F000001 = {
+			fileRef = 0BD178D701298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178E801298E177F000001 = {
+			fileRef = 0BD178D901298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Private,
+				);
+			};
+		};
+		0BD178E901298E177F000001 = {
+			fileRef = 0BD178DA01298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178EA01298E177F000001 = {
+			fileRef = 0BD178DC01298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178EB01298E177F000001 = {
+			fileRef = 0BD178DE01298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178EC01298E177F000001 = {
+			fileRef = 0BD178E001298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		0BD178ED01298E177F000001 = {
+			fileRef = 0BD178D101298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178EE01298E177F000001 = {
+			fileRef = 0BD178D301298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178EF01298E177F000001 = {
+			fileRef = 0BD178D601298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178F001298E177F000001 = {
+			fileRef = 0BD178D801298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178F101298E177F000001 = {
+			fileRef = 0BD178DB01298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178F201298E177F000001 = {
+			fileRef = 0BD178DD01298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178F301298E177F000001 = {
+			fileRef = 0BD178DF01298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178F401298E177F000001 = {
+			fileRef = 0BD178E101298E177F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178F501298E177F000001 = {
+			fileRef = 0867D69BFE84028FC02AAC07;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD178F601298EEC7F000001 = {
+			isa = PBXFileReference;
+			name = libgpgme.a;
+			path = /usr/local/lib/libgpgme.a;
+			refType = 0;
+		};
+		0BD178F701298EEC7F000001 = {
+			fileRef = 0BD178F601298EEC7F000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0BD1790F012998187F000001 = {
+			isa = PBXFileReference;
+			name = gpgme.h;
+			path = /usr/local/include/gpgme.h;
+			refType = 0;
+		};
+//0B0
+//0B1
+//0B2
+//0B3
+//0B4
 //100
 //101
 //102
@@ -292,128 +584,6 @@
 			);
 			isa = PBXGroup;
 			name = "Other Frameworks";
-			refType = 4;
-		};
-		1058C7B3FEA5585E11CA2CBB = {
-			fileRef = 1058C7B1FEA5585E11CA2CBB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-//100
-//101
-//102
-//103
-//104
-//F50
-//F51
-//F52
-//F53
-//F54
-		F5F004E3011733AA01000001 = {
-			isa = PBXFileReference;
-			path = gpgcontext.h;
-			refType = 4;
-		};
-		F5F004E4011733AA01000001 = {
-			isa = PBXFileReference;
-			path = gpgcontext.m;
-			refType = 4;
-		};
-		F5F004E5011733AA01000001 = {
-			isa = PBXFileReference;
-			path = gpgdata.h;
-			refType = 4;
-		};
-		F5F004E6011733AA01000001 = {
-			isa = PBXFileReference;
-			path = gpgdata.m;
-			refType = 4;
-		};
-		F5F004E7011733AA01000001 = {
-			isa = PBXFileReference;
-			path = gpgme.h;
-			refType = 4;
-		};
-		F5F004E8011733AA01000001 = {
-			fileRef = F5F004E3011733AA01000001;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		F5F004E9011733AA01000001 = {
-			fileRef = F5F004E5011733AA01000001;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		F5F004EA011733AA01000001 = {
-			fileRef = F5F004E7011733AA01000001;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-				);
-			};
-		};
-		F5F004EB011733AA01000001 = {
-			fileRef = F5F004E4011733AA01000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F5F004EC011733AA01000001 = {
-			fileRef = F5F004E6011733AA01000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F5F45A490119BC4201000001 = {
-			isa = PBXFileReference;
-			name = libgpgme.a;
-			path = /usr/local/lib/libgpgme.a;
-			refType = 0;
-		};
-		F5F45A4B0119C49101000001 = {
-			isa = PBXFileReference;
-			path = gpg.h;
-			refType = 4;
-		};
-		F5F45A4C0119C49101000001 = {
-			isa = PBXFileReference;
-			path = gpg.m;
-			refType = 4;
-		};
-		F5F45A4D0119C49101000001 = {
-			fileRef = F5F45A4B0119C49101000001;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		F5F45A4E0119C49101000001 = {
-			fileRef = F5F45A4C0119C49101000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F5F59DDE0126CBA601000001 = {
-			children = (
-				F5F45A4B0119C49101000001,
-				F5F004E3011733AA01000001,
-				F5F004E5011733AA01000001,
-				F5F004E7011733AA01000001,
-			);
-			isa = PBXGroup;
-			name = Headers;
-			path = "";
 			refType = 4;
 		};
 	};
