@@ -554,6 +554,32 @@ NSString *GPGStringFromChars(const char * chars)
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_FPR];
 }
 
+- (NSString *) _formattedFingerprint:(NSString *)fingerprint
+{
+    if(fingerprint != nil && [fingerprint length] == 40){
+        return [NSString stringWithFormat:@"%@ %@ %@ %@ %@  %@ %@ %@ %@ %@", [fingerprint substringWithRange:NSMakeRange(0, 4)], [fingerprint substringWithRange:NSMakeRange(4, 4)], [fingerprint substringWithRange:NSMakeRange(8, 4)], [fingerprint substringWithRange:NSMakeRange(12, 4)], [fingerprint substringWithRange:NSMakeRange(16, 4)], [fingerprint substringWithRange:NSMakeRange(20, 4)], [fingerprint substringWithRange:NSMakeRange(24, 4)], [fingerprint substringWithRange:NSMakeRange(28, 4)], [fingerprint substringWithRange:NSMakeRange(32, 4)], [fingerprint substringWithRange:NSMakeRange(36, 4)]];
+    }
+    else if(fingerprint != nil && [fingerprint length] == 32){
+        return [NSString stringWithFormat:@"%@ %@ %@ %@ %@ %@ %@ %@  %@ %@ %@ %@ %@ %@ %@ %@", [fingerprint substringWithRange:NSMakeRange(0, 2)], [fingerprint substringWithRange:NSMakeRange(2, 2)], [fingerprint substringWithRange:NSMakeRange(4, 2)], [fingerprint substringWithRange:NSMakeRange(6, 2)], [fingerprint substringWithRange:NSMakeRange(8, 2)], [fingerprint substringWithRange:NSMakeRange(10, 2)], [fingerprint substringWithRange:NSMakeRange(12, 2)], [fingerprint substringWithRange:NSMakeRange(14, 2)], [fingerprint substringWithRange:NSMakeRange(16, 2)], [fingerprint substringWithRange:NSMakeRange(18, 2)], [fingerprint substringWithRange:NSMakeRange(20, 2)], [fingerprint substringWithRange:NSMakeRange(22, 2)], [fingerprint substringWithRange:NSMakeRange(24, 2)], [fingerprint substringWithRange:NSMakeRange(26, 2)], [fingerprint substringWithRange:NSMakeRange(28, 2)], [fingerprint substringWithRange:NSMakeRange(30, 2)]];
+    }
+    else
+        return fingerprint;
+}
+
+- (NSString *) formattedFingerprint
+/*"
+ * Returns %{main key fingerprint}, formatted like this:
+ *
+ * XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX
+ *
+ * or
+ *
+ * XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
+"*/
+{
+    return [self _formattedFingerprint:[self fingerprint]];
+}
+
 - (NSArray *) subkeysFingerprints
 /*"
  * Returns an array of #NSString instances.
@@ -563,6 +589,26 @@ NSString *GPGStringFromChars(const char * chars)
 {
     // BUG: no fingerprint for subkeys! Reported to Werner.
     return [self subStringAttributesWithIdentifier:GPGME_ATTR_FPR maxCount:[self subkeysCount]];
+}
+
+- (NSArray *) subkeysFormattedFingerprints
+/*"
+ * Returns an array of #NSString instances; fingerprints are formatted,
+ * according to what's decribed in #{-formattedFingerprint}.
+ *
+ * #Caution: it does not work currently.
+"*/
+{
+    // BUG: no fingerprint for subkeys! Reported to Werner.
+    int				aCount = [self subkeysCount];
+    NSMutableArray	*fingerprints = [NSMutableArray arrayWithCapacity:aCount];
+    NSEnumerator	*anEnum = [[self subStringAttributesWithIdentifier:GPGME_ATTR_FPR maxCount:aCount] objectEnumerator];
+    NSString		*aFingerprint;
+
+    while(aFingerprint = [anEnum nextObject])
+        [fingerprints addObject:[self _formattedFingerprint:aFingerprint]];
+
+    return fingerprints;
 }
 
 - (GPGPublicKeyAlgorithm) algorithm
@@ -1172,6 +1218,25 @@ NSString *GPGStringFromChars(const char * chars)
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_CHAINID];
+}
+
+- (GPGKeyType) type
+/*"
+ * This returns information about the type of key.
+"*/
+{
+    unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_TYPE, NULL, 0);
+
+    return result;
+}
+
+- (NSString *) typeDescription
+/*"
+ * This returns information about the type of key, as string.
+ * Returns either "PGP" or "X.509".
+"*/
+{
+    return [self mainStringAttributeWithIdentifier:GPGME_ATTR_TYPE];
 }
 
 @end
