@@ -1,0 +1,70 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                askInputFileForEncryption = id; 
+                askInputFileForSigning = id; 
+                askOutputFileForEncryption = id; 
+                askOutputFileForSigning = id; 
+                cancel = id; 
+                decrypt = id; 
+                deleteKey = id; 
+                encrypt = id; 
+                export = id; 
+                import = id; 
+                ok = id; 
+                searchKeys = id; 
+                sign = id; 
+                verify = id; 
+                verifyDetachedSignature = id; 
+            }; 
+            CLASS = Controller; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                algorithmTextField = id; 
+                canCertifySwitch = id; 
+                canExcryptSwitch = id; 
+                canSignSwitch = id; 
+                deleteButton = id; 
+                deleteSwitch = id; 
+                encryptionArmoredSwitch = id; 
+                encryptionInputFilenameTextField = id; 
+                encryptionOutputFilenameTextField = id; 
+                encryptionPanel = id; 
+                hasExpiredSwitch = id; 
+                hasSecretSwitch = id; 
+                idleImageView = id; 
+                isDisabledSwitch = id; 
+                isInvalidSwitch = id; 
+                isRevokedSwitch = id; 
+                keyTableView = id; 
+                lengthTextField = id; 
+                mainKeyBox = id; 
+                ownerTrustField = id; 
+                passphraseDescriptionTextField = id; 
+                passphrasePanel = id; 
+                passphraseTextField = id; 
+                searchPatternTextField = id; 
+                signingArmoredSwitch = id; 
+                signingDetachedSwitch = id; 
+                signingInputFilenameTextField = id; 
+                signingOutputFilenameTextField = id; 
+                signingPanel = id; 
+                subkeyTableView = id; 
+                trustLevelField = id; 
+                trustTypeTextField = id; 
+                userIDTableView = id; 
+                validityTextField = id; 
+                xmlTextView = id; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {showHelp = id; }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
