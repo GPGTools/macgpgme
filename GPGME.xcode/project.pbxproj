@@ -92,6 +92,7 @@
 		};
 		0867D691FE84028FC02AAC07 = {
 			children = (
+				55B5189507AC37A6005C1DB3,
 				F550BC4A0201F2BB01A80016,
 				F56F791B012E3F8001000001,
 				0BD1790F012998187F000001,
@@ -537,12 +538,14 @@
 				FRAMEWORK_SEARCH_PATHS = "";
 				FRAMEWORK_VERSION = 1.0.2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = /usr/local/include/gpgme.h;
+				GCC_PREFIX_HEADER = GPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDINGGPGME;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Info-GPGME.plist";
-				INSTALL_PATH = Library/Frameworks;
+				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_STYLE = DYNAMIC;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-seg1addr 0x686E0000 -headerpad_max_install_names";
 				PRODUCT_NAME = GPGME;
@@ -582,6 +585,7 @@
 				554B55A1069F0111005E1C92,
 				554B55A2069F0111005E1C92,
 				5543FA93071493C4009979E9,
+				55B5189607AC37A6005C1DB3,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1175,6 +1179,20 @@
 		};
 		5587C98007A2E96400F17B27 = {
 			fileRef = 5587C97F07A2E96400F17B27;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55B5189507AC37A6005C1DB3 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = GPGME_Prefix.pch;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5189607AC37A6005C1DB3 = {
+			fileRef = 55B5189507AC37A6005C1DB3;
 			isa = PBXBuildFile;
 			settings = {
 			};
