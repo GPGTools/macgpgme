@@ -27,8 +27,9 @@
 
 #import "GPGKey.h"
 #import "GPGRecipients.h"
+#import "GPGDefines.h"
 
-NSString * GPGPublicKeyAlgorithmDescription(GPGPublicKeyAlgorithm value);
-NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymetricKeyAlgorithm value);
-NSString * GPGHashAlgorithmDescription(GPGHashAlgorithm value);
-NSString * GPGValidityDescription(GPGValidity value);
+GPG_EXPORT NSString * GPGPublicKeyAlgorithmDescription(GPGPublicKeyAlgorithm value);
+GPG_EXPORT NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymetricKeyAlgorithm value);
+GPG_EXPORT NSString * GPGHashAlgorithmDescription(GPGHashAlgorithm value);
+GPG_EXPORT NSString * GPGValidityDescription(GPGValidity value);
