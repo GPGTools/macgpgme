@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001 Mac GPG Project.
+//  Copyright (C) 2001-2002 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -47,10 +47,13 @@
 
 
 @implementation GPGRecipients
+/*"
+ * A #GPGRecipients instance is a set of %recipients that can be used in an encryption process.
+"*/
 
 - (id) init
 /*"
- * Designated initializer.
+ * Designated initializer. %Recipients set is empty.
  * 
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
@@ -80,8 +83,10 @@
 
 - (void) addName:(NSString *)name
 /*"
- * name is a userID (user's name, email address, keyID, etc.). Uses
- * #GPGValidityUnknown as validity.
+ * Adds the %recipients name to the set of %recipients.
+ *
+ * name is a %{user ID} (user's name, email address, %{key ID}, etc.).
+ * Uses #GPGValidityUnknown as validity.
  * 
  * Can raise a #GPGException.
 "*/
@@ -94,7 +99,9 @@
 
 - (void) addName:(NSString *)name withValidity:(GPGValidity)validity
 /*"
- * name is a userID (user's name, email address, keyID, etc.).
+ * Adds the %recipients name with the validity validity to the set of %recipients.
+ *
+ * name is a %{user ID} (user's name, email address, %{key ID}, etc.).
  * 
  * Can raise a #GPGException.
 "*/
@@ -106,13 +113,17 @@
 }
 
 - (unsigned int) count
+/*"
+ * Returns the number of %recipients in the set.
+"*/
 {
     return gpgme_recipients_count(_recipients);
 }
 
 - (NSEnumerator *) recipientNameEnumerator
 /*"
- * Enumerated objects are recipient names, represented as #NSString instances.
+ * Enumerated objects are %recipient names, represented as #NSString instances.
+ * Returned names are the ones set with #{-addName:} and #{-addName:withValidity:}.
  * 
  * Can raise a #GPGException, even during enumeration!
 "*/
@@ -120,6 +131,16 @@
     return [[[GPGRecipientNameEnumerator alloc] initForRecipients:self] autorelease];
 }
 
+#warning TODO
+/* 
+    We could also add the following calls:
+    - (void) addKey:(GPGKey *)key
+    - (void) addKey:(GPGKey *)key withValidity:(GPGValidity)validity
+    - (NSEnumerator *) keyEnumerator (but we need to create a local context to get a named key)
+    
+    Currently there is no way to copy a recipients set, because we can't enumerate
+    the associated validities. This will be implemented later in libgpgme.
+*/
 @end
 
 

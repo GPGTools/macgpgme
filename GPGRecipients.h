@@ -5,7 +5,7 @@
 //  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001 Mac GPG Project.
+//  Copyright (C) 2001-2002 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU General Public License as published by the Free
@@ -29,13 +29,23 @@
 @class NSEnumerator;
 
 
+/*"
+ * The #GPGValidity type is used to specify the validity of a %{user ID} in a key.
+ * The following validities are defined:
+ * _{GPGValidityUnknown    The %{user ID} is of unknown validity.}
+ * _{GPGValidityUndefined  No value assigned. The validity of the %{user ID} is undefined.}
+ * _{GPGValidityNever      The %{user ID} is never valid.}
+ * _{GPGValidityMarginal   The %{user ID} is marginally valid.}
+ * _{GPGValidityFull       The %{user ID} is fully valid.}
+ * _{GPGValidityUltimate   The %{user ID} is ultimately valid. Only used for keys for which the secret key is also available.}
+"*/
 typedef enum {
     GPGValidityUnknown   = 0,
-    GPGValidityUndefined = 1, /*"No value assigned"*/
+    GPGValidityUndefined = 1,
     GPGValidityNever     = 2,
     GPGValidityMarginal  = 3,
     GPGValidityFull      = 4,
-    GPGValidityUltimate  = 5  /*"Only used for keys for which the secret key is also available"*/
+    GPGValidityUltimate  = 5
 } GPGValidity;
 
 
