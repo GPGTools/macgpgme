@@ -1,12 +1,72 @@
-diff -ur gpgme-0.3.2/tests/gpg/mkdemodirs gpgme-0.3.2-MacOSX/tests/gpg/mkdemodirs
---- gpgme-0.3.2/tests/gpg/mkdemodirs	Tue Oct 16 23:08:55 2001
-+++ gpgme-0.3.2-MacOSX/tests/gpg/mkdemodirs	Tue Feb 12 21:33:25 2002
-@@ -25,7 +25,7 @@
- echo -n "Creating:"
- for name in $NAMES; do
-     echo -n " $name"
--    [ -d $name ] && rm -r $name
-+    [ -d $name ] && rm -r $name || true
-     mkdir $name
-     $GPGDEMO --export-secret-key -o - $name > $name/Secret.gpg
-     $GPG --homedir $name --allow-secret-key-import --import $name/Secret.gpg
+diff -ur gpgme-0.3.8/gpgme/Makefile.in /tmp/gpgme-0.3.8/gpgme/Makefile.in
+--- gpgme-0.3.8/gpgme/Makefile.in	Tue Jun 25 20:37:02 2002
++++ /tmp/gpgme-0.3.8/gpgme/Makefile.in	Sat Jul 13 17:18:58 2002
+@@ -168,6 +168,7 @@
+ 	sema.h io.h \
+ 	${system_components} \
+ 	debug.c debug.h \
++	vasprintf.c \
+ 	gpgme.c version.c errors.c
+ 
+ subdir = gpgme
+@@ -193,7 +194,7 @@
+ 	decrypt-verify.lo verify.lo sign.lo passphrase.lo progress.lo \
+ 	key.lo keylist.lo trustlist.lo import.lo export.lo genkey.lo \
+ 	delete.lo rungpg.lo engine-gpgsm.lo engine.lo $(am__objects_1) \
+-	debug.lo gpgme.lo version.lo errors.lo
++	debug.lo gpgme.lo version.lo errors.lo vasprintf.lo
+ libgpgme_la_OBJECTS = $(am_libgpgme_la_OBJECTS)
+ SCRIPTS = $(bin_SCRIPTS)
+ 
+@@ -223,6 +224,7 @@
+ @AMDEP_TRUE@	./$(DEPDIR)/recipient.Plo ./$(DEPDIR)/rungpg.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/sign.Plo ./$(DEPDIR)/signers.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/trustlist.Plo ./$(DEPDIR)/util.Plo \
++@AMDEP_TRUE@	./$(DEPDIR)/vasprintf.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/verify.Plo ./$(DEPDIR)/version.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/w32-io.Plo ./$(DEPDIR)/w32-sema.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/w32-util.Plo ./$(DEPDIR)/wait.Plo
+@@ -338,6 +340,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signers.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trustlist.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vasprintf.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/w32-io.Plo@am__quote@
+diff -ur gpgme-0.3.8/gpgme/ath-pth.c /tmp/gpgme-0.3.8/gpgme/ath-pth.c
+--- gpgme-0.3.8/gpgme/ath-pth.c	Sun Jun  2 21:19:25 2002
++++ /tmp/gpgme-0.3.8/gpgme/ath-pth.c	Sat Jul 13 17:19:59 2002
+@@ -18,7 +18,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+  */
+ 
+-#include <malloc.h>
++#include <stdlib.h>
+ #include <errno.h>
+ #include <pth.h>
+ 
+diff -ur gpgme-0.3.8/gpgme/ath-pthread.c /tmp/gpgme-0.3.8/gpgme/ath-pthread.c
+--- gpgme-0.3.8/gpgme/ath-pthread.c	Sun Jun  2 21:19:25 2002
++++ /tmp/gpgme-0.3.8/gpgme/ath-pthread.c	Sat Jul 13 17:23:45 2002
+@@ -18,7 +18,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+  */
+ 
+-#include <malloc.h>
++#include <stdlib.h>
+ #include <errno.h>
+ #include <pthread.h>
+ 
+diff -ur gpgme-0.3.8/gpgme/util.h /tmp/gpgme-0.3.8/gpgme/util.h
+--- gpgme-0.3.8/gpgme/util.h	Wed May  8 13:01:36 2002
++++ /tmp/gpgme-0.3.8/gpgme/util.h	Sat Jul 13 17:45:33 2002
+@@ -77,7 +77,7 @@
+ #ifdef HAVE_CONFIG_H
+ #if !HAVE_VASPRINTF
+ #include <stdarg.h>
+-int vasprintf (char **result, const char *format, va_list *args);
++int vasprintf (char **result, const char *format, va_list args);
+ int asprintf (char **result, const char *format, ...);
+ #endif
+ 

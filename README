@@ -1,16 +1,19 @@
 gpgme library
 =============
-In order to build this framework, you need gpgme 0.3.4 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
+In order to build this framework, you need gpgme 0.3.8 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.6). To download and install it, proceed like this:
 
 On MacOS X 10.1:
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.4.tar.gz
-curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.4.tar.gz.sig
-gpg --verify gpgme-0.3.4.tar.gz.sig
-gnutar xzf gpgme-0.3.4.tar.gz
-cd gpgme-0.3.4
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz
+curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz.sig
+gpg --verify gpgme-0.3.8.tar.gz.sig
+gnutar xzf gpgme-0.3.8.tar.gz
+cd gpgme-0.3.8
+
+We need to apply a patch, as well as adding a new file, missing from the original distribution
+cp -pR path/to/GPGME/vasprintf.c gpgme/
+patch -p1 < path/to/GPGME/gpgme.patch
+
 ./configure
-mv gpgme/util.h gpgme/util.h.original
-sed < gpgme/util.h.original "s%coid%void%" > gpgme/util.h
 mv libtool libtool.original
 sed < libtool.original "s%-undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
 make
@@ -19,14 +22,17 @@ sudo mv /usr/local/lib/libgpgme.dylib /usr/local/lib/libgpgme.dylib.off
 cd ..
 
 On MacOS X Server 1.x (Rhapsody):
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.4.tar.gz
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.4.tar.gz.sig
-gpg --verify gpgme-0.3.4.tar.gz.sig
-gnutar xzf gpgme-0.3.4.tar.gz
-cd gpgme-0.3.4
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.8.tar.gz.sig
+gpg --verify gpgme-0.3.8.tar.gz.sig
+gnutar xzf gpgme-0.3.8.tar.gz
+cd gpgme-0.3.8
+
+We need to apply a patch, as well as adding a new file, missing from the original distribution
+cp -pR path/to/GPGME/vasprintf.c gpgme/
+patch -p1 < path/to/GPGME/gpgme.patch
+
 ./configure
-mv gpgme/util.h gpgme/util.h.original
-sed < gpgme/util.h.original "s%coid%void%" > gpgme/util.h
 mv tests/gpg/mkdemodirs tests/gpg/mkdemodirs.original
 sed < tests/gpg/mkdemodirs.original 's%rm -r $name%rm -r $name || true%' > tests/gpg/mkdemodirs
 chmod a+x tests/gpg/mkdemodirs
