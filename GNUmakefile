@@ -14,15 +14,16 @@ ifeq ($(GNUSTEP_SYSTEM_ROOT),)
 else
 
 FRAMEWORK_NAME = GPGME
-CURRENT_VERSION_NAME = 0.3.4
+CURRENT_VERSION_NAME = 0.3.8
 
 GPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
-           GPGObject.m GPGRecipients.m GPGTrustItem.m GPGPrettyInfo.m\
-		   LocalizableStrings.m
+           GPGObject.m GPGPrettyInfo.m GPGRecipients.m GPGSignature.m\
+           GPGTrustItem.m LocalizableStrings.m
 
 GPGME_HEADER_FILES=GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
           GPGExceptions.h GPGInternals.h GPGKey.h GPGME.h GPGObject.h\
-          GPGRecipients.h GPGTrustItem.h GPGPrettyInfo.h LocalizableStrings.h
+          GPGPrettyInfo.h GPGRecipients.h GPGSignature.h GPGTrustItem.h\
+          LocalizableStrings.h
 
 ADDITIONAL_OBJCFLAGS += -I../
 

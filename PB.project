@@ -1,6 +1,6 @@
 {
     CURRENTLY_ACTIVE_VERSION = YES; 
-    DEPLOY_WITH_VERSION_NAME = 0.3.4; 
+    DEPLOY_WITH_VERSION_NAME = 0.3.8; 
     DYNAMIC_CODE_GEN = YES; 
     English_RESOURCES = {}; 
     FILESTABLE = {
@@ -13,6 +13,7 @@
             GPGObject.m, 
             GPGPrettyInfo.m, 
             GPGRecipients.m, 
+            GPGSignature.m, 
             GPGTrustItem.m, 
             LocalizableStrings.m
         ); 
@@ -32,6 +33,7 @@
             GPGObject.h, 
             GPGPrettyInfo.h, 
             GPGRecipients.h, 
+			GPGSignature.h, 
             GPGTrustItem.h, 
             LocalizableStrings.h
         ); 
@@ -56,10 +58,11 @@
             GPGExceptions.h, 
             GPGKey.h, 
             GPGObject.h, 
+            GPGPrettyInfo.h, 
             GPGRecipients.h, 
+			GPGSignature.h, 
             GPGTrustItem.h, 
-            GPGME.h, 
-            GPGPrettyInfo.h
+            GPGME.h
         ); 
     }; 
     LANGUAGE = English; 
