@@ -2,7 +2,7 @@
 //  GPGData.m
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import "GPGData.h"
@@ -41,6 +40,12 @@
 @implementation GPGData
 
 - (id) init
+/*"
+ * Data is created without content. Type is set to #GPGDataTypeNone; it can later
+ * be set to #GPGDataTypeData.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
 {
     GpgmeError	anError = gpgme_data_new(_dataPtr);
 
@@ -55,6 +60,12 @@
 }
 
 - (id) initWithData:(NSData *)someData
+/*"
+ * Copies someData's bytes.
+ * Type is set to #GPGDataTypeData.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
 {
     GpgmeError	anError = gpgme_data_new_from_mem(_dataPtr, [someData bytes], [someData length], 1);
 
@@ -69,6 +80,12 @@
 }
 
 - (id) initWithDataNoCopy:(NSMutableData *)someData
+/*"
+ * Doesn't copy someData, but user needs to make sure that someData remains valid
+ * until #dealloc. Type is set to #GPGDataTypeData.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
 {
 #warning Is someData really to be modified??? Ask Werner.
     // No, it seems that data is not modified, because
@@ -107,6 +124,12 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (id) initWithDataSource:(id)dataSource
+/*"
+ * dataSource must respond to selector #{data:readLength:}. dataSource is not
+ * retained. Data can only be read.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self
+"*/
 {
     GpgmeError	anError;
     
@@ -126,6 +149,11 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (id) initWithContentsOfFile:(NSString *)filename
+/*"
+ * Immediately opens file and copies content into memory; then it closes file.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
 {
     GpgmeError	anError = gpgme_data_new_from_file(_dataPtr, [filename fileSystemRepresentation], 1);
 
@@ -141,6 +169,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 
 - (id) initWithContentsOfFileNoCopy:(NSString *)filename
 // Not yet supported as of 0.2.2
+// Can raise a GPGException; in this case, a release is sent to self
 {
     GpgmeError	anError = gpgme_data_new_from_file(_dataPtr, [filename fileSystemRepresentation], 0);
 
@@ -155,6 +184,12 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (id) initWithContentsOfFile:(NSString *)filename atOffset:(unsigned long long)offset length:(unsigned long long)length
+/*"
+ * Immediately opens file and copies partial content into memory; then it closes
+ * file.
+ *
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
 {
     // We don't provide a method to match the case where filename is NULL
     // and filePtr (FILE *) is not NULL (both arguments are exclusive).
@@ -186,6 +221,13 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (NSData *) data
+/*"
+ * Returns a copy of data. #WARNING: after having called this method, instance can't
+ * respond to any other message; it should be released; it will raise an
+ * #NSGenericException!!!
+ *
+ * Returns nil if it couldn't allocate enough memory.
+"*/
 {
     size_t	aReadLength;
     char	*aBuffer;
@@ -210,6 +252,12 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (void) rewind
+/*"
+ * Prepares data in a way that the next call to #{-readDataOfLength:} does start at
+ * the beginning of the data.
+ *
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeError	anError;
     
@@ -220,6 +268,13 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (NSData *) readDataOfLength:(unsigned int)length
+/*"
+ * Reading starts from the current position. Returned data has the
+ * appropriate size, smaller or equal to length. Returns nil when there isn't
+ * anything more to read. Read data should be copied, not referenced.
+ *
+ * Can raise a #GPGException (but never a #GPGErrorEOF one).
+"*/
 {
     GpgmeError		anError;
     NSMutableData	*readData;
@@ -239,6 +294,11 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (void) writeData:(NSData *)data
+/*"
+ * Writing starts from the current position. Writes all data (makes a copy of it).
+ *
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeError	anError;
     
@@ -298,3 +358,17 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 @end
+
+
+// We need to write this fake implementation (not compiled!)
+// just to force autodoc to take our comments in account!
+#ifdef FAKE_IMPLEMENTATION_FOR_AUTODOC
+@implementation NSObject(GPGDataSource)
+- (NSData *) data:(GPGData *)data readLength:(unsigned int)maxLength
+/*"
+ * Returned data length must have a length smaller or equal to maxLength. If
+ * there is nothing more to read, return nil. Read data will be copied.
+"*/
+{}
+@end
+#endif

@@ -2,7 +2,7 @@
 //  GPGEngine.h
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import <GPGME/GPGDefines.h>
@@ -49,7 +48,7 @@ typedef enum {
     GPGErrorWriteError       = 14,
     GPGErrorInvalidType      = 15,
     GPGErrorInvalidMode      = 16,
-    GPGErrorFileError        = 17, /* errno is set in this case */
+    GPGErrorFileError        = 17, /*"errno is set in this case"*/
     GPGErrorDecryptionFailed = 18,
     GPGErrorNoPassphrase     = 19,
     GPGErrorCanceled         = 20,
@@ -58,46 +57,53 @@ typedef enum {
 } GPGError;
 
 
-GPG_EXPORT NSString	*GPGCheckVersion(NSString *requiredVersion);
-/*
- * Check that the version of the library is at minimum the requested one
- * and return the version string; return nil if the condition is not
- * met.  If requiredVersion is nil, no check is done and
- * the version string is simply returned.  It is a pretty good idea to
+/*"
+ * Checks that the version of the library is at minimum the requested one
+ * and returns the version string; returns nil if the condition is not
+ * met. If requiredVersion is nil, no check is done and
+ * the version string is simply returned. It is a pretty good idea to
  * run this function as soon as possible, because it also initializes
  * some subsystems. In a multithreaded environment if should be called
  * before the first thread is created.
+ *
  * NOTE: it starts a dummy NSThread to insure that Cocoa is ready
  *       for multithreading.
- */
-GPG_EXPORT GPGError	GPGCheckEngine();
-/*
- * Check whether the installed crypto engine matches the requirement of
+"*/
+GPG_EXPORT NSString	*GPGCheckVersion(NSString *requiredVersion);
+
+/*"
+ * Checks whether the installed crypto engine matches the requirement of
  * GPGME.
- */
-GPG_EXPORT NSString	*GPGEngineInfo();
-/*
- * Return information about the underlying crypto engine.  This is an
- * XML string with various information.  To get the version of the
+"*/
+GPG_EXPORT GPGError	GPGCheckEngine();
+
+/*"
+ * Returns information about the underlying crypto engine. This is an
+ * XML string with various information. To get the version of the
  * crypto engine it should be sufficient to grep for the first
- * version tag and use it's content.  A string is
+ * version tag and use it's content. A string is
  * always returned even if the crypto engine is not installed; in this
  * case a XML string with some error information is returned.
-<GnupgInfo>
- <engine>"
-  <version>aString</version>
-  <path>aString</path>
- </engine>
-</GnupgInfo>
- 
- or
- 
-<GnupgInfo>"
- <engine>"
-  <error>aString</error>
-  <path>aString</path> (optional)
- </engine>
-</GnupgInfo>
- */
+ *
+ * !{<GnupgInfo>
+ *  <engine>"
+ *   <version>aString</version>
+ *   <path>aString</path>
+ *  </engine>
+ * </GnupgInfo>}
+ *
+ *  or
+ *
+ * !{<GnupgInfo>"
+ *  <engine>"
+ *   <error>aString</error>
+ *   <path>aString</path> (optional)
+ *  </engine>
+ * </GnupgInfo>}
+"*/
+GPG_EXPORT NSString	*GPGEngineInfo();
+
+/*"
+ * Messages are currently not localized.
+"*/
 GPG_EXPORT NSString	*GPGErrorDescription(GPGError error);
-// Messages are currently not localized

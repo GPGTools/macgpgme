@@ -2,7 +2,7 @@
 //  GPGRecipients.h
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import <GPGME/GPGObject.h>
@@ -29,11 +28,11 @@
 
 typedef enum {
     GPGValidityUnknown   = 0,
-    GPGValidityUndefined = 1, // No value assigned
+    GPGValidityUndefined = 1, /*"No value assigned"*/
     GPGValidityNever     = 2,
     GPGValidityMarginal  = 3,
     GPGValidityFull      = 4,
-    GPGValidityUltimate  = 5  // Only used for keys for which the secret key is also available
+    GPGValidityUltimate  = 5  /*"Only used for keys for which the secret key is also available"*/
 } GPGValidity;
 
 
@@ -42,21 +41,12 @@ typedef enum {
 }
 
 - (id) init;
-// Designated initializer
-// Can raise a GPGException; in this case, a release is sent to self
 
 - (void) addName:(NSString *)name;
-// name is a userID (user's name, email address, keyID, etc.)
-// Uses GPGValidityUnknown as validity
-// Can raise a GPGException
 - (void) addName:(NSString *)name withValidity:(GPGValidity)validity;
-// name is a userID (user's name, email address, keyID, etc.)
-// Can raise a GPGException
 
 - (unsigned int) count;
 
 - (NSEnumerator *) recipientNameEnumerator;
-// Enumerated objects are recipient names, represented as NSString instances
-// Can raise a GPGException, even during enumeration!
 
 @end

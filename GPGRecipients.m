@@ -2,7 +2,7 @@
 //  GPGRecipients.m
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import "GPGRecipients.h"
@@ -41,8 +40,8 @@
 }
 
 - (id) initForRecipients:(GPGRecipients *)recipients;
-// Designated initializer
-// Can raise a GPGException; in this case, a release is sent to self
+// Designated initializer.
+// Can raise a GPGException; in this case, a release is sent to self.
 
 @end
 
@@ -50,6 +49,11 @@
 @implementation GPGRecipients
 
 - (id) init
+/*"
+ * Designated initializer.
+ * 
+ * Can raise a #GPGException; in this case, a #release is sent to self.
+"*/
 {
     GpgmeError	anError = gpgme_recipients_new((GpgmeRecipients *)&_internalRepresentation);
 
@@ -75,6 +79,12 @@
 }
 
 - (void) addName:(NSString *)name
+/*"
+ * name is a userID (user's name, email address, keyID, etc.). Uses
+ * #GPGValidityUnknown as validity.
+ * 
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeError	anError = gpgme_recipients_add_name(_recipients, (name != nil ? [name UTF8String]:NULL));
 
@@ -83,6 +93,11 @@
 }
 
 - (void) addName:(NSString *)name withValidity:(GPGValidity)validity
+/*"
+ * name is a userID (user's name, email address, keyID, etc.).
+ * 
+ * Can raise a #GPGException.
+"*/
 {
     GpgmeError	anError = gpgme_recipients_add_name_with_validity(_recipients, (name != nil ? [name UTF8String]:NULL), validity);
 
@@ -96,6 +111,11 @@
 }
 
 - (NSEnumerator *) recipientNameEnumerator
+/*"
+ * Enumerated objects are recipient names, represented as #NSString instances.
+ * 
+ * Can raise a #GPGException, even during enumeration!
+"*/
 {
     return [[[GPGRecipientNameEnumerator alloc] initForRecipients:self] autorelease];
 }

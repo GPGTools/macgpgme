@@ -2,7 +2,7 @@
 //  GPGExceptions.h
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import <Foundation/NSException.h>
@@ -32,15 +31,17 @@
 @class NSString;
 
 
+/*"
+ * A #GPGException can be raised by nearly any GPG call...
+ *
+ * Reason: description from #GPGError.
+ *
+ * UserInfo:
+ *
+ * _{GPGErrorCodeKey A #NSNumber containing a #GPGError value}
+ * _{GPGErrnoKey A #NSNumber containing %errno; present only if #GPGError = #GPGErrorFileError}
+"*/
 GPG_EXPORT NSString	* const GPGException;
-/*
- Can be raised by nearly any GPG call...
- Reason:	description from GPGError
- UserInfo:	GPGErrorCodeKey = GPGError (as NSNumber)
-            GPGErrnoKey = errno (as NSNumber); set only when GPGError = GPGErrorFileError
-            ...
- */
-
 GPG_EXPORT NSString	* const GPGErrorCodeKey;
 GPG_EXPORT NSString	* const GPGErrnoKey;
 
