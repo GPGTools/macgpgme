@@ -50,6 +50,7 @@ extern "C" {
 - (gpgme_ctx_t) gpgmeContext;
 - (void) setOperationMask:(int)flags;
 - (NSMutableDictionary *) operationData;
++ (NSDictionary *) parsedGroupDefinitionLine:(NSString *)groupDefLine;
 @end
 
 
