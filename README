@@ -8,6 +8,10 @@ curl -O ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.0.tar.gz.sig
 gpg --verify gpgme-0.3.0.tar.gz.sig
 gnutar xzf gpgme-0.3.0.tar.gz
 cd gpgme-0.3.0
+
+Then you need to apply a patch on the sources, available in GPGME framework
+patch -p1 < path/to/gpgme.patch
+
 ./configure
 mv libtool libtool.original
 sed < libtool.original "s%-undefined suppress%-prebind -F/System/Library/Frameworks/System.framework -seg1addr 0x10000000%" > libtool
@@ -21,9 +25,11 @@ wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.3.0.tar.gz.sig
 gpg --verify gpgme-0.3.0.tar.gz.sig
 gnutar xzf gpgme-0.3.0.tar.gz
 cd gpgme-0.3.0
+
+Then you need to apply a patch on the sources, available in GPGME framework
+patch -p1 < path/to/gpgme.patch
+
 ./configure
-mv tests/mkdemodirs tests/mkdemodirs.original
-sed < tests/mkdemodirs.original 's/\[ -d \$name \] \&\& rm -r \$name/\[ -d \$name \] \&\& rm -r \$name || true/' > tests/mkdemodirs
 make
 su root make install
 cd ..
