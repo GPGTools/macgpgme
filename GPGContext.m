@@ -191,7 +191,7 @@ static void progressCallback(void *object, const char *description, int type, in
     NSString	*aString = nil;
 
     if(aCString != NULL){
-        aString = [NSString stringWithUTF8String:aCString];
+        aString = GPGStringFromChars(aCString);
         free(aCString);
     }
 
@@ -338,7 +338,7 @@ static void progressCallback(void *object, const char *description, int type, in
     char	*aCString = gpgme_get_op_info(_context, 0);
 
     if(aCString != NULL){
-        NSString	*aString = [NSString stringWithUTF8String:aCString];
+        NSString	*aString = GPGStringFromChars(aCString);
 
         free(aCString);
 
@@ -561,7 +561,11 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (void) cancelOperation
 /*"
- * Tries to cancel the pending operation. It is not guaranteed that it will work under
+ * Tries to cancel the pending operation.
+ * A running synchronous operation in the context or the
+ * method #{-wait} sent to this context might notice the
+ * cancellation flag and return.
+ * It is not guaranteed that it will work under
  * under all circumstances. Its current primary purpose is to prevent
  * asking for a passphrase again in the passphrase callback.
 "*/
@@ -1051,6 +1055,7 @@ static void progressCallback(void *object, const char *description, int type, in
 
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+#warning We should parse statusAsXMLString to give more info in notification
     [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:GPGContextKey]];
 }
 
@@ -1122,7 +1127,7 @@ static void progressCallback(void *object, const char *description, int type, in
  *   Name-DN: C=de,O=g10 code,OU=Testlab,CN=Joe 2 Tester
  *   Name-Email: joe@@foo.bar
  * </GnupgKeyParms>}
- * Strings should be given in UTF-8 encoding. The format supportted for now
+ * Strings should be given in UTF-8 encoding. The format supported for now
  * is "internal". The content of the !{<GnupgKeyParms>} container is passed
  * verbatim to GnuPG. Control statements (e.g. pubring) are not allowed.
  * Key is generated in standard secring/pubring files if both secretKeyData
@@ -1180,11 +1185,13 @@ static void progressCallback(void *object, const char *description, int type, in
 /*"
  * Deletes the given key from the standard key ring of the crypto engine used by the context.
  * To delete a secret key along with the public key, allowSecret must be YES,
- * else only the public key is deleted.
+ * else only the public key is deleted, if that is supported.
  *
  * Can raise a #GPGException:
  * _{GPGErrorInvalidKey  key could not be found in the key ring.}
  * _{GPGErrorConflict    Secret key for key is available, but allowSecret is NO.}
+ *
+ * #WARNING: this does not work with gpg 1.0.7 and previous versions.
 "*/
 {
 #warning BUG: it seems it doesn't work yet...
@@ -1514,9 +1521,9 @@ static void progressCallback(void *object, const char *description, int type, in
  * another with the values you put into. By default it is empty.
  *
  * Currently, description has the following format: it is a 3 lines string.
- * -{1  ENTER or TRY_AGAIN}
- * -{2  keyID userID}
- * -{3  keyID keyID algo}
+ * _{1  ENTER or TRY_AGAIN}
+ * _{2  keyID userID}
+ * _{3  keyID keyID algo}
  *
  * #CAUTION:
  * Method will change in the future to context:passphraseForKey:again:, but currently you cannot ask
