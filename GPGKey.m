@@ -101,6 +101,9 @@
 
 - (NSDictionary *) dictionaryRepresentation
 /*"
+ * a word of warning:  if the user changes libgpgme.a out from under GPGME.framework
+ * then this will not return the same as xmlDescription.
+ *
  * returns a dictionary that looks something like this:
  * 
  * {
@@ -175,61 +178,77 @@
     [key_dict setObject: [self creationDate] forKey:@"created"];
     //expired date not yet implimented in GPGME 0.2.2; bug Werner about it ;-)
     [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
-    uids = [NSArray arrayWithArray: [self userIDs]];
-    uids_invalid_sts = [NSArray arrayWithArray: [self userIDsValidityStatuses]];
-    uids_revoked_sts = [NSArray arrayWithArray: [self userIDsRevocationStatuses]];
-    uids_names = [NSArray arrayWithArray: [self names]];
-    uids_emails = [NSArray arrayWithArray: [self emails]];
-    uids_comments = [NSArray arrayWithArray: [self comments]];
+    uids = [self userIDs];
+    uids_invalid_sts = [self userIDsValidityStatuses];
+    uids_revoked_sts = [self userIDsRevocationStatuses];
+    uids_names = [self names];
+    uids_emails = [self emails];
+    uids_comments = [self comments];
     for (i = 0; i < [uids count]; i++)	{
         [[key_dict objectForKey:@"userids"] addObject: [NSMutableDictionary dictionary]];
-        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-            [uids_invalid_sts objectAtIndex:i] forKey:@"invalid"];
-        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-            [uids_revoked_sts objectAtIndex:i] forKey:@"revoked"];
-        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-            [uids objectAtIndex:i] forKey:@"raw"];
-        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-            [uids_names objectAtIndex:i] forKey:@"name"];
-        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-            [uids_emails objectAtIndex:i] forKey:@"email"];
-        [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
-            [uids_comments objectAtIndex:i] forKey:@"comment"];
+        if ([uids_invalid_sts objectAtIndex:i])
+            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+                [uids_invalid_sts objectAtIndex:i] forKey:@"invalid"];
+        if ([uids_revoked_sts objectAtIndex:i])
+            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+                [uids_revoked_sts objectAtIndex:i] forKey:@"revoked"];
+        if ([uids objectAtIndex:i])
+            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+                [uids objectAtIndex:i] forKey:@"raw"];
+        if ([uids_names objectAtIndex:i])
+            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+                [uids_names objectAtIndex:i] forKey:@"name"];
+        if ([uids_emails objectAtIndex:i])
+            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+                [uids_emails objectAtIndex:i] forKey:@"email"];
+        if ([uids_comments objectAtIndex:i])
+            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+                [uids_comments objectAtIndex:i] forKey:@"comment"];
     }
     
     [key_dict setObject: [NSMutableArray array] forKey:@"subkeys"];
-    subkeys = [NSArray arrayWithArray: [self subkeysKeyIDs]];  //keyids
-    sks_secret_sts = [NSArray arrayWithArray: [self subkeysSecretnessStatuses]];
-    sks_invalid_sts = [NSArray arrayWithArray: [self subkeysValidityStatuses]];
-    sks_revoked_sts = [NSArray arrayWithArray: [self subkeysRevocationStatuses]];
-    sks_expired_sts = [NSArray arrayWithArray: [self subkeysExpirationStatuses]];
-    sks_disabled_sts = [NSArray arrayWithArray: [self subkeysActivityStatuses]];
-    sks_fprs = [NSArray arrayWithArray: [self subkeysFingerprints]];
-    sks_algos = [NSArray arrayWithArray: [self subkeysAlgorithms]];
-    sks_lens = [NSArray arrayWithArray: [self subkeysLengths]];
-    sks_cre_dates = [NSArray arrayWithArray: [self subkeysCreationDates]];
+    subkeys = [self subkeysKeyIDs];  //keyids
+    sks_secret_sts = [self subkeysSecretnessStatuses];
+    sks_invalid_sts = [self subkeysValidityStatuses];
+    sks_revoked_sts = [self subkeysRevocationStatuses];
+    sks_expired_sts = [self subkeysExpirationStatuses];
+    sks_disabled_sts = [self subkeysActivityStatuses];
+    sks_fprs = [self subkeysFingerprints];
+    sks_algos = [self subkeysAlgorithms];
+    sks_lens = [self subkeysLengths];
+    sks_cre_dates = [self subkeysCreationDates];
     for (i = 0; i < [subkeys count]; i++)	{
         [[key_dict objectForKey:@"subkeys"] addObject: [NSMutableDictionary dictionary]];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_secret_sts objectAtIndex:i] forKey:@"secret"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_invalid_sts objectAtIndex:i] forKey:@"invalid"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_revoked_sts objectAtIndex:i] forKey:@"revoked"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_expired_sts objectAtIndex:i] forKey:@"expired"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_disabled_sts objectAtIndex:i] forKey:@"disabled"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [subkeys objectAtIndex:i] forKey:@"keyid"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_fprs objectAtIndex:i] forKey:@"fpr"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_algos objectAtIndex:i] forKey:@"algo"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_lens objectAtIndex:i] forKey:@"len"];
-        [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-            [sks_cre_dates objectAtIndex:i] forKey:@"created"];
+        if ([sks_secret_sts objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_secret_sts objectAtIndex:i] forKey:@"secret"];
+        if ([sks_invalid_sts objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_invalid_sts objectAtIndex:i] forKey:@"invalid"];
+        if ([sks_revoked_sts objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_revoked_sts objectAtIndex:i] forKey:@"revoked"];
+        if ([sks_expired_sts objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_expired_sts objectAtIndex:i] forKey:@"expired"];
+        if ([sks_disabled_sts objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_disabled_sts objectAtIndex:i] forKey:@"disabled"];
+        if ([subkeys objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [subkeys objectAtIndex:i] forKey:@"keyid"];
+        if ([sks_fprs objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_fprs objectAtIndex:i] forKey:@"fpr"];
+        if ([sks_algos objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_algos objectAtIndex:i] forKey:@"algo"];
+        if ([sks_lens objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_lens objectAtIndex:i] forKey:@"len"];
+        if ([sks_cre_dates objectAtIndex:i])
+            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
+                [sks_cre_dates objectAtIndex:i] forKey:@"created"];
     }
         
     return key_dict;
@@ -686,7 +705,7 @@
 {
     int				i = 0;
     unsigned long	aValue;
-    unsigned		maxCount = [self secondaryUserIDsCount];
+    unsigned		maxCount = [self subkeysCount];
     NSMutableArray	*attributes = [NSMutableArray array];
 
     for(i = 0; i <= maxCount; i++){
