@@ -25,12 +25,35 @@
 
 #import "GPGKey.h"
 #import "GPGPrettyInfo.h"
+#import "GPGInternals.h"
 #import <Foundation/Foundation.h>
 #import <gpgme.h>
 
 
 #define _key	((GpgmeKey)_internalRepresentation)
 
+
+NSString *GPGStringFromChars(const char * chars)
+{
+    // Normally, all string attributes should be UTF-8 encoded,
+    // But some keys have userIDs which have been registered
+    // using wrong string encoding, and cannot be decoded.
+    NSString	*result = [NSString stringWithUTF8String:chars];
+
+    // We consider that if we cannot decode string as UTF-8 encoded,
+    // then we use ISOLatin1 encoding.
+    if(result == nil){
+        NSData	*someData = [NSData dataWithBytes:chars length:strlen(chars) + 1];
+
+        result = [[NSString alloc] initWithData:someData encoding:NSISOLatin1StringEncoding];
+        if(result == nil)
+            result = @"###"; // Let's avoid returning nil - this should not happen
+        else
+            [result autorelease];
+    }
+
+    return result;
+}
 
 @implementation GPGKey
 /*"
@@ -189,7 +212,7 @@
     NSString	*aString;
 
     NSAssert(aBuffer != NULL, @"### Unable to make an XML description.");
-    aString = [NSString stringWithUTF8String:aBuffer];
+    aString = GPGStringFromChars(aBuffer);
     free(aBuffer);
     
     return aString;
@@ -443,19 +466,8 @@
 {
     const char	*aCString = gpgme_key_get_string_attr(_key, identifier, NULL, 0);
 
-    if(aCString != NULL)	{
-        //detects whether string is Latin-1 or UTF-8
-        char *s;
-        
-        for (s=aCString; *s && !(*s & 0x80); s++)
-            ;
-        if (*s && !strchr(aCString, 0xc3))	{
-            return [[[NSString alloc] initWithData: [NSData dataWithBytes: aCString length: strlen(aCString)]
-                                          encoding: NSISOLatin1StringEncoding] autorelease];
-        }
-        else
-            return [NSString stringWithUTF8String:aCString];    
-        }
+    if(aCString != NULL)
+        return GPGStringFromChars(aCString);
     else
         return nil;
 }
@@ -479,7 +491,7 @@
             else
                 break;
         else
-            [attributes addObject:[NSString stringWithUTF8String:aCString]];
+            [attributes addObject:GPGStringFromChars(aCString)];
     }while(maxCount == 0 || i <= maxCount);
 
     return attributes;
