@@ -26,7 +26,6 @@
 #import <Foundation/NSObject.h>
 #import <GPGME/GPGKey.h>
 
-@class GPGContext;
 
 /*"
  * The #GPGSignatureStatus type holds the result of a signature check,
@@ -101,8 +100,6 @@ typedef enum {
     void		*_internalRepresentation;
     unsigned	_index;
 }
-
-- (id) initWithContext:(GPGContext *)ctx index:(unsigned)index;
 
 - (NSString *) fingerprint;
 - (GPGKey *) key;
