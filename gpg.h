@@ -32,7 +32,7 @@
 
 @protocol GPGPassphraseCB
 
-    - (NSString)passphraseCB;
+    - (NSString *)passphraseCB;
 
 @end
 
@@ -44,18 +44,24 @@
 - initWithUsername:(NSString *)username;
 - initWithUsername:(NSString *)username passphraseCBTarget:(id)target;
 - (void)dealloc;
+
+// user management
 - (int)setUsername:(NSString *)username;
 - (void)setPassphraseCBTarget:(id)target;
-//- (NSString)clearSign:(NSString *)data;
-//- (NSString)encrypt:(NSString *)data withRecipients:(NSArray *)recps;
-//- (NSString)encryptAndSign:(NSString *)data withRecipients(NSArray *)recps;
-//- (NSString)decrypt:(NSString *)data;
+- (NSString *)getUserKeyAsXML;
+
+// commands on data
+//- (NSString *)clearSign:(NSString *)data;
+//- (NSString *)encrypt:(NSString *)data withRecipients:(NSArray *)recps;
+//- (NSString *)encryptAndSign:(NSString *)data withRecipients(NSArray *)recps;
+//- (NSString *)decrypt:(NSString *)data;
 //- (int)verify:(NSString *)data;
 //- (int)verify:(NSString *)data withSig:(NSString *)sig;
-//- (NSArray)listKeys:(NSString *)pattern;
-//- (NSArray)listSecretKeys:(NSString *)pattern;
-- (NSString *)returnUserKeyAsXML;
+
+// key management
+//- (NSArray *)listKeys:(NSString *)pattern;
+//- (NSArray *)listSecretKeys:(NSString *)pattern;
 
 //private functions
-//+ (const char *)passphraseCB;
++ (const char *)passphraseCB;
 @end

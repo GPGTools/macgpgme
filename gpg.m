@@ -83,19 +83,14 @@ id passphrase_callback_target;
     passphrase_callback_target = [target retain];
 }
 
-- (NSString *)returnUserKeyAsXML
+- (NSString *)getUserKeyAsXML
 {
     return [[NSString alloc] initWithCString:gpgme_key_get_as_xml(user_key)];
 }
 
-/*
-* still can't get this part working, here's the error
-* In function `+[GPG passphraseCB]':
-* invalid lvalue in unary `&'
-*
 + (const char *)passphraseCB
 {
     return [[passphrase_callback_target passphraseCB] cString];
 }
-*/
+
 @end
