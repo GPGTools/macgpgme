@@ -35,6 +35,9 @@
 /*"
  * You should never need to instantiate objects of that class. #GPGContext does
  * it for you.
+ *
+ * Two #GPGKey instances are considered equal if they have the same %fingerprint.
+ * #GPGKey instances are (currently) immutable.
 "*/
 
 - (void) dealloc
@@ -43,7 +46,36 @@
     
     [super dealloc];
 
-    gpgme_key_unref(cachedKey); // It will call gpgme_key_release() if necessary
+    gpgme_key_unref(cachedKey);
+}
+
+- (unsigned) hash
+/*"
+ * Returns hash value based on %fingerprint.
+"*/
+{
+    if([self fingerprint] != nil)
+        return [[self fingerprint] hash];
+    return [super hash];
+}
+
+- (BOOL) isEqual:(id)anObject
+/*"
+ * Returns YES if both the receiver and anObject have the same %fingerprint.
+"*/
+{
+    if(anObject != nil && [anObject isKindOfClass:[GPGKey class]] && [self fingerprint] != nil && [anObject fingerprint] != nil && [[anObject fingerprint] isEqualToString:[self fingerprint]])
+        return YES;
+    return NO;
+}
+
+- (id) copyWithZone:(NSZone *)zone
+/*"
+ * Returns the same instance, retained. #GPGKey instances are (currently) immutable.
+"*/
+{
+    // Implementation is useful to allow use of GPGKeys as keys in NSMutableDictionaries.
+    return [self retain];
 }
 
 - (NSString *) xmlDescription
@@ -101,12 +133,12 @@
 
 - (NSDictionary *) dictionaryRepresentation
 /*"
- * a word of warning:  if the user changes libgpgme.a out from under GPGME.framework
- * then this will not return the same as xmlDescription.
+ * A word of warning:  if the user changes libgpgme.a out from under GPGME.framework
+ * then this will not return the same as -xmlDescription.
  *
- * returns a dictionary that looks something like this:
- * 
- * {
+ * Returns a dictionary that looks something like this:
+ *
+ * !{{
  * algo = 17; 
  * created = 2000-07-13 08:35:05 -0400; 
  * disabled = 0; 
@@ -128,7 +160,6 @@
  *         keyid = 5745314F70E767A9; 
  *         len = 2048; 
  *         revoked = 0; 
- *         secret = 1; 
  *     }
  * ); 
  * userids = (
@@ -156,13 +187,13 @@
  *         raw = "Gordon Worley <redbird@rbisland.cx>"; 
  *         revoked = 0; 
  *     }
- * ); 
- * }
+ * );
+ * }}
 "*/
 {
     NSMutableDictionary *key_dict = [NSMutableDictionary dictionary];
     NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
-            *subkeys, *sks_secret_sts, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
+            *subkeys, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
                 *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
     int i;
     
@@ -208,7 +239,6 @@
     
     [key_dict setObject: [NSMutableArray array] forKey:@"subkeys"];
     subkeys = [self subkeysKeyIDs];  //keyids
-    sks_secret_sts = [self subkeysSecretnessStatuses];
     sks_invalid_sts = [self subkeysValidityStatuses];
     sks_revoked_sts = [self subkeysRevocationStatuses];
     sks_expired_sts = [self subkeysExpirationStatuses];
@@ -219,9 +249,6 @@
     sks_cre_dates = [self subkeysCreationDates];
     for (i = 0; i < [subkeys count]; i++)	{
         [[key_dict objectForKey:@"subkeys"] addObject: [NSMutableDictionary dictionary]];
-        if ([sks_secret_sts objectAtIndex:i])
-            [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
-                [sks_secret_sts objectAtIndex:i] forKey:@"secret"];
         if ([sks_invalid_sts objectAtIndex:i])
             [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
                 [sks_invalid_sts objectAtIndex:i] forKey:@"invalid"];
@@ -269,7 +296,8 @@
     // If maxCount == 0, we stop enumerating when we get a NULL value,
     // else we replace NULL values with empty strings, and continue
     // up to maxCount. This is a workaround for the missing functions
-    // gpgme_key_subkeys_count() and gpgme_key_userids_count()...
+    // gpgme_key_subkeys_count() and gpgme_key_userids_count().
+    // Werner is aware of this, and will provide such a function/attribute.
     int				i = 1;
     const char		*aCString;
     NSMutableArray	*attributes = [NSMutableArray array];
@@ -397,7 +425,7 @@
 - (NSArray *) subkeysCreationDates
 /*"
  * Returns an array of #NSCalendarDate instances. Array values can be
- * #{+[NSValue:valueWithPointer:nil]} when corresponding creation date is not
+ * #{+[NSValue valueWithPointer:nil]} when corresponding creation date is not
  * available or invalid.
 "*/
 {
@@ -470,6 +498,8 @@
  * Returns primary userID email, followed by other userIDs emails.
 "*/
 {
+#warning Seems there is a bug: email contains full name PLUS email
+    // Compare with -email...
     NSMutableArray	*result = [self subStringAttributesWithIdentifier:GPGME_ATTR_EMAIL maxCount:[self secondaryUserIDsCount]];
 
     [result insertObject:[self userID] atIndex:0];
@@ -692,31 +722,16 @@
 }
 
 - (BOOL) hasSecretPart
+/*"
+ * If a key has a secret part, than all subkeys are password-protected (i.e. have a secret part too),
+ * but password can be different for each subkey.
+ * A subkey cannot have a secret part if the key hasn't.
+"*/
 {
     unsigned long	result = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_IS_SECRET, NULL, 0);
 
     return (!!result);
 }
-
-- (NSArray *) subkeysSecretnessStatuses
-/*"
- * Returns an array of #NSNumber instances. First value is for primary userID.
-"*/
-{
-    int				i = 0;
-    unsigned long	aValue;
-    unsigned		maxCount = [self subkeysCount];
-    NSMutableArray	*attributes = [NSMutableArray array];
-
-    for(i = 0; i <= maxCount; i++){
-        aValue = gpgme_key_get_ulong_attr(_key, GPGME_ATTR_IS_SECRET, NULL, i);
-        [attributes addObject:[NSNumber numberWithBool:!!aValue]];
-    }
-
-    return attributes;
-}
-
-//#warning We miss a function to get hasSecretPart from subkeys...
 
 - (BOOL) canEncrypt
 /*"

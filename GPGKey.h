@@ -86,7 +86,7 @@ enum {
 };
 
 
-@interface GPGKey : GPGObject
+@interface GPGKey : GPGObject <NSCopying>
 {
 }
 
@@ -160,7 +160,6 @@ enum {
 - (NSArray *) userIDsValidityStatuses;
 
 - (BOOL) hasSecretPart;
-- (NSArray *) subkeysSecretnessStatuses;
 
 - (BOOL) canEncrypt;
 - (BOOL) mainKeyCanEncrypt;
