@@ -2,7 +2,7 @@
 //  GPGKey.h
 //  GPGME
 //
-//  Created by stephane@sente.ch on Tue Aug 14 2001.
+//  Created by davelopper@users.sourceforge.net on Tue Aug 14 2001.
 //
 //
 //  Copyright (C) 2001 Mac GPG Project.
@@ -20,8 +20,7 @@
 //  write to the Free Software Foundation, Inc., 59 Temple Place--Suite 330,
 //  Boston, MA 02111-1307, USA.
 //  
-//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx> or
-//  <stephane@sente.ch>.
+//  More info at <http://macgpg.sourceforge.net/> or <macgpg@rbisland.cx>
 //
 
 #import <GPGME/GPGObject.h>
@@ -34,8 +33,12 @@
 @class NSString;
 
 
-// Algorithm numerical values (taken from OpenPGP, RFC2440)
-// Public key algorithms
+/*"
+ * Algorithm numerical values (taken from OpenPGP, RFC2440)
+"*/
+/*"
+ * Public key algorithms
+"*/
 enum {
     GPG_RSAAlgorithm                = 1,  // Encrypt or Sign
     GPG_RSAEncryptOnlyAlgorithm     = 2,  // aka RSA-E
@@ -48,7 +51,9 @@ enum {
     GPG_DiffieHellmanAlgorithm      = 21  // Encrypt or Sign
 };
 
-// Symetric key algorithms
+/*"
+ * Symetric key algorithms
+"*/
 enum {
     GPG_NoAlgorithm          = 0,   // Unencrypted data
     GPG_IDEAAlgorithm        = 1,
@@ -66,7 +71,9 @@ enum {
     GPG_DummyAlgorithm       = 110  // No encryption at all
 };
 
-// Hash algorithms
+/*"
+ * Hash algorithms
+"*/
 enum {
     GPG_MD5HashAlgorithm            = 1,
     GPG_SHA_1HashAlgorithm          = 2,
@@ -78,54 +85,11 @@ enum {
 };
 
 
-// You should never need to instantiate objects of that class.
-// GPGContext does it for you.
-
-
 @interface GPGKey : GPGObject
 {
 }
 
 - (NSString *) xmlDescription;
-// Can return nil if it is unable to make an XML description, for some reason
-/*
-<GnupgKeyblock>
-  <mainkey>
-    <secret/>
-    <invalid/>
-    <revoked/>
-    <expired/>
-    <disabled/>
-    <keyid>aString</keyid>
-    <fpr>aString</fpr>
-    <algo>anUnsignedInt</algo>
-    <len>anUnsignedInt</len>
-    <created>aTime</created>
-    <expires>aTime</expires> (not yet implemented)
-  </mainkey>
-  <userid> (first userid is the primary one)
-    <invalid/>
-    <revoked/>
-    <raw>aString</raw>
-    <name>aString</name>
-    <email>aString</email>
-    <comment>aString</comment>
-  </userid>
-  ... (other userids)
-  <subkey>
-    <secret/>
-    <invalid/>
-    <revoked/>
-    <expired/>
-    <disabled/>
-    <keyid>aString</keyid>
-    <fpr>aString</fpr>
-    <algo>anUnsignedInt</algo>
-    <len>anUnsignedInt</len>
-    <created>aTime</created>
-  </subkey>
-</GnupgKeyblock>
- */
 //- (NSDictionary *) dictionaryRepresentation;
 // Uses the same keys as in XML representation, but places
 // subkeys in an array keyed by "subkeys", and userIDs
@@ -134,31 +98,19 @@ enum {
 // as NSCalendarDates
 
 - (NSString *) keyID;
-// Returns main key keyID
 - (NSArray *) subkeysKeyIDs;
-// Returns an array of NSString instances
 
 - (NSString *) fingerprint;
-// Returns main key fingerprint
 - (NSArray *) subkeysFingerprints;
-// Returns an array of NSString instances
 
 - (unsigned int) algorithm;
-// Returns main key algorithm
 - (NSArray *) subkeysAlgorithms;
-// Returns an array of NSNumber instances
 
 - (unsigned int) length;
-// Returns main key length
 - (NSArray *) subkeysLengths;
-// Returns an array of NSNumber instances
 
 - (NSCalendarDate *) creationDate;
-// Returns main key creation date
-// Returns nil when not available or invalid
 - (NSArray *) subkeysCreationDates;
-// Returns an array of NSCalendarDate instances
-// Array values can be +[NSValue:valueWithPointer:nil] when not available or invalid
 
 // Not yet implemented
 //- (NSCalendarDate *) expirationDate;
@@ -169,85 +121,52 @@ enum {
 //- (unsigned long) ownerTrust;
 
 - (NSString *) userID;
-// Returns primary userID
 - (NSArray *) userIDs;
-// Returns primary userID, followed by other userIDs
 
 - (NSString *) name;
-// Returns primary userID name
 - (NSArray *) names;
-// Returns primary userID name, followed by other userIDs names
 
 - (NSString *) email;
-// Returns primary userID email
 - (NSArray *) emails;
-// Returns primary userID email, followed by other userIDs emails
 
 - (NSString *) comment;
-// Returns primary userID comment
 - (NSArray *) comments;
-// Returns primary userID comment, followed by other userIDs comments
 
 - (GPGValidity) validity;
-// Returns primary userID validity
 - (NSArray *) validities;
-// Returns primary userID validity, followed by other userIDs validities
 
 //- (unsigned int) type; Not yet implemented
 
 - (BOOL) isKeyRevoked;
-// Returns whether main key has been revoked
 - (NSArray *) subkeysRevocationStatuses;
-// Returns an array of NSNumber instances
 
 - (BOOL) isKeyInvalid;
-// Returns whether main key is invalid (e.g. due to a missing self-signature)
 - (NSArray *) subkeysValidityStatuses;
-// Returns an array of NSNumber instances
 
 - (BOOL) hasKeyExpired;
-// Returns whether main key has expired
 - (NSArray *) subkeysExpirationStatuses;
-// Returns an array of NSNumber instances
 
 - (BOOL) isKeyDisabled;
-// Returns whether main key is disabled
 - (NSArray *) subkeysActivityStatuses;
-// Returns an array of NSNumber instances
 
 - (BOOL) isPrimaryUserIDRevoked;
-// Returns whether primary userID has been revoked
 - (NSArray *) userIDsRevocationStatuses;
-// Returns an array of NSNumber instances
-// First value is for primary userID
 
 - (BOOL) isPrimaryUserIDInvalid;
-// Returns whether primary userID is invalid
 - (NSArray *) userIDsValidityStatuses;
-// Returns an array of NSNumber instances
-// First value is for primary userID
 
 - (BOOL) hasSecretPart;
 
 - (BOOL) canEncrypt;
-// Returns global encryption capability of the key
 - (BOOL) mainKeyCanEncrypt;
-// Returns whether main key can be used for encyption
 - (NSArray *) subkeysEncryptionCapabilities;
-// Returns an array of NSNumber instances
 
 - (BOOL) canSign;
-// Returns global signature capability of the key
 - (BOOL) mainKeyCanSign;
-// Returns whether main key can be used for signing
 - (NSArray *) subkeysSigningCapabilities;
-// Returns an array of NSNumber instances
 
 - (BOOL) canCertify;
-// Returns global certification capability of the key
 - (BOOL) mainKeyCanCertify;
-// Returns whether main key can be used for certification
 - (NSArray *) subkeysCertificationCapabilities;
-// Returns an array of NSNumber instances
 
 @end
