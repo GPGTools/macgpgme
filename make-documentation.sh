@@ -6,9 +6,6 @@ AUTODOC_FLAGS="-copydocs -timestamp -allclasses"
 AUTODOC_FORMAT=html
 export AD_COPYRIGHT="Mac GPG Project"
 
-# If autodoc is not installed, we quit without any error
-test -x $AUTODOC || exit 0
-
 # Expects one argument, the install path
 if [ ! $# -eq 2 ] ; then \
     echo "Needs 2 args: action and path where to install documentation"
@@ -29,6 +26,12 @@ ALL_AUTODOC_FLAGS="$AUTODOC_FLAGS $OTHER_AUTODOC_FLAGS"
 
 if [ "$1" = "clean" ] ; then \
     rm -rf $PUBLIC_DOC_INSTALLDIR ; \
+    exit 0
+fi
+
+# If autodoc is not installed, we quit without any error
+if [ ! -x $AUTODOC ] ; then \
+    echo "$AUTODOC not found. Documentation can not been generated."
     exit 0
 fi
 
