@@ -71,6 +71,7 @@
 		};
 		0867D691FE84028FC02AAC07 = {
 			children = (
+				F56F791B012E3F8001000001,
 				0BD1790F012998187F000001,
 				08FB77AEFE84172EC02AAC07,
 				089C1665FE841158C02AAC07,
@@ -584,6 +585,29 @@
 			);
 			isa = PBXGroup;
 			name = "Other Frameworks";
+			refType = 4;
+		};
+//100
+//101
+//102
+//103
+//104
+//F50
+//F51
+//F52
+//F53
+//F54
+		F56F791B012E3F8001000001 = {
+			children = (
+				F56F791C012E3F8001000001,
+			);
+			isa = PBXGroup;
+			name = Documentation;
+			refType = 4;
+		};
+		F56F791C012E3F8001000001 = {
+			isa = PBXFileReference;
+			path = README;
 			refType = 4;
 		};
 	};
