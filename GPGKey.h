@@ -112,12 +112,13 @@ enum {
 - (NSCalendarDate *) creationDate;
 - (NSArray *) subkeysCreationDates;
 
-// Not yet implemented
+// not yet implimented in GPGME as of 0.2.2
+// don't work on them, there's no way to get this info
 //- (NSCalendarDate *) expirationDate;
-// Returns main key expiration date
-//- (NSArray *) subkeysCreationDates;
-// Returns an array of NSCalendarDate instances
+//- (NSArray *) subkeysExpirationDates;
 
+// not yet implimented in GPGME as of 0.2.2
+// don't work on them, there's no way to get this info
 //- (unsigned long) ownerTrust;
 
 - (NSString *) userID;
@@ -135,7 +136,9 @@ enum {
 - (GPGValidity) validity;
 - (NSArray *) validities;
 
-//- (unsigned int) type; Not yet implemented
+// not yet implimented in GPGME as of 0.2.2
+// don't work on them, there's no way to get this info
+//- (unsigned int) type;
 
 - (BOOL) isKeyRevoked;
 - (NSArray *) subkeysRevocationStatuses;
