@@ -220,6 +220,9 @@ static void progressCallback(void *object, const char *description, int type, in
  * example used for MIME (RFC2015) signatures; note that the updated
  * RFC 3156 mandates that the mail user agent does some preparations
  * so that %{text mode} is not needed anymore.
+ *
+ * This option is only relevant to the OpenPGP crypto engine,
+ * and ignored by all other engines.
  * 
  * Default value is NO.
 "*/
@@ -507,6 +510,35 @@ static void progressCallback(void *object, const char *description, int type, in
     return [[[GPGSignerKeyEnumerator alloc] initForContext:self] autorelease];
 }
 
+- (void) setCertificatesInclusion:(int)includedCertificatesNumber
+/*"
+ * Specifies how many certificates should be included in an S/MIME signed message.
+ * By default, only the sender's certificate is included.
+ * The possible values of includedCertificatesNumber are:
+ * _{GPGAllExceptRootCertificatesInclusion  Include all certificates except the root certificate.}
+ * _{GPGAllCertificatesInclusion            Include all certificates.}
+ * _{GPGNoCertificatesInclusion             Include no certificates.}
+ * _{GPGOnlySenderCertificateInclusion      Include the sender's certificate only.}
+ * _{n                                      Include the first n certificates of the certificates path,
+ *                                          starting from the sender's certificate. The number n must be positive.}
+ *
+ * Values of includedCertificatesNumber smaller than -2 are undefined.
+ *
+ * This option is only relevant to the CMS crypto engine,
+ * and ignored by all other engines.
+"*/
+{
+    gpgme_set_include_certs(_context, includedCertificatesNumber);
+}
+
+- (int) certificatesInclusion
+/*"
+ * Returns the number of certificates to include in an S/MIME message.
+"*/
+{
+    return gpgme_get_include_certs(_context);
+}
+
 @end
 
 
@@ -664,8 +696,13 @@ static void progressCallback(void *object, const char *description, int type, in
 "*/
 {
     GPGSignatureStatus	returnedStatus;
-    GpgmeError			anError = gpgme_op_verify(_context, [signedData gpgmeData], NULL, &returnedStatus);
+    GpgmeData			uninitializedData;
+    GpgmeError			anError;
 
+    anError = gpgme_data_new(&uninitializedData);
+    if(anError != GPGME_No_Error)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    anError = gpgme_op_verify(_context, [signedData gpgmeData], uninitializedData, &returnedStatus);
     if(anError != GPGME_No_Error)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 
@@ -784,6 +821,10 @@ static void progressCallback(void *object, const char *description, int type, in
  * The set of keys used to create a signatures is contained in the context,
  * and is applied to all following signing operations in the context
  * (until the set is changed).
+ *
+ * If an S/MIME signed message is created using the CMS crypto engine,
+ * the number of certificates to include in the message can be specified
+ * with #{-setIncludedCertificates:}.
  * 
  * Note that settings done by #{-setUsesArmor:} and #{-setUsesTextMode:} are ignored for
  * mode #GPGSignatureModeClear.
@@ -810,23 +851,28 @@ static void progressCallback(void *object, const char *description, int type, in
     return [[[GPGData alloc] initWithInternalRepresentation:outputData] autorelease];
 }
 
-- (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients
+- (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients allRecipientsAreValid:(BOOL *)allRecipientsAreValidPtr
 /*"
  * Encrypts the plaintext in inputData for the recipients and
  * returns the ciphertext. The type of the ciphertext created is determined
  * by the %{ASCII armor} and %{text mode} attributes set for the context.
+ *
+ * allRecipientsAreValidPtr returns whether all recipients were valid or not.
+ * In case some recipients were not valid, plaintext is encrypted only for
+ * valid recipients. More information about the invalid recipients is available
+ * with #{-statusAsXMLString}.
  *
  * One plaintext can be encrypted for several %recipients at the same time.
  * The list of %recipients is created independently of any context,
  * and then passed to the encryption operation.
  *
  * Can raise a #GPGException:
- * _{GPGErrorNoRecipients  recipients does not contain valid recipients.}
+ * _{GPGErrorNoRecipients  recipients does not contain any valid recipients.}
  * _{GPGErrorNoPassphrase  The passphrase for the secret key could not be retrieved.}
  * Others exceptions could be raised too.
 "*/
 {
-#warning BUG: does not raise any exception if no recipient is trusted! (but it encrypts nothing)
+#warning CHECK OLD BUG: does not raise any exception if no recipient is trusted! (but it encrypts nothing)
     GpgmeData	outputData;
     GpgmeError	anError;
 
@@ -835,10 +881,56 @@ static void progressCallback(void *object, const char *description, int type, in
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 
     anError = gpgme_op_encrypt(_context, [recipients gpgmeRecipients], [inputData gpgmeData], outputData);
-    if(anError != GPGME_No_Error){
+    if(anError != GPGME_No_Error && anError != GPGME_Invalid_Recipients){
         gpgme_data_release(outputData);
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
+    if(allRecipientsAreValidPtr != NULL)
+        *allRecipientsAreValidPtr = (anError != GPGME_Invalid_Recipients);
+
+    return [[[GPGData alloc] initWithInternalRepresentation:outputData] autorelease];
+}
+
+- (GPGData *) encryptedSignedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients allRecipientsAreValid:(BOOL *)allRecipientsAreValidPtr
+/*"
+ * Signs then encrypts the plaintext in inputData for the recipients and
+ * returns the ciphertext. The type of the ciphertext created is determined
+ * by the %{ASCII armor} and %{text mode} attributes set for the context.
+ * The signers are set using #{-addSignerKey:}.
+ *
+ * allRecipientsAreValidPtr returns whether all recipients were valid or not.
+ * In case some recipients were not valid, plaintext is encrypted only for
+ * valid recipients. More information about the invalid recipients is available
+ * with #{-statusAsXMLString}.
+ *
+ * One plaintext can be encrypted for several %recipients at the same time.
+ * The list of %recipients is created independently of any context,
+ * and then passed to the encryption operation.
+ *
+ * This combined encrypt and sign operation is currently only available
+ * for the OpenPGP crypto engine.
+ *
+ * Can raise a #GPGException:
+ * _{GPGErrorNoRecipients  recipients does not contain any valid recipients.}
+ * _{GPGErrorNoPassphrase  The passphrase for the secret key could not be retrieved.}
+ * Others exceptions could be raised too.
+"*/
+{
+#warning CHECK OLD BUG: does not raise any exception if no recipient is trusted! (but it encrypts nothing)
+    GpgmeData	outputData;
+    GpgmeError	anError;
+
+    anError = gpgme_data_new(&outputData);
+    if(anError != GPGME_No_Error)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+
+    anError = gpgme_op_encrypt_sign(_context, [recipients gpgmeRecipients], [inputData gpgmeData], outputData);
+    if(anError != GPGME_No_Error && anError != GPGME_Invalid_Recipients){
+        gpgme_data_release(outputData);
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+    }
+    if(allRecipientsAreValidPtr != NULL)
+        *allRecipientsAreValidPtr = (anError != GPGME_Invalid_Recipients);
 
     return [[[GPGData alloc] initWithInternalRepresentation:outputData] autorelease];
 }

@@ -88,6 +88,23 @@ typedef enum {
 
 
 /*"
+ * Certificates inclusion (S/MIME only):
+ * _{GPGAllExceptRootCertificatesInclusion  Include all certificates except the root certificate.}
+ * _{GPGAllCertificatesInclusion            Include all certificates.}
+ * _{GPGNoCertificatesInclusion             Include no certificates.}
+ * _{GPGOnlySenderCertificateInclusion      Include the sender's certificate only.}
+ * _{n                                      Include the first n certificates of the certificates path,
+ *                                          starting from the sender's certificate. The number n must be positive.}
+"*/
+typedef enum {
+    GPGAllExceptRootCertificatesInclusion = -2,
+    GPGAllCertificatesInclusion           = -1,
+    GPGNoCertificatesInclusion            = -0,
+    GPGOnlySenderCertificateInclusion     =  1
+}GPGCertificatesInclusion;
+
+
+/*"
  * Posted whenever GPGME thinks that it is idle and time can be better
  * spent elsewhere.
  * 
@@ -188,6 +205,13 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 // Does NOT retain key!
 // Can raise a GPGException
 - (NSEnumerator *) signerKeyEnumerator;
+
+/*"
+ * Including certificates (S/MIME only)
+"*/
+- (void) setCertificatesInclusion:(int)includedCertificatesNumber;
+- (int) certificatesInclusion;
+
 @end
 
 
@@ -227,7 +251,11 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
 /*"
  * Encrypt
 "*/
-- (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients;
+- (GPGData *) encryptedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients allRecipientsAreValid:(BOOL *)allRecipientsAreValidPtr;
+/*"
+ * Encrypt and Sign
+"*/
+- (GPGData *) encryptedSignedData:(GPGData *)inputData forRecipients:(GPGRecipients *)recipients allRecipientsAreValid:(BOOL *)allRecipientsAreValidPtr;
 /*"
  * Managing keyring
 "*/
