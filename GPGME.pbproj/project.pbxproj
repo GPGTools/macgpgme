@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 34;
+	objectVersion = 38;
 	objects = {
 		014CEA440018CDF011CA2923 = {
 			buildRules = (
@@ -20,6 +20,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEBUGGING_SYMBOLS = NO;
 				OPTIMIZATION_CFLAGS = "-O3";
 			};
 			isa = PBXBuildStyle;
@@ -124,16 +125,16 @@
 				F5330347012FC85C01000001,
 			);
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 6;
-				DYLIB_CURRENT_VERSION = 6;
+				DYLIB_COMPATIBILITY_VERSION = 7;
+				DYLIB_CURRENT_VERSION = 7;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 0.3.8;
+				FRAMEWORK_VERSION = 0.3.12;
 				HEADER_SEARCH_PATHS = /usr/local/include;
-				IMPLICITLY_INCLUDED_HEADERS = /usr/local/include/gpgme.h;
 				INSTALL_PATH = Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CFLAGS = "-DBUILDINGGPGME";
 				OTHER_LDFLAGS = "-seg1addr 0x18000000";
+				PREFIX_HEADER = /usr/local/include/gpgme.h;
 				PRODUCT_NAME = GPGME;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
@@ -147,8 +148,8 @@
 			productName = GPG;
 			productReference = 034768E0FF38A50411DB9C8B;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE plist SYSTEM \"file://localhost/System/Library/DTDs/PropertyList.dtd\">
-<plist version=\"0.9\">
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
@@ -165,11 +166,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.8</string>
+	<string>0.3.12</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.3.8</string>
+	<string>0.3.12</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
@@ -196,7 +197,7 @@
 				F55CD03D02D65F9C01C07EFC,
 			);
 			isa = PBXHeadersBuildPhase;
-			name = Headers;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0867D69EFE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
@@ -205,7 +206,7 @@
 				F55CD03A02D65F6201C07EFC,
 			);
 			isa = PBXResourcesBuildPhase;
-			name = "Bundle Resources";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0867D69FFE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
@@ -223,7 +224,7 @@
 				F55CD03E02D65F9C01C07EFC,
 			);
 			isa = PBXSourcesBuildPhase;
-			name = Sources;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0867D6A0FE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
@@ -232,14 +233,14 @@
 				0BD178F701298EEC7F000001,
 			);
 			isa = PBXFrameworksBuildPhase;
-			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0867D6A2FE84028FC02AAC07 = {
 			buildActionMask = 2147483647;
 			files = (
 			);
 			isa = PBXRezBuildPhase;
-			name = "ResourceManager Resources";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0867D6A5FE840307C02AAC07 = {
 			isa = PBXFrameworkReference;
@@ -639,9 +640,9 @@
 			generatedFileNames = (
 			);
 			isa = PBXShellScriptBuildPhase;
-			name = "Shell Script";
 			neededFileNames = (
 			);
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "sh make-documentation.sh \"$ACTION\" \"$SYMROOT/$PRODUCT_NAME.framework/Resources/English.lproj/Documentation\"\n";
 		};
@@ -714,8 +715,8 @@
 			productName = GPGTester;
 			productReference = F550BC3F0201F10201A80016;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE plist SYSTEM \"file://localhost/System/Library/DTDs/PropertyList.dtd\">
-<plist version=\"0.9\">
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
@@ -758,7 +759,7 @@
 				F550BC5A0201F2BC01A80016,
 			);
 			isa = PBXHeadersBuildPhase;
-			name = Headers;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F550BC430201F10201A80016 = {
 			buildActionMask = 2147483647;
@@ -772,7 +773,7 @@
 				F550BC610201F2BC01A80016,
 			);
 			isa = PBXResourcesBuildPhase;
-			name = "Bundle Resources";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F550BC440201F10201A80016 = {
 			buildActionMask = 2147483647;
@@ -781,7 +782,7 @@
 				F550BC690201F49101A80016,
 			);
 			isa = PBXSourcesBuildPhase;
-			name = Sources;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F550BC450201F10201A80016 = {
 			buildActionMask = 2147483647;
@@ -790,14 +791,14 @@
 				F53E87C40202065B01A80016,
 			);
 			isa = PBXFrameworksBuildPhase;
-			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F550BC460201F10201A80016 = {
 			buildActionMask = 2147483647;
 			files = (
 			);
 			isa = PBXRezBuildPhase;
-			name = "ResourceManager Resources";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F550BC470201F10201A80016 = {
 			buildRules = (
@@ -816,6 +817,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEBUGGING_SYMBOLS = NO;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				OPTIMIZATION_CFLAGS = "-O3";
 				SKIP_INSTALL = YES;
@@ -1027,7 +1029,7 @@
 				F550BC670201F37E01A80016,
 			);
 			isa = PBXCopyFilesBuildPhase;
-			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F550BC670201F37E01A80016 = {
 			fileRef = 034768E0FF38A50411DB9C8B;
