@@ -20,6 +20,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				OPTIMIZATION_CFLAGS = "-O3";
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -37,6 +38,7 @@
 		034768DFFF38A50411DB9C8B = {
 			children = (
 				034768E0FF38A50411DB9C8B,
+				F550BC3F0201F10201A80016,
 			);
 			isa = PBXGroup;
 			name = Products;
@@ -59,6 +61,8 @@
 //084
 		0867D690FE84028FC02AAC07 = {
 			buildStyles = (
+				F550BC470201F10201A80016,
+				F550BC480201F10201A80016,
 				014CEA440018CDF011CA2923,
 				014CEA450018CDF011CA2923,
 			);
@@ -68,10 +72,13 @@
 			projectDirPath = "";
 			targets = (
 				0867D69CFE84028FC02AAC07,
+				F550BC400201F10201A80016,
+				F550BC6A0201F88D01A80016,
 			);
 		};
 		0867D691FE84028FC02AAC07 = {
 			children = (
+				F550BC4A0201F2BB01A80016,
 				F56F791B012E3F8001000001,
 				0BD1790F012998187F000001,
 				08FB77AEFE84172EC02AAC07,
@@ -110,15 +117,15 @@
 			);
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 3;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 0.2.3;
+				FRAMEWORK_VERSION = 0.3.0;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				IMPLICITLY_INCLUDED_HEADERS = /usr/local/include/gpgme.h;
 				INSTALL_PATH = Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CFLAGS = "-DBUILDINGGPGME";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-seg1addr 0x18000000";
 				PRODUCT_NAME = GPGME;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
@@ -150,11 +157,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2.3</string>
+	<string>0.3.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.2.3</string>
+	<string>0.3.0</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
@@ -610,11 +617,419 @@
 			neededFileNames = (
 			);
 			shellPath = /bin/sh;
-			shellScript = "MKDIRS=\"mkdir -p\"\nAUTODOC=/usr/local/bin/autodoc\nAUTODOC_FLAGS=\"-copydocs -timestamp -allclasses\"\nAUTODOC_FORMAT=html\nAUTODOC_LANGUAGE=English\nexport AD_COPYRIGHT=\"Mac GPG Project\"\n\n# If autodoc is not installed, we quit without any error\ntest -x $AUTODOC || exit 0\n\nPUBLIC_DOC_INSTALLDIR=\"$SYMROOT/$PRODUCT_NAME.framework/Resources/$AUTODOC_LANGUAGE.lproj/Documentation\"\n\n# We need to write down file names here\nAUTODOC_FILES=\"GPGContext.h GPGData.h GPGEngine.h GPGExceptions.h GPGKey.h GPGObject.h GPGRecipients.h GPGTrustItem.h\"\nAUTODOC_DOCDIR=\"$PUBLIC_DOC_INSTALLDIR\"\n\nOTHER_AUTODOC_FLAGS=\"-typedirs -allclasses -combine -force -nosingles\"\n\nALL_AUTODOC_FLAGS=\"$AUTODOC_FLAGS $OTHER_AUTODOC_FLAGS\"\n\n$MKDIRS $PUBLIC_DOC_INSTALLDIR\n$AUTODOC $ALL_AUTODOC_FLAGS -format $AUTODOC_FORMAT -dest $AUTODOC_DOCDIR $AUTODOC_FILES\n";
+			shellScript = "sh make-documentation.sh $SYMROOT/$PRODUCT_NAME.framework/Resources/English.lproj/Documentation\n";
+		};
+		F53E87C40202065B01A80016 = {
+			fileRef = 1058C7B1FEA5585E11CA2CBB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F53E87DC0202125E01A80016 = {
+			isa = PBXFileReference;
+			path = IntroGPGME.html;
+			refType = 4;
+		};
+		F550BC3F0201F10201A80016 = {
+			isa = PBXApplicationReference;
+			path = GPGTester.app;
+			refType = 3;
+		};
+		F550BC400201F10201A80016 = {
+			buildPhases = (
+				F550BC420201F10201A80016,
+				F550BC430201F10201A80016,
+				F550BC440201F10201A80016,
+				F550BC450201F10201A80016,
+				F550BC460201F10201A80016,
+				F550BC660201F37E01A80016,
+			);
+			buildSettings = {
+				INSTALL_PATH = "$(USER_APPS_DIR)";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = GPGTester;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+				WRAPPER_EXTENSION = app;
+			};
+			dependencies = (
+				F550BC410201F10201A80016,
+			);
+			isa = PBXApplicationTarget;
+			name = GPGTester;
+			productInstallPath = "$(USER_APPS_DIR)";
+			productName = GPGTester;
+			productReference = F550BC3F0201F10201A80016;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist SYSTEM \"file://localhost/System/Library/DTDs/PropertyList.dtd\">
+<plist version=\"0.9\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>GPGTester</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundleIdentifier</key>
+	<string>net.sourceforge.macgpg.gpgtester</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>0.1</string>
+	<key>NSMainNibFile</key>
+	<string>GPGTester.nib</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>
+";
+			shouldUseHeadermap = 0;
+		};
+		F550BC410201F10201A80016 = {
+			isa = PBXTargetDependency;
+			target = 0867D69CFE84028FC02AAC07;
+		};
+		F550BC420201F10201A80016 = {
+			buildActionMask = 2147483647;
+			files = (
+				F550BC5A0201F2BC01A80016,
+			);
+			isa = PBXHeadersBuildPhase;
+			name = Headers;
+		};
+		F550BC430201F10201A80016 = {
+			buildActionMask = 2147483647;
+			files = (
+				F550BC5B0201F2BC01A80016,
+				F550BC5C0201F2BC01A80016,
+				F550BC5D0201F2BC01A80016,
+				F550BC5E0201F2BC01A80016,
+				F550BC5F0201F2BC01A80016,
+				F550BC600201F2BC01A80016,
+				F550BC610201F2BC01A80016,
+			);
+			isa = PBXResourcesBuildPhase;
+			name = "Bundle Resources";
+		};
+		F550BC440201F10201A80016 = {
+			buildActionMask = 2147483647;
+			files = (
+				F550BC620201F2BC01A80016,
+				F550BC690201F49101A80016,
+			);
+			isa = PBXSourcesBuildPhase;
+			name = Sources;
+		};
+		F550BC450201F10201A80016 = {
+			buildActionMask = 2147483647;
+			files = (
+				F550BC650201F34F01A80016,
+				F53E87C40202065B01A80016,
+			);
+			isa = PBXFrameworksBuildPhase;
+			name = "Frameworks & Libraries";
+		};
+		F550BC460201F10201A80016 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXRezBuildPhase;
+			name = "ResourceManager Resources";
+		};
+		F550BC470201F10201A80016 = {
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				OPTIMIZATION_CFLAGS = "-O0";
+				SKIP_INSTALL = YES;
+			};
+			isa = PBXBuildStyle;
+			name = EmbDevelopment;
+		};
+		F550BC480201F10201A80016 = {
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				OPTIMIZATION_CFLAGS = "-O3";
+				SKIP_INSTALL = YES;
+			};
+			isa = PBXBuildStyle;
+			name = EmbDeployment;
+		};
+		F550BC4A0201F2BB01A80016 = {
+			children = (
+				F550BC630201F30B01A80016,
+				F550BC4B0201F2BB01A80016,
+				F550BC4C0201F2BB01A80016,
+				F550BC4F0201F2BB01A80016,
+			);
+			isa = PBXGroup;
+			name = GPGTester;
+			refType = 4;
+		};
+		F550BC4B0201F2BB01A80016 = {
+			children = (
+				F550BC680201F49001A80016,
+			);
+			isa = PBXGroup;
+			name = "Other Sources";
+			refType = 4;
+		};
+		F550BC4C0201F2BB01A80016 = {
+			children = (
+				F550BC4D0201F2BB01A80016,
+				F550BC4E0201F2BB01A80016,
+			);
+			isa = PBXGroup;
+			name = Classes;
+			refType = 4;
+		};
+		F550BC4D0201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = Controller.h;
+			path = GPGTester/Controller.h;
+			refType = 4;
+		};
+		F550BC4E0201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = Controller.m;
+			path = GPGTester/Controller.m;
+			refType = 4;
+		};
+		F550BC4F0201F2BB01A80016 = {
+			children = (
+				F550BC500201F2BB01A80016,
+				F550BC510201F2BB01A80016,
+				F550BC520201F2BB01A80016,
+				F550BC530201F2BB01A80016,
+				F550BC540201F2BB01A80016,
+				F550BC550201F2BB01A80016,
+				F550BC580201F2BB01A80016,
+			);
+			isa = PBXGroup;
+			name = Resources;
+			path = "";
+			refType = 4;
+		};
+		F550BC500201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = CheckMark.tiff;
+			path = GPGTester/CheckMark.tiff;
+			refType = 4;
+		};
+		F550BC510201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = idle1.tiff;
+			path = GPGTester/idle1.tiff;
+			refType = 4;
+		};
+		F550BC520201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = idle2.tiff;
+			path = GPGTester/idle2.tiff;
+			refType = 4;
+		};
+		F550BC530201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = idle3.tiff;
+			path = GPGTester/idle3.tiff;
+			refType = 4;
+		};
+		F550BC540201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = idle4.tiff;
+			path = GPGTester/idle4.tiff;
+			refType = 4;
+		};
+		F550BC550201F2BB01A80016 = {
+			children = (
+				F550BC560201F2BB01A80016,
+				F550BC570201F2BB01A80016,
+			);
+			isa = PBXVariantGroup;
+			name = GPGTester.nib;
+			path = "";
+			refType = 4;
+		};
+		F550BC560201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = "English - macos";
+			path = "GPGTester/English.lproj/GPGTester-macos.nib";
+			refType = 4;
+		};
+		F550BC570201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = English;
+			path = GPGTester/English.lproj/GPGTester.nib;
+			refType = 4;
+		};
+		F550BC580201F2BB01A80016 = {
+			children = (
+				F550BC590201F2BB01A80016,
+			);
+			isa = PBXVariantGroup;
+			name = InfoPlist.strings;
+			path = "";
+			refType = 4;
+		};
+		F550BC590201F2BB01A80016 = {
+			isa = PBXFileReference;
+			name = English;
+			path = GPGTester/English.lproj/InfoPlist.strings;
+			refType = 4;
+		};
+		F550BC5A0201F2BC01A80016 = {
+			fileRef = F550BC4D0201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC5B0201F2BC01A80016 = {
+			fileRef = F550BC500201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC5C0201F2BC01A80016 = {
+			fileRef = F550BC510201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC5D0201F2BC01A80016 = {
+			fileRef = F550BC520201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC5E0201F2BC01A80016 = {
+			fileRef = F550BC530201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC5F0201F2BC01A80016 = {
+			fileRef = F550BC540201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC600201F2BC01A80016 = {
+			fileRef = F550BC550201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC610201F2BC01A80016 = {
+			fileRef = F550BC580201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC620201F2BC01A80016 = {
+			fileRef = F550BC4E0201F2BB01A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC630201F30B01A80016 = {
+			children = (
+				F550BC640201F30B01A80016,
+			);
+			isa = PBXGroup;
+			name = Documentation;
+			refType = 4;
+		};
+		F550BC640201F30B01A80016 = {
+			isa = PBXFileReference;
+			name = NOTES;
+			path = GPGTester/NOTES;
+			refType = 4;
+		};
+		F550BC650201F34F01A80016 = {
+			fileRef = 034768E0FF38A50411DB9C8B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC660201F37E01A80016 = {
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F550BC670201F37E01A80016,
+			);
+			isa = PBXCopyFilesBuildPhase;
+			name = "Copy Files";
+		};
+		F550BC670201F37E01A80016 = {
+			fileRef = 034768E0FF38A50411DB9C8B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC680201F49001A80016 = {
+			isa = PBXFileReference;
+			name = GPGTester_main.m;
+			path = GPGTester/GPGTester_main.m;
+			refType = 4;
+		};
+		F550BC690201F49101A80016 = {
+			fileRef = F550BC680201F49001A80016;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F550BC6A0201F88D01A80016 = {
+			buildArgumentsString = "make-documentation.sh \"$ACTION\" \"$DOC_PATH\"";
+			buildPhases = (
+			);
+			buildSettings = {
+				DOC_PATH = /Library/Documentation/GPGME;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "GPGME Documentation";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+			};
+			buildToolPath = /bin/sh;
+			dependencies = (
+			);
+			isa = PBXLegacyTarget;
+			name = "GPGME Documentation";
+			productName = "GPGME Documentation";
+			settingsToExpand = 6;
+			settingsToPassInEnvironment = 25;
+			settingsToPassOnCommandLine = 280;
+			shouldUseHeadermap = 0;
+		};
+		F550BC6B0201F8D201A80016 = {
+			isa = PBXFileReference;
+			path = "make-documentation.sh";
+			refType = 4;
 		};
 		F56F791B012E3F8001000001 = {
 			children = (
+				F550BC6B0201F8D201A80016,
 				F56F791C012E3F8001000001,
+				F53E87DC0202125E01A80016,
 			);
 			isa = PBXGroup;
 			name = Documentation;
