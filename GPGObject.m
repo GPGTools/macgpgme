@@ -30,9 +30,9 @@
 @implementation GPGObject
 
 /*"
- This abstract class takes care of uniquing instances
- against %gpgme internal structures. It is the base class for
- all classes wrapping %gpgme structures.
+ * This abstract class takes care of uniquing instances
+ * against %gpgme internal structures. It is the base class for
+ * all classes wrapping %gpgme structures.
 "*/
 
 static NSMapTable	*mapTable = NULL;
@@ -49,11 +49,11 @@ static NSLock		*mapTableLock = nil;
 
 - (id) initWithInternalRepresentation:(void *)aPtr
 /*"
- Default initializer.
-
- All subclasses must call this method.
- Can return another object than the one which received the message!
- In this case the original object is released.
+ * Default initializer.
+ *
+ * All subclasses must call this method.
+ * Can return another object than the one which received the message!
+ * In this case the original object is released.
 "*/
 {
     NSParameterAssert(aPtr != NULL);
@@ -78,9 +78,9 @@ static NSLock		*mapTableLock = nil;
 
 - (void) dealloc
 /*"
-#WARNING: %_internalRepresentation pointer MUST still be valid when
-#{-[GPGObject dealloc]} method is called!!!
- "*/
+ * #WARNING: %_internalRepresentation pointer MUST still be valid when
+ * #{-[GPGObject dealloc]} method is called!!!
+"*/
 {
     if(_internalRepresentation != NULL){
         [mapTableLock lock];
