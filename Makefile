@@ -11,17 +11,20 @@ NAME = GPGME
 
 PROJECTVERSION = 2.8
 PROJECT_TYPE = Framework
+English_RESOURCES = Localizable.strings
+
+LANGUAGES = English
 
 GLOBAL_RESOURCES = IntroGPGME.html
 
 CLASSES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
-          GPGObject.m GPGRecipients.m GPGTrustItem.m GPGPrettyInfo.m\
-		  LocalizableStrings.m
+          GPGObject.m GPGPrettyInfo.m GPGRecipients.m GPGTrustItem.m\
+          LocalizableStrings.m
 
 HFILES = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
          GPGExceptions.h GPGInternals.h GPGKey.h GPGME.h GPGObject.h\
-         GPGRecipients.h GPGTrustItem.h GPGPrettyInfo.h\
-		 LocalizableStrings.h
+         GPGPrettyInfo.h GPGRecipients.h GPGTrustItem.h\
+         LocalizableStrings.h
 
 OTHERSRCS = h.template m.template Makefile Makefile.postamble\
             Makefile.preamble README
@@ -44,7 +47,7 @@ LIBRARY_PATHS = -L/usr/local/lib
 FRAMEWORKS = -framework Foundation
 PUBLIC_HEADERS = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
                  GPGExceptions.h GPGKey.h GPGObject.h GPGRecipients.h\
-                 GPGTrustItem.h GPGPrettyInfo.h GPGME.h
+                 GPGTrustItem.h GPGME.h
 
 
 

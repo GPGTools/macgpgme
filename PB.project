@@ -2,6 +2,7 @@
     CURRENTLY_ACTIVE_VERSION = YES; 
     DEPLOY_WITH_VERSION_NAME = 0.3.4; 
     DYNAMIC_CODE_GEN = YES; 
+    English_RESOURCES = {}; 
     FILESTABLE = {
         CLASSES = (
             GPGContext.m, 
@@ -10,10 +11,13 @@
             GPGExceptions.m, 
             GPGKey.m, 
             GPGObject.m, 
+            GPGPrettyInfo.m, 
             GPGRecipients.m, 
-            GPGTrustItem.m
+            GPGTrustItem.m, 
+            LocalizableStrings.m
         ); 
         DOCUMENTATION = (IntroGPGME.html); 
+        English_OTHER_RESOURCES = (Localizable.strings); 
         FRAMEWORKS = (Foundation.framework); 
         HEADERSEARCH = (/usr/local/include); 
         H_FILES = (
@@ -26,11 +30,14 @@
             GPGKey.h, 
             GPGME.h, 
             GPGObject.h, 
+            GPGPrettyInfo.h, 
             GPGRecipients.h, 
-            GPGTrustItem.h
+            GPGTrustItem.h, 
+            LocalizableStrings.h
         ); 
         LIBRARYSEARCH = (/usr/local/lib); 
         OTHER_LIBS = (gpgme); 
+        OTHER_RESOURCES = (); 
         OTHER_SOURCES = (
             h.template, 
             m.template, 
