@@ -2,6 +2,9 @@
 //  gpg.h
 //  GPGME
 //
+//  Provides super easy to use interface to GPGContext.  Good for those who
+//  just want GnuPG access to do basic things.
+//
 //  Created by redbird on Thu Aug 02 2001.
 //
 //
@@ -25,10 +28,22 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "gpgcontext.h"
 
 @interface GPG : NSObject {
-
+    NSString *user_key;
+    GPGContext *context;
 }
+- init;
+- initWithUsername:(NSString *)username withPassphrase:(NSMutableString *)passphrase;
+- (void)dealloc;
+- (void)setUsername:(NSString *)username;
+- (void)setPassphrase:(NSMutableString *)passphrase;
+//- (NSString)clearSign:(NSString *)data;
+//- (NSString)encrypt:(NSString *)data withRecipients:(NSArray *)recp;
+//- (NSString)encryptAndSign:(NSString *)data withRecipients(NSArray *)recp;
+//- (NSString)decrypt:(NSString *)data;
+//- (int)verify:(NSString *)data withSig:(NSString *)sig;
+//- (NSArray)listKeys:(NSString *)pattern;
 
 @end

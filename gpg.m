@@ -25,9 +25,36 @@
 //
 
 #import "gpg.h"
-#import "gpgcontext.h"
-
+#import "gpgme.h"
 
 @implementation GPG
+- init
+{
+    context = [[GPGContext alloc] init];
+}
 
+- initWithUsername:(NSString *)username withPassphrase:(NSMutableString *)passphrase
+{
+    [self init];
+    [self setUsername:(NSString *)username];
+    [self setPassphrase:(NSMutableString *)passphrase];
+}
+
+- (void)dealloc
+{
+    [context release];
+    [user_key release];
+    [super dealloc];
+}
+
+- (void)setUsername:(NSString *)username
+{
+    
+}
+
+- (void)setPassphrase:(NSMutableString *)passphrase
+//Clears passphrase at end to prevent it being read
+{
+    [passphrase setString:nil];
+}
 @end
