@@ -125,7 +125,7 @@
 
 - (int) type
 {
-#warning What is the <type> attribute??? Ask Werner
+    // What is the <type> attribute??? Asked to Werner: "do not use GpgmeTrustItem yet"
     return gpgme_trust_item_get_int_attr(_trustItem, GPGME_ATTR_TYPE, NULL, 0);
 }
 
