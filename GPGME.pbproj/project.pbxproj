@@ -1163,18 +1163,21 @@
 			refType = 4;
 		};
 		F5A699FE0306A54D01000104 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = French;
 			path = French.lproj/Localizable.strings;
 			refType = 4;
 		};
 		F5A699FF0306A54D01000104 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = German;
 			path = German.lproj/Localizable.strings;
 			refType = 4;
 		};
 		F5A69A000306A54D01000104 = {
+			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = Swedish;
 			path = Swedish.lproj/Localizable.strings;
