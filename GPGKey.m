@@ -100,33 +100,89 @@
 }
 
 - (NSDictionary *) dictionaryRepresentation
+/*"
+ * returns a dictionary that looks something like this:
+ * 
+ * {
+ * algo = 17; 
+ * created = 2000-07-13 08:35:05 -0400; 
+ * disabled = 0; 
+ * expired = 0; 
+ * fpr = C462FA84B8113501901020D26EF377F7BBD3B003; 
+ * invalid = 0; 
+ * keyid = 6EF377F7BBD3B003; 
+ * len = 1024; 
+ * revoked = 0; 
+ * secret = 1; 
+ * subkeys = (
+ * 		{
+ *         algo = 16; 
+ *         created = 2000-07-13 08:35:06 -0400; 
+ *         disabled = 0; 
+ *         expired = 0; 
+ *         fpr = ""; 
+ *         invalid = 0; 
+ *         keyid = 5745314F70E767A9; 
+ *         len = 2048; 
+ *         revoked = 0; 
+ *         secret = 1; 
+ *     }
+ * ); 
+ * userids = (
+ *     {
+ *         comment = "Gordon Worley <redbird@mac.com>"; 
+ *         email = "Gordon Worley <redbird@mac.com>"; 
+ *         invalid = 0; 
+ *         name = "Gordon Worley <redbird@mac.com>"; 
+ *         raw = "Gordon Worley <redbird@mac.com>"; 
+ *         revoked = 0; 
+ *     }, 
+ *     {
+ *         comment = ""; 
+ *         email = ""; 
+ *         invalid = 0; 
+ *         name = "[image of size 2493]"; 
+ *         raw = "[image of size 2493]"; 
+ *         revoked = 0; 
+ *     }, 
+ *     {
+ *         comment = ""; 
+ *         email = "redbird@rbisland.cx"; 
+ *         invalid = 0; 
+ *         name = "Gordon Worley"; 
+ *         raw = "Gordon Worley <redbird@rbisland.cx>"; 
+ *         revoked = 0; 
+ *     }
+ * ); 
+ * }
+"*/
 {
-    NSMutableDictionary *key_dict = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *key_dict = [NSMutableDictionary dictionary];
     NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
             *subkeys, *sks_secret_sts, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
                 *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates;
     int i;
     
-    [key_dict setObject: [[NSNumber alloc] initWithInt:[self hasSecretPart]] forKey:@"secret"];
-    [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyInvalid]] forKey:@"invalid"];
-    [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyRevoked]] forKey:@"revoked"];
-    [key_dict setObject: [[NSNumber alloc] initWithInt:[self hasKeyExpired]] forKey:@"expired"];
-    [key_dict setObject: [[NSNumber alloc] initWithInt:[self isKeyDisabled]] forKey:@"disabled"];
+    [key_dict setObject: [NSNumber numberWithInt:[self hasSecretPart]] forKey:@"secret"];
+    [key_dict setObject: [NSNumber numberWithInt:[self isKeyInvalid]] forKey:@"invalid"];
+    [key_dict setObject: [NSNumber numberWithInt:[self isKeyRevoked]] forKey:@"revoked"];
+    [key_dict setObject: [NSNumber numberWithInt:[self hasKeyExpired]] forKey:@"expired"];
+    [key_dict setObject: [NSNumber numberWithInt:[self isKeyDisabled]] forKey:@"disabled"];
     [key_dict setObject: [self keyID] forKey: @"keyid"];
     [key_dict setObject: [self fingerprint] forKey:@"fpr"];
-    [key_dict setObject: [[NSNumber alloc] initWithInt:[self algorithm]] forKey:@"algo"];
-    [key_dict setObject: [[NSNumber alloc] initWithInt:[self length]] forKey:@"len"];
+    [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
+    [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
     [key_dict setObject: [self creationDate] forKey:@"created"];
     //expired date not yet implimented in GPGME 0.2.2; bug Werner about it ;-)
-    [key_dict setObject: [[NSMutableArray alloc] init] forKey:@"userids"];
-    uids = [[NSArray alloc] initWithArray: [self userIDs]];
-    uids_invalid_sts = [[NSArray alloc] initWithArray: [self userIDsValidityStatuses]];
-    uids_revoked_sts = [[NSArray alloc] initWithArray: [self userIDsRevocationStatuses]];
-    uids_names = [[NSArray alloc] initWithArray: [self names]];
-    uids_emails = [[NSArray alloc] initWithArray: [self emails]];
-    uids_comments = [[NSArray alloc] initWithArray: [self comments]];
+    [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
+    uids = [NSArray arrayWithArray: [self userIDs]];
+    uids_invalid_sts = [NSArray arrayWithArray: [self userIDsValidityStatuses]];
+    uids_revoked_sts = [NSArray arrayWithArray: [self userIDsRevocationStatuses]];
+    uids_names = [NSArray arrayWithArray: [self names]];
+    uids_emails = [NSArray arrayWithArray: [self emails]];
+    uids_comments = [NSArray arrayWithArray: [self comments]];
     for (i = 0; i < [uids count]; i++)	{
-        [[key_dict objectForKey:@"userids"] addObject: [[NSMutableDictionary alloc] init]];
+        [[key_dict objectForKey:@"userids"] addObject: [NSMutableDictionary dictionary]];
         [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
             [uids_invalid_sts objectAtIndex:i] forKey:@"invalid"];
         [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
@@ -141,19 +197,19 @@
             [uids_comments objectAtIndex:i] forKey:@"comment"];
     }
     
-    [key_dict setObject: [[NSMutableArray alloc] init] forKey:@"subkeys"];
-    subkeys = [[NSArray alloc] initWithArray: [self subkeysKeyIDs]];  //keyids
-    sks_secret_sts = [[NSArray alloc] initWithArray: [self subkeysSecretnessStatuses]];
-    sks_invalid_sts = [[NSArray alloc] initWithArray: [self subkeysValidityStatuses]];
-    sks_revoked_sts = [[NSArray alloc] initWithArray: [self subkeysRevocationStatuses]];
-    sks_expired_sts = [[NSArray alloc] initWithArray: [self subkeysExpirationStatuses]];
-    sks_disabled_sts = [[NSArray alloc] initWithArray: [self subkeysActivityStatuses]];
-    sks_fprs = [[NSArray alloc] initWithArray: [self subkeysFingerprints]];
-    sks_algos = [[NSArray alloc] initWithArray: [self subkeysAlgorithms]];
-    sks_lens = [[NSArray alloc] initWithArray: [self subkeysLengths]];
-    sks_cre_dates = [[NSArray alloc] initWithArray: [self subkeysCreationDates]];
+    [key_dict setObject: [NSMutableArray array] forKey:@"subkeys"];
+    subkeys = [NSArray arrayWithArray: [self subkeysKeyIDs]];  //keyids
+    sks_secret_sts = [NSArray arrayWithArray: [self subkeysSecretnessStatuses]];
+    sks_invalid_sts = [NSArray arrayWithArray: [self subkeysValidityStatuses]];
+    sks_revoked_sts = [NSArray arrayWithArray: [self subkeysRevocationStatuses]];
+    sks_expired_sts = [NSArray arrayWithArray: [self subkeysExpirationStatuses]];
+    sks_disabled_sts = [NSArray arrayWithArray: [self subkeysActivityStatuses]];
+    sks_fprs = [NSArray arrayWithArray: [self subkeysFingerprints]];
+    sks_algos = [NSArray arrayWithArray: [self subkeysAlgorithms]];
+    sks_lens = [NSArray arrayWithArray: [self subkeysLengths]];
+    sks_cre_dates = [NSArray arrayWithArray: [self subkeysCreationDates]];
     for (i = 0; i < [subkeys count]; i++)	{
-        [[key_dict objectForKey:@"subkeys"] addObject: [[NSMutableDictionary alloc] init]];
+        [[key_dict objectForKey:@"subkeys"] addObject: [NSMutableDictionary dictionary]];
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
             [sks_secret_sts objectAtIndex:i] forKey:@"secret"];
         [[[key_dict objectForKey:@"subkeys"] objectAtIndex:i] setObject:
