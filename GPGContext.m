@@ -317,24 +317,6 @@ static void idleFunction()
         return nil;
 }
 
-- (NSDictionary *) status
-{
-    char			*aCString = gpgme_get_op_info(_context, 0);
-    NSDictionary	*aDictionary = nil;
-
-    if(aCString != NULL){
-        aDictionary = [[GPGXMLParser parsedDictionaryFromCString:aCString] objectForKey:@"GnupgOperationInfo"];
-#warning Replace elements
-        // signature -> signatures (array)
-        // algo -> NSNumber
-        // hashalgo -> NSNumber
-        // created -> NSCalendarDate
-        free(aCString);
-    }
-
-    return aDictionary;
-}
-
 static const char *passphraseCallback(void *object, const char *description, void *r_hd)
 {
     NSString	*aDescription;
