@@ -48,3 +48,8 @@
 @interface GPGRecipients(GPGInternals)
 - (GpgmeRecipients) gpgmeRecipients;
 @end
+
+
+@interface GPGSignature(GPGInternals)
+- (id) initWithGpgmeContext:(GpgmeCtx)ctx index:(unsigned)index;
+@end
