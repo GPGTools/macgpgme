@@ -128,12 +128,12 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
  * dataSource must respond to selector #{data:readLength:}. dataSource is not
  * retained. Data can only be read.
  *
- * Can raise a #GPGException; in this case, a #release is sent to self
+ * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
 {
     GpgmeError	anError;
-    
-    NSParameterAssert([dataSource respondsToSelector:@selector(data:readLength:)]);
+
+    NSParameterAssert(dataSource != nil && [dataSource respondsToSelector:@selector(data:readLength:)]);
 
     anError = gpgme_data_new_with_read_cb(_dataPtr, readCallback, self);
 
@@ -168,7 +168,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (id) initWithContentsOfFileNoCopy:(NSString *)filename
-// Not yet supported as of 0.2.2
+// Not yet supported as of 0.2.3
 // Can raise a GPGException; in this case, a release is sent to self
 {
     GpgmeError	anError = gpgme_data_new_from_file(_dataPtr, [filename fileSystemRepresentation], 0);
@@ -253,8 +253,8 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 
 - (void) rewind
 /*"
- * Prepares data in a way that the next call to #{-readDataOfLength:} does start at
- * the beginning of the data.
+ * Prepares data in a way that the next call to #{-readDataOfLength:} starts at
+ * the beginning of the data. This has to be done for all types of GPGData objects.
  *
  * Can raise a #GPGException.
 "*/
