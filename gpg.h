@@ -28,7 +28,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "gpgcontext.h"
 #import "gpgme.h"
 
 @protocol GPGPassphraseCB
@@ -39,7 +38,7 @@
 
 @interface GPG : NSObject {
     GpgmeKey user_key;
-    GPGContext *context;
+    GpgmeCtx context;
 }
 - init;
 - initWithUsername:(NSString *)username;
@@ -54,6 +53,8 @@
 //- (int)verify:(NSString *)data;
 //- (int)verify:(NSString *)data withSig:(NSString *)sig;
 //- (NSArray)listKeys:(NSString *)pattern;
+//- (NSArray)listSecretKeys:(NSString *)pattern;
+- (NSString *)returnUserKeyAsXML;
 
 //private functions
 //+ (const char *)passphraseCB;

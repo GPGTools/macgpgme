@@ -71,6 +71,7 @@
 		};
 		0867D691FE84028FC02AAC07 = {
 			children = (
+				F5F59DDE0126CBA601000001,
 				08FB77AEFE84172EC02AAC07,
 				089C1665FE841158C02AAC07,
 				0867D69AFE84028FC02AAC07,
@@ -236,13 +237,9 @@
 		};
 		08FB77AEFE84172EC02AAC07 = {
 			children = (
-				F5F45A4B0119C49101000001,
 				F5F45A4C0119C49101000001,
-				F5F004E3011733AA01000001,
 				F5F004E4011733AA01000001,
-				F5F004E5011733AA01000001,
 				F5F004E6011733AA01000001,
-				F5F004E7011733AA01000001,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -326,18 +323,26 @@
 			fileRef = F5F004E3011733AA01000001;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		F5F004E9011733AA01000001 = {
 			fileRef = F5F004E5011733AA01000001;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		F5F004EA011733AA01000001 = {
 			fileRef = F5F004E7011733AA01000001;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+				);
 			};
 		};
 		F5F004EB011733AA01000001 = {
@@ -378,6 +383,9 @@
 			fileRef = F5F45A4B0119C49101000001;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		F5F45A4E0119C49101000001 = {
@@ -385,6 +393,18 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		F5F59DDE0126CBA601000001 = {
+			children = (
+				F5F45A4B0119C49101000001,
+				F5F004E3011733AA01000001,
+				F5F004E5011733AA01000001,
+				F5F004E7011733AA01000001,
+			);
+			isa = PBXGroup;
+			name = Headers;
+			path = "";
+			refType = 4;
 		};
 	};
 	rootObject = 0867D690FE84028FC02AAC07;

@@ -31,8 +31,13 @@ id passphrase_callback_target;
 @implementation GPG
 - init
 {
-    context = [[GPGContext alloc] init];
-    return self;
+    int err = gpgme_new (&context);
+    if (err)	{
+        return nil;
+    }
+    else	{
+        return self;
+    }
 }
 
 - initWithUsername:(NSString *)username
@@ -52,7 +57,7 @@ id passphrase_callback_target;
 
 - (void)dealloc
 {
-    [context release];
+    gpgme_release (context);
     gpgme_key_release (user_key);
     [passphrase_callback_target release];
     [super dealloc];
@@ -60,13 +65,13 @@ id passphrase_callback_target;
 
 - (int)setUsername:(NSString *)username
 {
-    int err = gpgme_op_keylist_start([context context], [username cString], 1);
+    int err = gpgme_op_keylist_start(context, [username cString], 1);
     if (err) return err;
     
-    err = gpgme_op_keylist_next([context context], &user_key);
+    err = gpgme_op_keylist_next(context, &user_key);
     if (err) return err;
     
-    err = gpgme_signers_add([context context], user_key);
+    err = gpgme_signers_add(context, user_key);
     if (err) return err;
     //else
     return 0;
@@ -76,6 +81,11 @@ id passphrase_callback_target;
 {
     [passphrase_callback_target autorelease];
     passphrase_callback_target = [target retain];
+}
+
+- (NSString *)returnUserKeyAsXML
+{
+    return [[NSString alloc] initWithCString:gpgme_key_get_as_xml(user_key)];
 }
 
 /*
