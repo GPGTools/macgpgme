@@ -37,8 +37,9 @@
  * Reason: description of #GPGError.
  *
  * UserInfo:
- * _{GPGErrorCodeKey A #NSNumber containing a #GPGError value}
- * _{GPGErrnoKey A #NSNumber containing %errno; present only if #GPGError = #GPGErrorFileError}
+ * _{GPGErrorCodeKey  A #NSNumber containing a #GPGError value}
+ * _{GPGErrnoKey      A #NSNumber containing %errno; present only if #GPGError = #GPGErrorFileError}
+ * _{GPGContextKey    The #GPGContext which terminated with an error; used only by #{+[GPGContext waitOnAnyRequest:]}}
 "*/
 GPG_EXPORT NSString	* const GPGException;
 GPG_EXPORT NSString	* const GPGErrorCodeKey;

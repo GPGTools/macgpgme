@@ -201,7 +201,7 @@ static int readCallback(void *object, char *destinationBuffer, size_t destinatio
 }
 
 - (id) initWithContentsOfFileNoCopy:(NSString *)filename
-// Not yet supported as of 0.3.0
+// Not yet supported as of 0.3.3
 // Can raise a GPGException; in this case, a release is sent to self
 {
     GpgmeError	anError = gpgme_data_new_from_file(_dataPtr, [filename fileSystemRepresentation], 0);

@@ -148,12 +148,12 @@ enum {
 - (NSArray *) subkeysSigningCapabilities;
 - (NSArray *) subkeysCertificationCapabilities;
 
-// Not yet implemented in GPGME as of 0.3.0
+// Not yet implemented in GPGME as of 0.3.3
 // Don't work on them, there's no way to get this info
 //- (NSCalendarDate *) expirationDate;
 //- (NSArray *) subkeysExpirationDates;
 
-// Not yet implemented in GPGME as of 0.3.0
+// Not yet implemented in GPGME as of 0.3.3
 // Don't work on them, there's no way to get this info
 //- (unsigned long) ownerTrust;
 
@@ -180,7 +180,7 @@ enum {
 - (NSArray *) userIDsValidityStatuses;
 
 
-// Not yet implemented in GPGME as of 0.3.0
+// Not yet implemented in GPGME as of 0.3.3
 // Don't work on them, there's no way to get this info
 //- (unsigned int) type;
 

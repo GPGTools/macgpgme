@@ -223,7 +223,7 @@
     [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
     [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
     [key_dict setObject: [self creationDate] forKey:@"created"];
-    // Expiration date not yet implemented in GPGME 0.3.0; bug Werner about it ;-)
+    // Expiration date not yet implemented in GPGME 0.3.3; bug Werner about it ;-)
     [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
     uids = [self userIDs];
     uids_invalid_sts = [self userIDsValidityStatuses];
