@@ -14,7 +14,7 @@ ifeq ($(GNUSTEP_SYSTEM_ROOT),)
 else
 
 FRAMEWORK_NAME = GPGME
-CURRENT_VERSION_NAME = 0.2.2
+CURRENT_VERSION_NAME = 0.2.3
 
 GPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
            GPGObject.m GPGRecipients.m GPGTrustItem.m
