@@ -802,17 +802,17 @@ static void progressCallback(void *object, const char *description, int type, in
  * by more than one key.
 "*/
 {
-    NSMutableArray	*signatures = [NSMutableArray arrayWithCapacity:3];
+    NSMutableArray	*signatures = [[NSMutableArray alloc] initWithCapacity:3];
     unsigned		anIndex = 0;
 
     while(gpgme_get_sig_status(_context, anIndex, NULL, NULL)){
-        GPGSignature	*aSignature = [[GPGSignature allocWithZone:[self zone]] initWithGpgmeContext:_context index:anIndex++];
+        GPGSignature	*aSignature = [[GPGSignature allocWithZone:[self zone]] initWithContext:self index:anIndex++];
 
         [signatures addObject:aSignature];
         [aSignature release];
     }
     
-    return signatures;
+    return [signatures autorelease];
 }
 
 - (GPGData *) decryptedData:(GPGData *)inputData signatureStatus:(GPGSignatureStatus *)statusPtr
