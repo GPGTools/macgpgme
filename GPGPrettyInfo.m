@@ -26,13 +26,8 @@
 #import "GPGPrettyInfo.h"
 #import "LocalizableStrings.h"
 
-/*"
- * NOTE:
- * These functions require that the contesnts of Localizable.string in GPGME be
- * copied into your application.
-"*/
 
-NSString * GPGPrettyPublicKeyAlgorithm(GPGPublicKeyAlgorithm value)
+NSString * GPGPublicKeyAlgorithmDescription(GPGPublicKeyAlgorithm value)
 /*"
  * Returns a human readable string that corresponds to the gcrypt input value
 "*/
@@ -41,41 +36,41 @@ NSString * GPGPrettyPublicKeyAlgorithm(GPGPublicKeyAlgorithm value)
     
     switch (value)	{
         case GPG_RSAAlgorithm:
-            return_value = NSLocalizedString(GPGRSAAlgorithmString, GPGRSAAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGRSAAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_RSAEncryptOnlyAlgorithm:
-            return_value = NSLocalizedString(GPGRSAEncryptOnlyAlgorithmString, GPGRSAEncryptOnlyAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGRSAEncryptOnlyAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_RSASignOnlyAlgorithm:
-            return_value = NSLocalizedString(GPGRSASignOnlyAlgorithmString, GPGRSASignOnlyAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGRSASignOnlyAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_ElgamalEncryptOnlyAlgorithm:
-            return_value = NSLocalizedString(GPGElgamalEncryptOnlyAlgorithmString, GPGElgamalEncryptOnlyAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGElgamalEncryptOnlyAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_DSAAlgorithm:
-            return_value = NSLocalizedString(GPGDSAAlgorithmString, GPGDSAAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGDSAAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_EllipticCurveAlgorithm:
-            return_value = NSLocalizedString(GPGEllipticCurveAlgorithmString, GPGEllipticCurveAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGEllipticCurveAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_ECDSAAlgorithm:
-            return_value = NSLocalizedString(GPGECDSAAlgorithmString, GPGECDSAAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGECDSAAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_ElgamalAlgorithm:
-            return_value = NSLocalizedString(GPGElgamalAlgorithmString, GPGElgamalAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGElgamalAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_DiffieHellmanAlgorithm:
-            return_value = NSLocalizedString(GPGDiffieHellmanAlgorithmString, GPGDiffieHellmanAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGDiffieHellmanAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         default:
-            return_value = NSLocalizedString(GPGUnknownString, GPGUnknownString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGUnknownString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
     }
 
     return return_value;
 }
 
-NSString * GPGPrettySymmetricKeyAlgorithm(GPGSymetricKeyAlgorithm value)
+NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymetricKeyAlgorithm value)
 /*"
  * Returns a human readable string that corresponds to the gcrypt input value
 "*/
@@ -85,56 +80,56 @@ NSString * GPGPrettySymmetricKeyAlgorithm(GPGSymetricKeyAlgorithm value)
 
     switch (value)	{
         case GPG_NoAlgorithm:
-            return_value = NSLocalizedString(GPGNoAlgorithmString, GPGNoAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGNoAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_IDEAAlgorithm:
-            return_value = NSLocalizedString(GPGIDEAAlgorithmString, GPGIDEAAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGIDEAAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_TripleDESAlgorithm:
-            return_value = NSLocalizedString(GPGTripleDESAlgorithmString, GPGTripleDESAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGTripleDESAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_CAST5Algorithm:
-            return_value = NSLocalizedString(GPGCAST5AlgorithmString, GPGCAST5AlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGCAST5AlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_BlowfishAlgorithm:
-            return_value = NSLocalizedString(GPGBlowfishAlgorithmString, GPGBlowfishAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGBlowfishAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_SAFER_SK128Algorithm:
-            return_value = NSLocalizedString(GPGSAFERSK128AlgorithmString, GPGSAFERSK128AlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGSAFERSK128AlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_DES_SKAlgorithm:
-            return_value = NSLocalizedString(GPGDESSKAlgorithmString, GPGDESSKAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGDESSKAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_AES128Algorithm:
-            return_value = NSLocalizedString(GPGAES128AlgorithmString, GPGAES128AlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGAES128AlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_AES192Algorithm:
-            return_value = NSLocalizedString(GPGAES192AlgorithmString, GPGAES192AlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGAES192AlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_AES256Algorithm:
-            return_value = NSLocalizedString(GPGAES256AlgorithmString, GPGAES256AlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGAES256AlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_TwoFishAlgorithm:
-            return_value = NSLocalizedString(GPGTwoFishAlgorithmString, GPGTwoFishAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGTwoFishAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_SkipjackAlgorithm:
-            return_value = NSLocalizedString(GPGSkipjackAlgorithmString, GPGSkipjackAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGSkipjackAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_TwoFish_OldAlgorithm:
-            return_value = NSLocalizedString(GPGTwoFishOldAlgorithmString, GPGTwoFishOldAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGTwoFishOldAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_DummyAlgorithm:
-            return_value = NSLocalizedString(GPGDummyAlgorithmString, GPGDummyAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGDummyAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         default:
-            return_value = NSLocalizedString(GPGUnknownString, GPGUnknownString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGUnknownString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
     }
 
     return return_value;    
 }
 
-NSString * GPGPrettyHashAlgorithm(GPGHashAlgorithm value)
+NSString * GPGHashAlgorithmDescription(GPGHashAlgorithm value)
 /*"
  * Returns a human readable string that corresponds to the gcrypt input value
 "*/
@@ -143,35 +138,35 @@ NSString * GPGPrettyHashAlgorithm(GPGHashAlgorithm value)
 
     switch (value)	{
         case GPG_MD5HashAlgorithm:
-            return_value = NSLocalizedString(GPGMD5HashAlgorithmString, GPGMD5HashAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGMD5HashAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_SHA_1HashAlgorithm:
-            return_value = NSLocalizedString(GPGSHA1HashAlgorithmString, GPGSHA1HashAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGSHA1HashAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_RIPE_MD160HashAlgorithm:
-            return_value = NSLocalizedString(GPGRIPEMD160HashAlgorithmString, GPGRIPEMD160HashAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGRIPEMD160HashAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_DoubleWidthSHAHashAlgorithm:
-            return_value = NSLocalizedString(GPGDoubleWidthSHAHashAlgorithmString, GPGDoubleWidthSHAHashAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGDoubleWidthSHAHashAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_MD2HashAlgorithm:
-            return_value = NSLocalizedString(GPGMD2HashAlgorithmString, GPGMD2HashAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGMD2HashAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_TIGER192HashAlgorithm:
-            return_value = NSLocalizedString(GPGTIGER192HashAlgorithmString, GPGTIGER192HashAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGTIGER192HashAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPG_HAVALHashAlgorithm:
-            return_value = NSLocalizedString(GPGHAVALHashAlgorithmString, GPGHAVALHashAlgorithmString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGHAVALHashAlgorithmString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         default:
-            return_value = NSLocalizedString(GPGUnknownString, GPGUnknownString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGUnknownString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
     }
 
     return return_value;    
 }
 
-NSString * GPGPrettyValidity(GPGValidity value)
+NSString * GPGValidityDescription(GPGValidity value)
 /*"
  * Returns a human readable string that corresponds to the gcrypt input value
 "*/
@@ -180,22 +175,22 @@ NSString * GPGPrettyValidity(GPGValidity value)
 
     switch (value)	{
         case GPGValidityUndefined:
-            return_value = NSLocalizedString(GPGValidityUndefinedString, GPGValidityUndefinedString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGValidityUndefinedString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPGValidityNever:
-            return_value = NSLocalizedString(GPGValidityNeverString, GPGValidityNeverString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGValidityNeverString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPGValidityMarginal:
-            return_value = NSLocalizedString(GPGValidityMarginalString, GPGValidityMarginalString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGValidityMarginalString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPGValidityFull:
-            return_value = NSLocalizedString(GPGValidityFullString, GPGValidityFullString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGValidityFullString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         case GPGValidityUltimate:
-            return_value = NSLocalizedString(GPGValidityUltimateString, GPGValidityUltimateString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGValidityUltimateString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
         default:  //GPGValidityUnknown = 0; if it's something else I guess it's also unknown
-            return_value = NSLocalizedString(GPGUnknownString, GPGUnknownString);
+            return_value = NSLocalizedStringFromTableInBundle(GPGUnknownString, nil, [NSBundle bundleForClass: [GPGObject class]], "");
             break;
     }
     
