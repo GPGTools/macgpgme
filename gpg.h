@@ -31,18 +31,22 @@
 #import "gpgcontext.h"
 #import "gpgme.h"
 
+@protocol GPGPassphraseCB
+
+    - (NSString)passphraseCB;
+
+@end
+
 @interface GPG : NSObject {
-    NSString *user_key;
+    GpgmeKey user_key;
     GPGContext *context;
-    id passphrase_callback_target, passphrase_callback_arg;
-    SEL passphrase_callback_method;
 }
 - init;
 - initWithUsername:(NSString *)username;
-- initWithUsername:(NSString *)username passphraseCBTarget:(id)target selector:call_back userData:(id)arg;
+- initWithUsername:(NSString *)username passphraseCBTarget:(id)target;
 - (void)dealloc;
-- (void)setUsername:(NSString *)username;
-- (void)setPassphraseCBTarget:(id)target selector:(SEL)call_back userData:(id)arg;
+- (int)setUsername:(NSString *)username;
+- (void)setPassphraseCBTarget:(id)target;
 //- (NSString)clearSign:(NSString *)data;
 //- (NSString)encrypt:(NSString *)data withRecipients:(NSArray *)recps;
 //- (NSString)encryptAndSign:(NSString *)data withRecipients(NSArray *)recps;
@@ -51,4 +55,6 @@
 //- (int)verify:(NSString *)data withSig:(NSString *)sig;
 //- (NSArray)listKeys:(NSString *)pattern;
 
+//private functions
+//+ (const char *)passphraseCB;
 @end

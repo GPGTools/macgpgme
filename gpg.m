@@ -25,7 +25,8 @@
 //
 
 #import "gpg.h"
-#import "gpgme.h"
+
+id passphrase_callback_target;
 
 @implementation GPG
 - init
@@ -37,42 +38,54 @@
 - initWithUsername:(NSString *)username
 {
     [self init];
-    [self setUsername:(NSString *)username];
+    [self setUsername:username];
     return self;
 }
 
-- initWithUsername:(NSString *)username passphraseCBTarget:(id)target selector:call_back userData:(id)arg
+- initWithUsername:(NSString *)username passphraseCBTarget:(id)target
 {
     [self init];
-    [self setUsername:(NSString *)username];
+    [self setUsername:username];
+    [self setPassphraseCBTarget:target];
     return self;
 }
 
 - (void)dealloc
 {
     [context release];
-    [user_key release];
+    gpgme_key_release (user_key);
     [passphrase_callback_target release];
-    [passphrase_callback_arg release];
     [super dealloc];
 }
 
-- (void)setUsername:(NSString *)username
+- (int)setUsername:(NSString *)username
 {
     int err = gpgme_op_keylist_start([context context], [username cString], 1);
-    //help, now what?
+    if (err) return err;
+    
+    err = gpgme_op_keylist_next([context context], &user_key);
+    if (err) return err;
+    
+    err = gpgme_signers_add([context context], user_key);
+    if (err) return err;
+    //else
+    return 0;
 }
 
-//when a passphrase is needed [target call_back:arg] will be called (arg can be nil).
-//you should not store the password in your program, you *must* ask the user for it
-//each time.  call_back must return an NSString.
-
-//xxx remember to make sure this is safe in final version - redbird
-- (void)setPassphraseCBTarget:(id)target selector:(SEL)call_back userData:(id)arg
+- (void)setPassphraseCBTarget:(id)target
 {
+    [passphrase_callback_target autorelease];
     passphrase_callback_target = [target retain];
-    passphrase_callback_method = call_back;
-    passphrase_callback_arg = [arg retain];
 }
 
+/*
+* still can't get this part working, here's the error
+* In function `+[GPG passphraseCB]':
+* invalid lvalue in unary `&'
+*
++ (const char *)passphraseCB
+{
+    return [[passphrase_callback_target passphraseCB] cString];
+}
+*/
 @end
