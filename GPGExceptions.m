@@ -37,6 +37,8 @@ NSString	* const GPGErrnoKey = @"GPGErrnoKey";
 
 + (NSException *) exceptionWithGPGError:(GPGError)error userInfo:(NSDictionary *)additionalUserInfo
 {
+    NSParameterAssert(error != GPGME_No_Error);
+    
     if(additionalUserInfo != nil){
         additionalUserInfo = [NSMutableDictionary dictionaryWithDictionary:additionalUserInfo];
         [(NSMutableDictionary *)additionalUserInfo setObject:[NSNumber numberWithInt:error] forKey:GPGErrorCodeKey];
