@@ -85,7 +85,6 @@
     
     [keys release];
     keys = nil;
-    [aContext setFastKeyListMode:YES];
     keys = [[[aContext keyEnumeratorForSearchPattern:[searchPatternTextField stringValue] secretKeysOnly:NO] allObjects] retain];
     [aContext release];
     [keyTableView noteNumberOfRowsChanged];
