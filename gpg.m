@@ -53,7 +53,7 @@
     [context release];
     [user_key release];
     [passphrase_callback_target release];
-    [passpharse_callback_arg release];
+    [passphrase_callback_arg release];
     [super dealloc];
 }
 
@@ -71,8 +71,8 @@
 - (void)setPassphraseCBTarget:(id)target selector:(SEL)call_back userData:(id)arg
 {
     passphrase_callback_target = [target retain];
-    passpharse_callback_method = call_back;
-    passpharse_callback_arg = [arg retain];
+    passphrase_callback_method = call_back;
+    passphrase_callback_arg = [arg retain];
 }
 
 @end

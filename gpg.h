@@ -34,8 +34,8 @@
 @interface GPG : NSObject {
     NSString *user_key;
     GPGContext *context;
-    id passphrase_callback_target, passpharse_callback_arg;
-    SEL passpharse_callback_method;
+    id passphrase_callback_target, passphrase_callback_arg;
+    SEL passphrase_callback_method;
 }
 - init;
 - initWithUsername:(NSString *)username;
