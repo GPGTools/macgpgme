@@ -1,12 +1,12 @@
 gpgme library
 =============
-In order to build this, you need GPGME 0.2.2 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.4h). To download and install it, procede like this:
+In order to build this, you need GPGME 0.2.3 or greater installed (and whatever version of GnuPG that requires; currently >= 1.0.4h). To download and install it, proceed like this:
 
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.2.tar.gz
-wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.2.tar.gz.sig
-gpg --verify gpgme-0.2.2.tar.gz.sig
-gnutar xzf gpgme-0.2.2.tar.gz
-cd gpgme-0.2.2
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz
+wget ftp://ftp.gnupg.org/gcrypt/alpha/gpgme/gpgme-0.2.3.tar.gz.sig
+gpg --verify gpgme-0.2.3.tar.gz.sig
+gnutar xzf gpgme-0.2.3.tar.gz
+cd gpgme-0.2.3
 mv config.guess config.guess.original
 mv config.sub config.sub.original
 cp /usr/libexec/config.guess .
