@@ -31,30 +31,48 @@
 - init
 {
     context = [[GPGContext alloc] init];
+    return self;
 }
 
-- initWithUsername:(NSString *)username withPassphrase:(NSMutableString *)passphrase
+- initWithUsername:(NSString *)username
 {
     [self init];
     [self setUsername:(NSString *)username];
-    [self setPassphrase:(NSMutableString *)passphrase];
+    return self;
+}
+
+- initWithUsername:(NSString *)username passphraseCBTarget:(id)target selector:call_back userData:(id)arg
+{
+    [self init];
+    [self setUsername:(NSString *)username];
+    return self;
 }
 
 - (void)dealloc
 {
     [context release];
     [user_key release];
+    [passphrase_callback_target release];
+    [passphare_callback_arg release];
     [super dealloc];
 }
 
 - (void)setUsername:(NSString *)username
 {
-    
+    int err = gpgme_op_keylist_start([context context], [username cString], 1);
+    //help, now what?
 }
 
-- (void)setPassphrase:(NSMutableString *)passphrase
-//Clears passphrase at end to prevent it being read
+//when a passphrase is needed [target call_back:arg] will be called (arg can be nil).
+//you should not store the password in your program, you *must* ask the user for it
+//each time.  call_back must return an NSString.
+
+//xxx remember to make sure this is safe in final version - redbird
+- (void)setPassphraseCBTarget:(id)target selector:(SEL)call_back userData:(id)arg
 {
-    [passphrase setString:nil];
+    passphrase_callback_target = [target retain];
+    passphare_callback_method = call_back;
+    passphare_callback_arg = [arg retain];
 }
+
 @end

@@ -29,20 +29,25 @@
 
 #import <Foundation/Foundation.h>
 #import "gpgcontext.h"
+#import "gpgme.h"
 
 @interface GPG : NSObject {
     NSString *user_key;
     GPGContext *context;
+    id passphrase_callback_target, passphare_callback_arg;
+    SEL passphare_callback_method;
 }
 - init;
-- initWithUsername:(NSString *)username withPassphrase:(NSMutableString *)passphrase;
+- initWithUsername:(NSString *)username;
+- initWithUsername:(NSString *)username passphraseCBTarget:(id)target selector:call_back userData:(id)arg;
 - (void)dealloc;
 - (void)setUsername:(NSString *)username;
-- (void)setPassphrase:(NSMutableString *)passphrase;
+- (void)setPassphraseCBTarget:(id)target selector:(SEL)call_back userData:(id)arg;
 //- (NSString)clearSign:(NSString *)data;
-//- (NSString)encrypt:(NSString *)data withRecipients:(NSArray *)recp;
-//- (NSString)encryptAndSign:(NSString *)data withRecipients(NSArray *)recp;
+//- (NSString)encrypt:(NSString *)data withRecipients:(NSArray *)recps;
+//- (NSString)encryptAndSign:(NSString *)data withRecipients(NSArray *)recps;
 //- (NSString)decrypt:(NSString *)data;
+//- (int)verify:(NSString *)data;
 //- (int)verify:(NSString *)data withSig:(NSString *)sig;
 //- (NSArray)listKeys:(NSString *)pattern;
 
