@@ -85,7 +85,11 @@
     
     [keys release];
     keys = nil;
-    keys = [[[aContext keyEnumeratorForSearchPattern:[searchPatternTextField stringValue] secretKeysOnly:NO] allObjects] retain];
+#if 1
+    keys = [[[aContext keyEnumeratorForSearchPattern:[searchPatternTextField stringValue] secretKeysOnly:[deleteSwitch state]] allObjects] retain];
+#else
+    keys = [[[aContext keyEnumeratorForSearchPatterns:[NSArray arrayWithObject:[searchPatternTextField stringValue]] secretKeysOnly:[deleteSwitch state]] allObjects] retain];
+#endif
     [aContext release];
     [keyTableView noteNumberOfRowsChanged];
     [keyTableView reloadData];
@@ -138,8 +142,12 @@
             [xmlTextView setString:[selectedKey descriptionAsXMLString]];
     
             [mainKeyBox setTitle:[selectedKey userID]];
-    
+
+#if 0
             [algorithmTextField setIntValue:[selectedKey algorithm]];
+#else
+            [algorithmTextField setStringValue:[selectedKey algorithmDescription]];
+#endif
             [lengthTextField setIntValue:[selectedKey length]];
             [validityTextField setIntValue:[selectedKey validity]];
     
@@ -175,7 +183,11 @@
         else{
             [xmlTextView setString:@""];
             [mainKeyBox setTitle:@""];
+#if 0
             [algorithmTextField setIntValue:0];
+#else
+            [algorithmTextField setStringValue:@""];
+#endif
             [lengthTextField setIntValue:0];
             [validityTextField setIntValue:0];
     
@@ -303,7 +315,15 @@
         inputData = [[GPGData alloc] initWithContentsOfFile:[encryptionInputFilenameTextField stringValue]];
 
         NS_DURING
-            outputData = [aContext encryptedData:inputData forRecipients:[self selectedRecipients] allRecipientsAreValid:(BOOL *)&allRecipientsAreValid];
+            GPGRecipients	*selectedRecipients = [self selectedRecipients];
+
+            if(selectedRecipients != nil)
+                outputData = [aContext encryptedData:inputData forRecipients:[self selectedRecipients] allRecipientsAreValid:(BOOL *)&allRecipientsAreValid];
+            else{
+                // Symmetric encryption
+                allRecipientsAreValid = YES;
+                outputData = [aContext encryptedData:inputData];
+            }
         NS_HANDLER
             outputData = nil;
             NSLog(@"Exception userInfo: %@", [localException userInfo]);
@@ -348,7 +368,7 @@
 
 - (BOOL) validateMenuItem:(id <NSMenuItem>)menuItem
 {
-    if([menuItem action] == @selector(export:) || [menuItem action] == @selector(encrypt:) || [menuItem action] == @selector(sign:))
+    if([menuItem action] == @selector(export:) || /*[menuItem action] == @selector(encrypt:) ||*/ [menuItem action] == @selector(sign:))
         return [keyTableView numberOfSelectedRows] > 0;
     else
         return YES;
@@ -491,6 +511,10 @@
             return @"Error!";
         case GPGSignatureStatusDifferent:
             return @"Different statuses";
+        case GPGSignatureStatusGoodButExpired:
+            return @"OK but signature expired";
+        case GPGSignatureStatusGoodButKeyExpired:
+            return @"OK but key expired";
         default:
             return [NSString stringWithFormat:@"Unknown result: %d", status];
     }
@@ -514,6 +538,7 @@
         else
             aStatus = [aContext verifySignedData:inputData];
         statusString = [self stringFromSignatureStatus:aStatus];
+#if 0
         {
             int	i;
 
@@ -529,6 +554,16 @@
                 statusString = [statusString stringByAppendingFormat:@"\n%@ for %@ (Signed by %@ on %@)", [self stringFromSignatureStatus:sigStatus], fingerPrint, [aKey userID], creationDate];
             }
         }
+#else
+        {
+            NSEnumerator	*anEnum = [[aContext signatures] objectEnumerator];
+            GPGSignature	*aSig;
+
+            while(aSig = [anEnum nextObject]){
+                statusString = [statusString stringByAppendingFormat:@"\n%@ (0x%x) for %@ (Signed by %@ on %@, expires on %@, %@) [%@/%@]", [self stringFromSignatureStatus:[aSig status]], [aSig summary], [aSig fingerprint], [[aSig key] userID], [aSig creationDate], [aSig expirationDate], [aSig validityDescription], [aSig errorToken], [aSig suberrorToken]];
+            }
+        }
+#endif
         NSRunInformationalAlertPanel(@"Authentication result", statusString, nil, nil, nil);
 
         NSLog(@"Notations: %@", [aContext notationsAsXMLString]);
