@@ -362,10 +362,9 @@ static const char *passphraseCallback(void *object, const char *description, voi
     if(aPassphrase == nil)
         return NULL;
     else{
-        // We cannot simply pass [aPassphrase UTF8String], because
-        // the buffer is autoreleased!!!
-        const char	*aCString = [aPassphrase UTF8String];
-        NSData		*passphraseAsData = [NSData dataWithBytes:aCString length:strlen(aCString) + 1];
+        // We cannot simply return [aPassphrase UTF8String], because
+        // the buffer is autoreleased, that's why we retain data.
+        NSData	*passphraseAsData = [aPassphrase dataUsingEncoding:NSUTF8StringEncoding];
 
         [(*((NSMutableDictionary **)r_hd)) setObject:passphraseAsData forKey:@"passphraseAsData"];
 
@@ -984,22 +983,50 @@ static void progressCallback(void *object, const char *description, int type, in
 
 #warning FIXME: gpgme_op_genkey() has no counterpart
 #if 0
-- (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
-//- (void) generateKeyFromDictionary:(NSDictionary *)params secretKey:(GPGData **)secretKeyPtr publicKey:(GPGData **)publicKeyPtr
+- (NSString *) xmlStringForString:(NSString *)string
+{
+    int				i, offset = 0, length = [string length];
+    NSMutableString	*xmlString = [NSMutableString stringWithString:string];
+    
+    for(i = 0; i < length; i++){
+        unichar	aChar = [string characterAtIndex:i];
+        
+        if(aChar == '\n'){
+            [xmlString replaceCharactersInRange:NSMakeRange(i + offset, 1) withString:@" "];
+        }
+/*        else if(aChar == '<'){
+            [xmlString replaceCharactersInRange:NSMakeRange(i + offset, 1) withString:@"&lt;"];
+            offset += 3;
+        }
+        else if(aChar == '>'){
+            [xmlString replaceCharactersInRange:NSMakeRange(i + offset, 1) withString:@"&gt;"];
+            offset += 3;
+        }
+        else if(aChar == ':'){
+            [xmlString replaceCharactersInRange:NSMakeRange(i + offset, 1) withString:@"\\x3a"];
+            offset += 3;
+        }*/
+    }
+    
+    return xmlString;
+}
+
+//- (void) generateKeyWithXMLString:(NSString *)params secretKey:(GPGData *)secretKeyData publicKey:(GPGData *)publicKeyData
+- (void) generateKeyFromDictionary:(NSDictionary *)params secretKey:(GPGData *)secretKeyData publicKey:(GPGData *)publicKeyData
 /*"
  * Generates a new key pair and puts it into the standard key ring if
- * both publicKeyPtr and secretKeyPtr are NULL. In this case
+ * both publicKeyData and secretKeyData are nil. In this case
  * method returns immediately after starting the operation, and does not wait for
- * it to complete. If publicKeyPtr is not NULL, the newly created data object,
- * upon successful completion, will contain the public key. If secretKeyPtr
- * is not NULL, the newly created data object, upon successful completion,
+ * it to complete. If publicKeyData is not nil, the newly created data object,
+ * upon successful completion, will contain the public key. If secretKeyData
+ * is not nil, the newly created data object, upon successful completion,
  * will contain the secret key.
  *
  * Note that not all crypto engines support this interface equally.
- * GnuPG does not support publicKey and secretKeyPtr, they should be both NULL,
+ * GnuPG does not support publicKeyData and secretKeyData, they should be both nil,
  * and the key pair will be added to the standard key ring.
- * GpgSM does only support publicKeyPtr, the secret key will be
- * stored by gpg-agent. GpgSM expects publicKeyPtr being not NULL.
+ * GpgSM does only support publicKeyData, the secret key will be
+ * stored by gpg-agent. GpgSM expects publicKeyData being not nil.
  *
  * The params string specifies parameters for the key in XML format.
  * The details about the format of params are specific to the crypto engine
@@ -1025,17 +1052,53 @@ static void progressCallback(void *object, const char *description, int type, in
  * Strings should be given in UTF-8 encoding. The format supportted for now
  * is "internal". The content of the !{<GnupgKeyParms>} container is passed
  * verbatim to GnuPG. Control statements (e.g. pubring) are not allowed.
- * Key is generated in standard secring/pubring files if both secretKeyPtr
- * and publicKeyPtr are NULL, else newly created key is returned but not stored
+ * Key is generated in standard secring/pubring files if both secretKeyData
+ * and publicKeyData are nil, else newly created key is returned but not stored
  * Currently cannot return generated secret/public keys.
  *
  * Can raise a #GPGException:
  * _{GPGErrorInvalidValue  params is not a valid XML string.}
- * _{GPGErrorNotSupported  publicKeyPtr or secretKeyPtr is not NULL.}
+ * _{GPGErrorNotSupported  publicKeyData or secretKeyData is not nil.}
  * _{GPGErrorGeneralError  No key was created by the engine.}
  * Others exceptions could be raised too.
 "*/
 {
+    NSMutableString	*xmlString = [[NSMutableString alloc] init];
+    id				aValue;
+    GpgmeError		anError;
+    
+    [xmlString appendString:@"<GnupgKeyParms format=\"internal\">\n"];
+    [xmlString appendFormat:@"Key-Type: %@\n", [params objectForKey:@"type"]]; // number or string
+    [xmlString appendFormat:@"Key-Length: %@\n", [params objectForKey:@"length"]]; // number or string
+    aValue = [params objectForKey:@"subkeyType"]; // number or string; optional
+    if(aValue != nil){
+        [xmlString appendFormat:@"Subkey-Type: %@\n", aValue];
+        [xmlString appendFormat:@"Subkey-Length: %@\n", [params objectForKey:@"subkeyLength"]]; // number or string
+    }
+    aValue = [params objectForKey:@"name"];
+    if(aValue != nil)
+        [xmlString appendFormat:@"Name-Real: %@\n", [self xmlStringForString:aValue]];
+    aValue = [params objectForKey:@"comment"];
+    if(aValue != nil)
+        [xmlString appendFormat:@"Name-Comment: %@\n", [self xmlStringForString:aValue]];
+    aValue = [params objectForKey:@"email"];
+    if(aValue != nil)
+        [xmlString appendFormat:@"Name-Email: %@\n", [self xmlStringForString:aValue]];
+    aValue = [params objectForKey:@"expirationDate"];
+    if(aValue != nil)
+        [xmlString appendFormat:@"Expire-Date: %@\n", [aValue descriptionWithCalendarFormat:@"%Y-%m-%d"]];
+    else
+        [xmlString appendString:@"Expire-Date: 0\n"];
+    aValue = [params objectForKey:@"passphrase"];
+    if(aValue != nil)
+        [xmlString appendFormat:@"Passphrase: %@\n", [self xmlStringForString:aValue]];
+    [xmlString appendString:@"</GnupgKeyParms>\n"];
+    
+    anError = gpgme_op_genkey(_context, [xmlString utf8String], [secretKeyData gpgmeData], [publicKeyData gpgmeData]);
+    if(anError != GPGME_No_Error)
+        [[NSException exceptionWithGPGError:anError userInfo:[NSDictionary dictionaryWithObject:[xmlString autorelease] forKey:@"XML"]] raise];
+    [xmlString release];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:GPGContextKey]];
 }
 #endif
