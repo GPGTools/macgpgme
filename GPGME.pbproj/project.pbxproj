@@ -111,7 +111,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 0.2.2;
+				FRAMEWORK_VERSION = 0.2.3;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
@@ -149,11 +149,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2.2</string>
+	<string>0.2.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.2.2</string>
+	<string>0.2.3</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
