@@ -1129,7 +1129,7 @@
 
 - (NSString *) issuerSerial
 /*"
- * Returns the %{issuer serial} (only for S/MIME).
+ * Returns the X.509 %{issuer serial} attribute of the key (only for S/MIME).
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_SERIAL];
@@ -1137,7 +1137,7 @@
 
 - (NSString *) issuerName
 /*"
- * Returns the %{issuer name} (only for S/MIME).
+ * Returns the X.509 %{issuer name} attribute of the key (only for S/MIME).
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_ISSUER];
@@ -1145,7 +1145,7 @@
 
 - (NSString *) chainID
 /*"
- * Returns the %{chain ID} (only for S/MIME).
+ * Returns the X.509 %{chain ID} that can be used to build the certification chain (only for S/MIME).
 "*/
 {
     return [self mainStringAttributeWithIdentifier:GPGME_ATTR_CHAINID];
