@@ -72,7 +72,7 @@
         while(aRow = [anEnum nextObject]){
             GPGKey	*aKey = [keys objectAtIndex:[aRow intValue]];
 
-            [recipients addName:[aKey userID]];
+            [recipients addName:[aKey fingerprint] withValidity:GPGValidityFull];
         }
 
         return [recipients autorelease];
@@ -165,7 +165,7 @@
                 GPGContext		*aContext = [[GPGContext alloc] init];
                 GPGTrustItem	*trustItem;
     
-                trustItem = [[[aContext trustItemEnumeratorForSearchPattern:[selectedKey userID] maximumLevel:100] allObjects] lastObject];
+                trustItem = [[[aContext trustItemEnumeratorForSearchPattern:[selectedKey fingerprint] maximumLevel:100] allObjects] lastObject];
                 [aContext release];
     
                 [ownerTrustField setIntValue:[trustItem validity]];
@@ -225,9 +225,9 @@
     [NSApp stopModalWithCode:NSAlertAlternateReturn];
 }
 
-- (NSString *) context:(GPGContext *)context passphraseForDescription:(NSString *)description userInfo:(NSMutableDictionary *)userInfo
+- (NSString *) context:(GPGContext *)context passphraseForKey:(GPGKey *)key again:(BOOL)again
 {
-    [passphraseDescriptionTextField setStringValue:description];
+    [passphraseDescriptionTextField setStringValue:[key userID]];
     [passphraseTextField setStringValue:@""];
     [passphrasePanel orderFront:nil];
 
