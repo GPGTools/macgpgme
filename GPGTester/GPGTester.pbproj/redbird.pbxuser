@@ -1,10 +1,10 @@
 // !$*UTF8*$!
 {
-	0867D690FE84028FC02AAC07 = {
-		activeBuildStyle = 014CEA440018CDF011CA2923;
-		activeTarget = 0867D69CFE84028FC02AAC07;
+	29B97313FDCFA39411CA2CEA = {
+		activeBuildStyle = 4A9504CCFFE6A4B311CA0CBA;
+		activeTarget = 29B97326FDCFA39411CA2CEA;
 		addToTargets = (
-			0867D69CFE84028FC02AAC07,
+			29B97326FDCFA39411CA2CEA,
 		);
 		perUserDictionary = {
 			PBXWorkspaceConfiguration = {
@@ -13,10 +13,9 @@
 					ActiveTab = 0;
 					Frame = "{{0, 23}, {1024, 607}}";
 					Split0 = {
-						ActiveTab = 2;
 						Frame = "{{224, 0}, {800, 607}}";
 						Split0 = {
-							Frame = "{{0, 216}, {800, 391}}";
+							Frame = "{{0, 24}, {800, 583}}";
 						};
 						SplitCount = 1;
 						Tab0 = {
@@ -45,10 +44,10 @@
 							LauncherConfigVersion = 4;
 						};
 						Tab1 = {
-							Frame = "{{0, 0}, {484, 208}}";
+							Frame = "{{0, 0}, {800, 208}}";
 							LauncherConfigVersion = 3;
 							Runner = {
-								Frame = "{{0, 0}, {484, 208}}";
+								Frame = "{{0, 0}, {800, 208}}";
 							};
 						};
 						Tab2 = {
@@ -57,7 +56,7 @@
 							Frame = "{{0, 0}, {800, 192}}";
 						};
 						Tab3 = {
-							Frame = "{{0, 0}, {800, 295}}";
+							Frame = "{{0, 0}, {726, 295}}";
 						};
 						TabCount = 4;
 					};
@@ -72,15 +71,15 @@
 						OptionsSetName = "Hierarchy, all classes";
 					};
 					Tab2 = {
-						Frame = "{{0, 0}, {200, 607}}";
+						Frame = "{{0, 0}, {200, 100}}";
 					};
 					Tab3 = {
-						Frame = "{{0, 0}, {200, 607}}";
+						Frame = "{{0, 0}, {200, 100}}";
 						Split0 = {
-							Frame = "{{0, 0}, {200, 295}}";
+							Frame = "{{0, 0}, {200, 45}}";
 						};
 						Split1 = {
-							Frame = "{{0, 304}, {200, 303}}";
+							Frame = "{{0, 54}, {200, 46}}";
 						};
 						SplitCount = 2;
 					};
@@ -95,15 +94,15 @@
 		wantsIndex = 1;
 		wantsSCM = -1;
 	};
-	0867D69CFE84028FC02AAC07 = {
+	29B97326FDCFA39411CA2CEA = {
 		activeExec = 0;
-	};
-	0BD178DA01298E177F000001 = {
-		uiCtxt = {
-			sepNavWindowFrame = "{{2, 224}, {750, 502}}";
+		targetExecs = {
+			macosx = (
+				F553D22B012DCF2D01000001,
+			);
 		};
 	};
-	F524982B020C67A001717871 = {
+	F553D22B012DCF2D01000001 = {
 		activeArgIndex = 2147483647;
 		argumentStrings = (
 		);
@@ -117,16 +116,5 @@
 		);
 		sourceDirectories = (
 		);
-	};
-	F550BC400201F10201A80016 = {
-		activeExec = 0;
-		targetExecs = {
-			macosx = (
-				F524982B020C67A001717871,
-			);
-		};
-	};
-	F550BC6A0201F88D01A80016 = {
-		activeExec = 0;
 	};
 }
