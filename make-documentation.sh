@@ -16,7 +16,7 @@ fi
 PUBLIC_DOC_INSTALLDIR=$2
 
 # We need to write down file names here
-AUTODOC_FILES="GPGContext.h GPGData.h GPGEngine.h GPGExceptions.h GPGKey.h GPGObject.h GPGRecipients.h GPGTrustItem.h"
+AUTODOC_FILES="GPGContext.h GPGData.h GPGEngine.h GPGExceptions.h GPGKey.h GPGObject.h GPGRecipients.h GPGTrustItem.h GPGPrettyInfo.h"
 AUTODOC_DOCDIR="$PUBLIC_DOC_INSTALLDIR"
 OTHER_FILES="IntroGPGME.html"
 

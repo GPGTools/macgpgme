@@ -183,6 +183,8 @@
 				0BD178EA01298E177F000001,
 				0BD178EB01298E177F000001,
 				0BD178EC01298E177F000001,
+				F549FD5802BFA3AB0128824A,
+				F55CD03D02D65F9C01C07EFC,
 			);
 			isa = PBXHeadersBuildPhase;
 			name = Headers;
@@ -191,6 +193,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				089C1668FE841158C02AAC07,
+				F55CD03A02D65F6201C07EFC,
 			);
 			isa = PBXResourcesBuildPhase;
 			name = "Bundle Resources";
@@ -206,6 +209,8 @@
 				0BD178F201298E177F000001,
 				0BD178F301298E177F000001,
 				0BD178F401298E177F000001,
+				F549FD5902BFA3AB0128824A,
+				F55CD03E02D65F9C01C07EFC,
 			);
 			isa = PBXSourcesBuildPhase;
 			name = Sources;
@@ -235,6 +240,7 @@
 		089C1665FE841158C02AAC07 = {
 			children = (
 				089C1666FE841158C02AAC07,
+				F55CD03802D65F6201C07EFC,
 			);
 			isa = PBXGroup;
 			name = Resources;
@@ -282,6 +288,10 @@
 				0BD178DF01298E177F000001,
 				0BD178E001298E177F000001,
 				0BD178E101298E177F000001,
+				F549FD5602BFA3AB0128824A,
+				F549FD5702BFA3AB0128824A,
+				F55CD03B02D65F9C01C07EFC,
+				F55CD03C02D65F9C01C07EFC,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -629,6 +639,31 @@
 			isa = PBXFileReference;
 			path = IntroGPGME.html;
 			refType = 4;
+		};
+		F549FD5602BFA3AB0128824A = {
+			isa = PBXFileReference;
+			path = GPGPrettyInfo.h;
+			refType = 4;
+		};
+		F549FD5702BFA3AB0128824A = {
+			isa = PBXFileReference;
+			path = GPGPrettyInfo.m;
+			refType = 4;
+		};
+		F549FD5802BFA3AB0128824A = {
+			fileRef = F549FD5602BFA3AB0128824A;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		F549FD5902BFA3AB0128824A = {
+			fileRef = F549FD5702BFA3AB0128824A;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		F550BC3F0201F10201A80016 = {
 			isa = PBXApplicationReference;
@@ -1024,6 +1059,52 @@
 			isa = PBXFileReference;
 			path = "make-documentation.sh";
 			refType = 4;
+		};
+		F55CD03802D65F6201C07EFC = {
+			children = (
+				F55CD03902D65F6201C07EFC,
+			);
+			isa = PBXVariantGroup;
+			name = Localizable.strings;
+			path = "";
+			refType = 4;
+		};
+		F55CD03902D65F6201C07EFC = {
+			isa = PBXFileReference;
+			name = English;
+			path = English.lproj/Localizable.strings;
+			refType = 4;
+		};
+		F55CD03A02D65F6201C07EFC = {
+			fileRef = F55CD03802D65F6201C07EFC;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F55CD03B02D65F9C01C07EFC = {
+			isa = PBXFileReference;
+			path = LocalizableStrings.h;
+			refType = 4;
+		};
+		F55CD03C02D65F9C01C07EFC = {
+			isa = PBXFileReference;
+			path = LocalizableStrings.m;
+			refType = 4;
+		};
+		F55CD03D02D65F9C01C07EFC = {
+			fileRef = F55CD03B02D65F9C01C07EFC;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Private,
+				);
+			};
+		};
+		F55CD03E02D65F9C01C07EFC = {
+			fileRef = F55CD03C02D65F9C01C07EFC;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		F56F791B012E3F8001000001 = {
 			children = (

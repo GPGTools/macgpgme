@@ -213,8 +213,9 @@
 {
     NSMutableDictionary *key_dict = [NSMutableDictionary dictionary];
     NSArray *uids, *uids_invalid_sts, *uids_revoked_sts, *uids_names, *uids_emails, *uids_comments,
+            *uids_validities,
             *subkeys, *sks_short_keyids, *sks_invalid_sts, *sks_revoked_sts, *sks_expired_sts,
-                *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates, *sks_exp_dates;
+        *sks_disabled_sts, *sks_fprs, *sks_algos, *sks_lens, *sks_cre_dates, *sks_exp_dates;
     int i;
     
     [key_dict setObject: [NSNumber numberWithBool:[self hasSecretPart]] forKey:@"secret"];
@@ -227,7 +228,8 @@
     [key_dict setObject: [self fingerprint] forKey:@"fpr"];
     [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
     [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
-    [key_dict setObject: [self creationDate] forKey:@"created"];
+    if ([self creationDate])
+        [key_dict setObject: [self creationDate] forKey:@"created"];
     if ([self expirationDate])
         [key_dict setObject: [self expirationDate] forKey:@"expire"];
     [key_dict setObject: [NSMutableArray array] forKey:@"userids"];
@@ -237,6 +239,7 @@
     uids_names = [self names];
     uids_emails = [self emails];
     uids_comments = [self comments];
+    uids_validities = [self validities];
     for (i = 0; i < [uids count]; i++)	{
         [[key_dict objectForKey:@"userids"] addObject: [NSMutableDictionary dictionary]];
         if ([uids_invalid_sts objectAtIndex:i])
@@ -257,6 +260,9 @@
         if ([uids_comments objectAtIndex:i])
             [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
                 [uids_comments objectAtIndex:i] forKey:@"comment"];
+        if ([uids_validities objectAtIndex:i])
+            [[[key_dict objectForKey:@"userids"] objectAtIndex:i] setObject:
+                                     [uids_validities objectAtIndex:i] forKey:@"validity"];
     }
     
     [key_dict setObject: [NSMutableArray array] forKey:@"subkeys"];
