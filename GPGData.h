@@ -34,13 +34,13 @@
 typedef enum {
     GPGDataTypeNone       = 0,
     GPGDataTypeData       = 1,
-    GPGDataTypeFileHandle = 2, /*"Non-writable"*/
-    GPGDataTypeFile       = 3, /*"Non-writable"*/
-    GPGDataTypeDataSource = 4  /*"Non-writable"*/
+    GPGDataTypeFileHandle = 2,
+    GPGDataTypeFile       = 3,
+    GPGDataTypeDataSource = 4
 } GPGDataType;
 
 
-@interface GPGData : GPGObject
+@interface GPGData : GPGObject /*"NSObject"*/
 {
     id				_dataSource;
     NSMutableData	*_retainedData;
