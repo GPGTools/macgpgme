@@ -29,7 +29,7 @@
 
 NSString * GPGPublicKeyAlgorithmDescription(GPGPublicKeyAlgorithm value)
 /*"
- * Returns a human readable string that corresponds to the gcrypt input value
+ * Returns a localized human readable string that corresponds to the gcrypt input value
 "*/
 {
     NSString *return_value;
@@ -70,11 +70,10 @@ NSString * GPGPublicKeyAlgorithmDescription(GPGPublicKeyAlgorithm value)
     return return_value;
 }
 
-NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymetricKeyAlgorithm value)
+NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymmetricKeyAlgorithm value)
 /*"
- * Returns a human readable string that corresponds to the gcrypt input value
+ * Returns a localized human readable string that corresponds to the gcrypt input value
 "*/
-
 {
     NSString *return_value;
 
@@ -131,7 +130,7 @@ NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymetricKeyAlgorithm value)
 
 NSString * GPGHashAlgorithmDescription(GPGHashAlgorithm value)
 /*"
- * Returns a human readable string that corresponds to the gcrypt input value
+ * Returns a localized human readable string that corresponds to the gcrypt input value
 "*/
 {
     NSString *return_value;
@@ -168,7 +167,7 @@ NSString * GPGHashAlgorithmDescription(GPGHashAlgorithm value)
 
 NSString * GPGValidityDescription(GPGValidity value)
 /*"
- * Returns a human readable string that corresponds to the gcrypt input value
+ * Returns a localized human readable string that corresponds to the gcrypt input value
 "*/
 {
     NSString *return_value;
