@@ -1,6 +1,6 @@
 {
     CURRENTLY_ACTIVE_VERSION = YES; 
-    DEPLOY_WITH_VERSION_NAME = 0.2.3; 
+    DEPLOY_WITH_VERSION_NAME = 0.3.0; 
     DYNAMIC_CODE_GEN = YES; 
     FILESTABLE = {
         CLASSES = (
@@ -13,6 +13,7 @@
             GPGRecipients.m, 
             GPGTrustItem.m
         ); 
+        DOCUMENTATION = (IntroGPGME.html); 
         FRAMEWORKS = (Foundation.framework); 
         HEADERSEARCH = (/usr/local/include); 
         H_FILES = (
@@ -23,27 +24,34 @@
             GPGExceptions.h, 
             GPGInternals.h, 
             GPGKey.h, 
-			GPGME.h, 
+            GPGME.h, 
             GPGObject.h, 
             GPGRecipients.h, 
             GPGTrustItem.h
         ); 
         LIBRARYSEARCH = (/usr/local/lib); 
         OTHER_LIBS = (gpgme); 
-        OTHER_SOURCES = (h.template, m.template, Makefile, Makefile.postamble, Makefile.preamble); 
+        OTHER_SOURCES = (
+            h.template, 
+            m.template, 
+            Makefile, 
+            Makefile.postamble, 
+            Makefile.preamble, 
+            README
+        ); 
         PRECOMPILED_HEADERS = (); 
         PROJECT_HEADERS = (); 
         PUBLIC_HEADERS = (
             GPGContext.h, 
+            GPGData.h, 
             GPGDefines.h, 
+            GPGEngine.h, 
             GPGExceptions.h, 
             GPGKey.h, 
-			GPGME.h, 
             GPGObject.h, 
             GPGRecipients.h, 
             GPGTrustItem.h, 
-            GPGEngine.h, 
-            GPGData.h
+            GPGME.h
         ); 
     }; 
     LANGUAGE = English; 

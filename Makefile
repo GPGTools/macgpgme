@@ -12,6 +12,8 @@ NAME = GPGME
 PROJECTVERSION = 2.8
 PROJECT_TYPE = Framework
 
+GLOBAL_RESOURCES = IntroGPGME.html
+
 CLASSES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m GPGKey.m\
           GPGObject.m GPGRecipients.m GPGTrustItem.m
 
@@ -20,11 +22,11 @@ HFILES = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
          GPGRecipients.h GPGTrustItem.h
 
 OTHERSRCS = h.template m.template Makefile Makefile.postamble\
-            Makefile.preamble
+            Makefile.preamble README
 
 MAKEFILEDIR = $(MAKEFILEPATH)/pb_makefiles
 CURRENTLY_ACTIVE_VERSION = YES
-DEPLOY_WITH_VERSION_NAME = 0.2.3
+DEPLOY_WITH_VERSION_NAME = 0.3.0
 CODE_GEN_STYLE = DYNAMIC
 MAKEFILE = framework.make
 NEXTSTEP_INSTALLDIR = /Library/Frameworks
@@ -38,9 +40,9 @@ PROF_LIBS = $(LIBS)
 HEADER_PATHS = -I/usr/local/include
 LIBRARY_PATHS = -L/usr/local/lib
 FRAMEWORKS = -framework Foundation
-PUBLIC_HEADERS = GPGContext.h GPGDefines.h GPGExceptions.h\
-                 GPGKey.h GPGObject.h GPGME.h GPGRecipients.h GPGTrustItem.h\
-                 GPGEngine.h GPGData.h
+PUBLIC_HEADERS = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h\
+                 GPGExceptions.h GPGKey.h GPGObject.h GPGRecipients.h\
+                 GPGTrustItem.h GPGME.h
 
 
 
