@@ -39,7 +39,7 @@ typedef enum {
 } GPGValidity;
 
 
-@interface GPGRecipients : GPGObject
+@interface GPGRecipients : GPGObject /*"NSObject"*/
 {
 }
 

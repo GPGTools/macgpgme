@@ -30,7 +30,7 @@
 @class NSString;
 
 
-@interface GPGTrustItem : GPGObject
+@interface GPGTrustItem : GPGObject /*"NSObject"*/
 {
 }
 
