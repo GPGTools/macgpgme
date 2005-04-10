@@ -340,16 +340,22 @@ static gpgme_error_t passphraseCallback(void *object, const char *uid_hint, cons
     if(uid_hint != NULL){
         // In case of symmetric encryption, no key is needed
         NSString	*aPattern = GPGStringFromChars(passphrase_info);
-        GPGContext	*keySearchContext = [[GPGContext alloc] init];
+        GPGContext	*keySearchContext = nil;
 
-        // Do NOT use the whole uid_hint, because it causes problems with
-        // uids that have ISOLatin1 data (instead of UTF8), and can also
-        // lead to "ambiguous name" error. Use only the keyID, taken from
-        // the passphrase_info.
-        aPattern = [aPattern substringToIndex:[aPattern rangeOfString:@" "].location];
-        keys = [[keySearchContext keyEnumeratorForSearchPattern:aPattern secretKeysOnly:YES] allObjects];
-        [keySearchContext stopKeyEnumeration];
-        [keySearchContext release];
+		NS_DURING
+			keySearchContext = [[GPGContext alloc] init];
+			// Do NOT use the whole uid_hint, because it causes problems with
+			// uids that have ISOLatin1 data (instead of UTF8), and can also
+			// lead to "ambiguous name" error. Use only the keyID, taken from
+			// the passphrase_info.
+			aPattern = [aPattern substringToIndex:[aPattern rangeOfString:@" "].location];
+			keys = [[keySearchContext keyEnumeratorForSearchPattern:aPattern secretKeysOnly:YES] allObjects];
+			[keySearchContext stopKeyEnumeration];
+			[keySearchContext release];
+		NS_HANDLER
+			[keySearchContext release];
+		NS_ENDHANDLER
+
         NSCAssert2([keys count] == 1, @"### No key or more than one key (%d) for search pattern '%@'", [keys count], aPattern);
     }
 
@@ -1849,6 +1855,10 @@ static void progressCallback(void *object, const char *description, int type, in
  * with code #GPGErrorTruncatedKeyListing during enumeration (i.e. when
  * when invoking -nextObject on the enumerator) if the crypto backend had to
  * truncate the result, and less than the desired keys could be listed.
+ *
+ * #WARNING: there is a bug in gpg: secret keys fetched in batch (i.e. with this
+ * method) have no capabilities and you need to invoke -refreshKey: on each to  
+ * get full information for them.
 "*/
 {
     return [[[GPGKeyEnumerator alloc] initForContext:self searchPatterns:searchPatterns secretKeysOnly:secretKeysOnly] autorelease];
@@ -1983,6 +1993,7 @@ static void progressCallback(void *object, const char *description, int type, in
     NSRange			aRange;
     NSString		*escapeCode = nil;
     unsigned		escapeCodeLength = 0;
+	BOOL			neededToUnescape = NO;
 
     switch(_version){
         case 0:
@@ -2017,7 +2028,21 @@ static void progressCallback(void *object, const char *description, int type, in
         hiChar = hiChar * 16 + loChar;
         
         [newString replaceCharactersInRange:NSMakeRange(aRange.location, escapeCodeLength + 2) withString:[NSString stringWithCharacters:&hiChar length:1]];
+		neededToUnescape = YES;
     }
+	
+	if(neededToUnescape && _version == 1){
+		// New in 1.4? Accents are passed correctly, always escaped. This means
+		// that we need _now_ to transform to UTF8: what we got was not UTF8!
+		// Does happen with my key from wwwkeys.us.pgp.net, but not from ldap://keyserver.pgp.com
+		NSData		*rawData = [newString dataUsingEncoding:NSISOLatin1StringEncoding];
+		NSString	*decodedString = [[NSString alloc] initWithData:rawData encoding:NSUTF8StringEncoding];
+		
+		if(decodedString != nil){
+			[newString setString:decodedString];
+			[decodedString release];
+		}
+	}
 
     return newString;
 }
@@ -2411,6 +2436,8 @@ enum {
 
 + (void) performCommand:(int)theCommand forContext:(GPGContext *)theContext argument:(id)theArgument serverOptions:(NSDictionary *)thePassedOptions needsLocking:(BOOL)needsLocking
 {
+	static NSMutableDictionary	*executableVersions = nil;
+	
     _GPGContextHelper	*helper;
     NSTask				*aTask = nil;
     NSMutableString		*commandString = nil;
@@ -2425,7 +2452,11 @@ enum {
     NSArray 			*options;
     NSEnumerator		*anEnum;
     int					formatVersion = 0;
+    NSNumber			*formatVersionNumber = nil;
 
+	if(executableVersions == nil)
+		executableVersions = [[NSMutableDictionary alloc] initWithCapacity:5];
+	
     gpgOptions = [[GPGOptions alloc] init];
     aHostName = [thePassedOptions objectForKey:@"keyserver"];
     if(aHostName == nil){
@@ -2458,8 +2489,20 @@ enum {
         aProtocol = @"hkp";
     }
     else if([aString hasPrefix:@"http://"]){
-        launchPath = @"gpgkeys_http"; // Hardcoded
+        launchPath = @"gpgkeys_curl"; // Hardcoded
         aProtocol = @"http";
+    }
+    else if([aString hasPrefix:@"https://"]){
+        launchPath = @"gpgkeys_curl"; // Hardcoded
+        aProtocol = @"https";
+    }
+    else if([aString hasPrefix:@"ftp://"]){
+        launchPath = @"gpgkeys_curl"; // Hardcoded
+        aProtocol = @"ftp";
+    }
+    else if([aString hasPrefix:@"ftps://"]){
+        launchPath = @"gpgkeys_curl"; // Hardcoded
+        aProtocol = @"ftps";
     }
     else if([aString hasPrefix:@"finger://"]){
 #warning FIXME Not sure that finger URLs start with finger:// 
@@ -2472,45 +2515,63 @@ enum {
     }
     aHostName = [aHostName substringFromIndex:aRange.location + 3]; // 3 = length of '://'
 
+#warning FIXME No longer hardcode path
     aString = [@"/usr/local/libexec/gnupg/" stringByAppendingPathComponent:launchPath]; // Hardcoded
     if(![[NSFileManager defaultManager] fileExistsAtPath:aString]){
-        // Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
+		BOOL	tryEmbeddedOnes = YES;
+		
+		if([aProtocol isEqualToString:@"http"]){
+			launchPath = @"gpgkeys_http"; // Hardcoded
+			aString = [@"/usr/local/libexec/gnupg/" stringByAppendingPathComponent:launchPath]; // Hardcoded
+			tryEmbeddedOnes = ![[NSFileManager defaultManager] fileExistsAtPath:aString];
+		}
+		
+		if(tryEmbeddedOnes){
+			// Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
 #warning FIXME Emdeb gpgkeys_* 1.2 binaries (backwards compatible)
-        launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
-        if(!launchPath || ![[NSFileManager defaultManager] fileExistsAtPath:launchPath]){
-            [gpgOptions release];
-            [[NSException exceptionWithGPGError:gpgme_error(GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
-        }
-    }
+			launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
+			if(!launchPath || ![[NSFileManager defaultManager] fileExistsAtPath:launchPath]){
+				[gpgOptions release];
+				[[NSException exceptionWithGPGError:gpgme_error(GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
+			}
+		}
+	}
     else
         launchPath = aString;
 
-    // We need to test the format version used by the executable
-    NS_DURING
-        NSData	*outputData;
-        
-        aTask = [[NSTask alloc] init];
-        [aTask setLaunchPath:launchPath];
-        [aTask setArguments:[NSArray arrayWithObject:@"-V"]]; // Get version
-        anOutputPipe = [NSPipe pipe];
-        [aTask setStandardOutput:[anOutputPipe fileHandleForWriting]];
-        [aTask launch];
-        // Output is on 2 lines: first contains format version,
-        // second contains executable version; we are interested only in format version,
-        // and reading first 2 bytes should be enough. If we use -readDataToEndOfFile
-        // we need to write more complex code, to avoid being blocked.
-        outputData = [[anOutputPipe fileHandleForReading] readDataOfLength:2];
-        [aTask waitUntilExit];
-        aString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
-        formatVersion = [aString intValue];
-        [aString release];
-        [aTask release];
-    NS_HANDLER
-        [aTask release];
-        [gpgOptions release];
-        [localException raise];
-    NS_ENDHANDLER
-    
+	formatVersionNumber = [executableVersions objectForKey:launchPath];
+	if(!formatVersionNumber){
+		// We need to test the format version used by the executable
+		// We do it only once per executable and cache result,
+		// to spare use of system resources (when launching task).
+		NS_DURING
+			NSData	*outputData;
+			
+			aTask = [[NSTask alloc] init];
+			[aTask setLaunchPath:launchPath];
+			[aTask setArguments:[NSArray arrayWithObject:@"-V"]]; // Get version
+			anOutputPipe = [NSPipe pipe];
+			[aTask setStandardOutput:[anOutputPipe fileHandleForWriting]];
+			[aTask launch];
+			// Output is on 2 lines: first contains format version,
+			// second contains executable version; we are interested only in format version,
+			// and reading first 2 bytes should be enough. If we use -readDataToEndOfFile
+			// we need to write more complex code, to avoid being blocked.
+			outputData = [[anOutputPipe fileHandleForReading] readDataOfLength:2];
+			[aTask waitUntilExit];
+			aString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
+			formatVersionNumber = [NSNumber numberWithInt:[aString intValue]];
+			[executableVersions setObject:formatVersionNumber forKey:launchPath];
+			[aString release];
+			[aTask release];
+		NS_HANDLER
+			[aTask release];
+			[gpgOptions release];
+			[localException raise];
+		NS_ENDHANDLER
+	}
+
+	formatVersion = [formatVersionNumber intValue];    
     aRange = [aHostName rangeOfString:@":"];
     if(aRange.length > 0){
         port = [aHostName substringFromIndex:aRange.location + 1];
@@ -2530,7 +2591,7 @@ enum {
         [commandString appendFormat:@"PORT %@\n", port];
 
     if(formatVersion > 0)
-        [commandString appendFormat:@"VERSION %d\n", formatVersion]; // For gpg 1.3.x, optional
+        [commandString appendFormat:@"VERSION %d\n", formatVersion]; // For gpg >= 1.3.x, optional
     options = [thePassedOptions objectForKey:@"keyserver-options"];
     if(options == nil){
         options = [gpgOptions _subOptionsForName:@"keyserver-options"];
@@ -2554,6 +2615,7 @@ enum {
             // We start with the first key.
             GPGKey		*aKey = [theArgument objectAtIndex:0];
             NSString	*aKeyID = [aKey keyID];
+#warning FIXME Could we not use current context?
             GPGContext	*tempContext = [[GPGContext alloc] init];
             NSString	*asciiExport = nil;
 
@@ -2746,7 +2808,7 @@ enum {
                         else if([aLine hasPrefix:@"SEARCH "] || [aLine length] == 0)
                             // SEARCH ... END
                             break;
-                        else
+                        else if(![aLine isEqualToString:@"\r"])
                             NSLog(@"### Unable to parse following line. Ignored.\n%@", aLine);
                     }
                 }
