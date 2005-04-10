@@ -188,13 +188,20 @@ NSString *GPGStringFromChars(const char * chars)
     if(![self isSecret])
         return self;
     else{
+#warning FIXME Cache result!
         GPGContext	*aContext = [[GPGContext alloc] init];
-        GPGKey		*aKey;
+        GPGKey		*aKey = nil;
 
-        aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:NO] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
-        [aKey retain];
-        [aContext stopKeyEnumeration];
-        [aContext release];
+		NS_DURING
+			aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:NO] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
+			[aKey retain];
+			[aContext stopKeyEnumeration];
+			[aContext release];
+		NS_HANDLER
+			[aContext stopKeyEnumeration];
+			[aContext release];
+			[localException raise];
+		NS_ENDHANDLER
 
         return [aKey autorelease];
     }
@@ -210,12 +217,18 @@ NSString *GPGStringFromChars(const char * chars)
         return self;
     else{
         GPGContext	*aContext = [[GPGContext alloc] init];
-        GPGKey		*aKey;
+        GPGKey		*aKey = nil;
 
-        aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:YES] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
-        [aKey retain];
-        [aContext stopKeyEnumeration];
-        [aContext release];
+		NS_DURING
+			aKey = [[aContext keyEnumeratorForSearchPattern:[@"0x" stringByAppendingString:[self fingerprint]] secretKeysOnly:YES] nextObject]; // We assume that there is only one key returned (with the same fingerprint)
+			[aKey retain];
+			[aContext stopKeyEnumeration];
+			[aContext release];
+		NS_HANDLER
+			[aContext stopKeyEnumeration];
+			[aContext release];
+			[localException raise];
+		NS_ENDHANDLER
 
         return [aKey autorelease];
     }
