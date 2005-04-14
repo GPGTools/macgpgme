@@ -277,6 +277,22 @@
 			4BF7D63B080DF8BE00DBC74F = 4BF7D63B080DF8BE00DBC74F;
 			4BF7D63C080DF8BE00DBC74F = 4BF7D63C080DF8BE00DBC74F;
 			4BF7D63D080DF8BE00DBC74F = 4BF7D63D080DF8BE00DBC74F;
+			4BF7D641080DF91000DBC74F = 4BF7D641080DF91000DBC74F;
+			4BF7D642080DF91000DBC74F = 4BF7D642080DF91000DBC74F;
+			4BF7D646080DFA0300DBC74F = 4BF7D646080DFA0300DBC74F;
+			4BF7D647080DFA0300DBC74F = 4BF7D647080DFA0300DBC74F;
+			4BF7D648080DFA0300DBC74F = 4BF7D648080DFA0300DBC74F;
+			4BF7D649080DFA0300DBC74F = 4BF7D649080DFA0300DBC74F;
+			4BF7D64A080DFA0300DBC74F = 4BF7D64A080DFA0300DBC74F;
+			4BF7D64B080DFA0300DBC74F = 4BF7D64B080DFA0300DBC74F;
+			4BF7D64C080DFA0300DBC74F = 4BF7D64C080DFA0300DBC74F;
+			4BF7D654080DFAD000DBC74F = 4BF7D654080DFAD000DBC74F;
+			4BF7D655080DFAD000DBC74F = 4BF7D655080DFAD000DBC74F;
+			4BF7D656080DFAD000DBC74F = 4BF7D656080DFAD000DBC74F;
+			4BF7D657080DFAD000DBC74F = 4BF7D657080DFAD000DBC74F;
+			4BF7D658080DFAD000DBC74F = 4BF7D658080DFAD000DBC74F;
+			4BF7D659080DFAD000DBC74F = 4BF7D659080DFAD000DBC74F;
+			4BF7D65A080DFAD000DBC74F = 4BF7D65A080DFAD000DBC74F;
 		};
 		sourceControlManager = 4BF7D5A5080DEDE100DBC74F;
 		userBuildSettings = {
@@ -285,8 +301,8 @@
 	0BD178D001298E177F000001 = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {555, 5408}}";
-			sepNavSelRange = "{12164, 0}";
-			sepNavVisRect = "{{0, 4784}, {555, 450}}";
+			sepNavSelRange = "{12241, 0}";
+			sepNavVisRect = "{{0, 4720}, {555, 450}}";
 		};
 	};
 	0BD178D101298E177F000001 = {
@@ -300,7 +316,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {555, 11596}}";
 			sepNavSelRange = "{1216, 0}";
-			sepNavVisRect = "{{0, 0}, {555, 450}}";
+			sepNavVisRect = "{{0, 177}, {555, 450}}";
 		};
 	};
 	4BF7D59C080DEDB800DBC74F = {
@@ -760,6 +776,166 @@
 		vrLoc = 11754;
 	};
 	4BF7D63D080DF8BE00DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "  if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])\n";
+		rLen = 97;
+		rLoc = 5310;
+		rType = 0;
+		vrLen = 611;
+		vrLoc = 5029;
+	};
+	4BF7D641080DF91000DBC74F = {
+		fRef = 0BD178D001298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.h: 371";
+		rLen = 0;
+		rLoc = 12164;
+		rType = 0;
+		vrLen = 677;
+		vrLoc = 11754;
+	};
+	4BF7D642080DF91000DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "  if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])\n";
+		rLen = 97;
+		rLoc = 5310;
+		rType = 0;
+		vrLen = 611;
+		vrLoc = 5029;
+	};
+	4BF7D646080DFA0300DBC74F = {
+		fRef = 0BD178D001298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.h: 371";
+		rLen = 0;
+		rLoc = 12164;
+		rType = 0;
+		vrLen = 677;
+		vrLoc = 11754;
+	};
+	4BF7D647080DFA0300DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGKey.m: 37";
+		rLen = 0;
+		rLoc = 1216;
+		rType = 0;
+		vrLen = 1268;
+		vrLoc = 418;
+	};
+	4BF7D648080DFA0300DBC74F = {
+		fRef = 0BD178D001298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.h: 371";
+		rLen = 0;
+		rLoc = 12164;
+		rType = 0;
+		vrLen = 677;
+		vrLoc = 11754;
+	};
+	4BF7D649080DFA0300DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGKey.m: 37";
+		rLen = 0;
+		rLoc = 1216;
+		rType = 0;
+		vrLen = 1195;
+		vrLoc = 0;
+	};
+	4BF7D64A080DFA0300DBC74F = {
+		fRef = 0BD178D001298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.h: 371";
+		rLen = 0;
+		rLoc = 12164;
+		rType = 0;
+		vrLen = 677;
+		vrLoc = 11754;
+	};
+	4BF7D64B080DFA0300DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGKey.m: 37";
+		rLen = 0;
+		rLoc = 1216;
+		rType = 0;
+		vrLen = 1268;
+		vrLoc = 418;
+	};
+	4BF7D64C080DFA0300DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "  if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])\n";
+		rLen = 97;
+		rLoc = 5310;
+		rType = 0;
+		vrLen = 611;
+		vrLoc = 5029;
+	};
+	4BF7D654080DFAD000DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGKey.m: 37";
+		rLen = 0;
+		rLoc = 1216;
+		rType = 0;
+		vrLen = 1268;
+		vrLoc = 418;
+	};
+	4BF7D655080DFAD000DBC74F = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.m: keyID";
+		rLen = 0;
+		rLoc = 84775;
+		rType = 0;
+		vrLen = 1625;
+		vrLoc = 82540;
+	};
+	4BF7D656080DFAD000DBC74F = {
+		fRef = 0BD178D001298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.h: 371";
+		rLen = 0;
+		rLoc = 12164;
+		rType = 0;
+		vrLen = 788;
+		vrLoc = 11583;
+	};
+	4BF7D657080DFAD000DBC74F = {
+		fRef = 0BD178DB01298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGKey.m: 37";
+		rLen = 0;
+		rLoc = 1216;
+		rType = 0;
+		vrLen = 1268;
+		vrLoc = 418;
+	};
+	4BF7D658080DFAD000DBC74F = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.m: keyID";
+		rLen = 0;
+		rLoc = 84775;
+		rType = 0;
+		vrLen = 1625;
+		vrLoc = 82540;
+	};
+	4BF7D659080DFAD000DBC74F = {
+		fRef = 0BD178D001298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.h: 377";
+		rLen = 0;
+		rLoc = 12241;
+		rType = 0;
+		vrLen = 788;
+		vrLoc = 11583;
+	};
+	4BF7D65A080DFAD000DBC74F = {
 		fRef = 0BD178DB01298E177F000001;
 		isa = PBXTextBookmark;
 		name = "  if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])\n";
