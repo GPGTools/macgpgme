@@ -374,6 +374,12 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
 "*/
 - (void) interruptAsyncOperation;
 
+
+/*"
+* context is busy with an async operation
+"*/
+-(BOOL)isPerformingAsyncOperation;
+
 @end
 
 
