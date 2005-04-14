@@ -34,6 +34,7 @@
 
 #define _key	((gpgme_key_t)_internalRepresentation)
 
+@class GPGRemoteKey;
 
 NSString *GPGStringFromChars(const char * chars)
 {
@@ -143,23 +144,30 @@ NSString *GPGStringFromChars(const char * chars)
     return [super hash];
 }
 
+
+
 - (BOOL) isEqual:(id)anObject
 /*"
- * Returns YES if both the receiver and anObject have the same %fingerprint,
- * are of the same class, and are both public or secret keys.
+* Returns YES if both the receiver and anObject have the same %fingerprint,
+* are of the same class, and are both public or secret keys.
+* If either object is a #GPGRemoteKey (which doesn't hold fingerprint info)
+* make do by comparing on the short version of the %keyID
 "*/
 {
-    if(anObject != nil && [anObject isMemberOfClass:[self class]] && [self isSecret] == [anObject isSecret]){
-        NSString	*fingerprint = [self fingerprint];
+  if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])
+	return [[anObject shortKeyID] isEqualToString:[self shortKeyID]];
+  
+  else if(anObject != nil && [anObject isMemberOfClass:[self class]] && [self isSecret] == [anObject isSecret]){
+	NSString	*fingerprint = [self fingerprint];
     
-        if(fingerprint != nil){
-            NSString	*otherFingerprint = [anObject fingerprint];
-        
-            if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint])
-                return YES;
-        }
-    }
-    return NO;
+	if(fingerprint != nil){
+	  NSString	*otherFingerprint = [anObject fingerprint];
+	  
+	  if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint])
+		return YES;
+	}
+  }
+  return NO;
 }
 
 - (id) copyWithZone:(NSZone *)zone
