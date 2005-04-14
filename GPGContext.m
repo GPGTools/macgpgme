@@ -2104,6 +2104,12 @@ static void progressCallback(void *object, const char *description, int type, in
     }
 }
 
+-(NSString *)shortKeyID
+{
+  NSString *keyIDString=[self keyID];
+  return [keyIDString substringFromIndex:[keyIDString length]-8];
+}
+
 - (NSArray *) subkeys
 {
     return nil;
@@ -3213,6 +3219,15 @@ enum {
         [localException raise];
     NS_ENDHANDLER
     [_helperPerContextLock unlock];
+}
+
+
+-(BOOL)isPerformingAsyncOperation
+  /*"
+  * If the conext is processing an async operation, this method will return True. Otherwise, it will return False.
+   "*/
+{
+  return(NSMapGet(_helperPerContext, self)!=nil);
 }
 
 @end
