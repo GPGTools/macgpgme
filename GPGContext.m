@@ -2196,7 +2196,10 @@ static void progressCallback(void *object, const char *description, int type, in
     if([aString length] > 0){
         int	aValue = [aString intValue];
 
-        return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
+        if(aValue != 0)
+            return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
+        else
+            return nil;
     }
     else
         return nil; // Information not available
