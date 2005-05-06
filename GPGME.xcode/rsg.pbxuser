@@ -39,7 +39,7 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
 					20,
-					326,
+					251,
 					20,
 					55,
 					43,
@@ -57,7 +57,7 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 137039874;
+			PBXPerProjectTemplateStateSaveDate = 137040492;
 			PBXPrepackagedSmartGroups_v2 = (
 				{
 					PBXTransientLocationAtTop = bottom;
@@ -234,7 +234,7 @@
 					};
 				},
 			);
-			PBXWorkspaceStateSaveDate = 137039874;
+			PBXWorkspaceStateSaveDate = 137040492;
 		};
 		sourceControlManager = 4BF7D5A5080DEDE100DBC74F;
 		userBuildSettings = {
