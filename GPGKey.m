@@ -154,10 +154,13 @@ NSString *GPGStringFromChars(const char * chars)
 * make do by comparing on the short version of the %keyID
 "*/
 {
+  if(anObject == nil || ![anObject isMemberOfClass:[self class]])
+	return NO;
+  
   if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])
 	return [[anObject shortKeyID] isEqualToString:[self shortKeyID]];
   
-  else if(anObject != nil && [anObject isMemberOfClass:[self class]] && [self isSecret] == [anObject isSecret]){
+  else if([self isSecret] == [anObject isSecret]){
 	NSString	*fingerprint = [self fingerprint];
     
 	if(fingerprint != nil){
