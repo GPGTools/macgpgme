@@ -154,7 +154,7 @@ NSString *GPGStringFromChars(const char * chars)
 * make do by comparing on the short version of the %keyID
 "*/
 {
-  if(anObject == nil || ![anObject isMemberOfClass:[self class]])
+  if(anObject == nil || ![anObject isKindOfClass:[GPGKey class]])
 	return NO;
   
   if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])
