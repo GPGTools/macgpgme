@@ -9,12 +9,26 @@
 			4BF7D59C080DEDB800DBC74F,
 		);
 		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXErrorsWarningsDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					300,
+					172,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXErrorsWarningsDataSource_TypeID,
+					PBXErrorsWarningsDataSource_MessageID,
+					PBXErrorsWarningsDataSource_LocationID,
+				);
+			};
 			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
 				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					212,
+					299,
 					20,
 					55,
 					43,
@@ -57,7 +71,7 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 137040492;
+			PBXPerProjectTemplateStateSaveDate = 137270220;
 			PBXPrepackagedSmartGroups_v2 = (
 				{
 					PBXTransientLocationAtTop = bottom;
@@ -234,7 +248,11 @@
 					};
 				},
 			);
-			PBXWorkspaceStateSaveDate = 137040492;
+			PBXWorkspaceStateSaveDate = 137270220;
+		};
+		perUserProjectItems = {
+			4BD66CA4082C4E320040508B = 4BD66CA4082C4E320040508B;
+			4BD66CA5082C4E320040508B = 4BD66CA5082C4E320040508B;
 		};
 		sourceControlManager = 4BF7D5A5080DEDE100DBC74F;
 		userBuildSettings = {
@@ -249,9 +267,9 @@
 	};
 	0BD178D101298E177F000001 = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {555, 50921}}";
-			sepNavSelRange = "{84775, 0}";
-			sepNavVisRect = "{{0, 0}, {555, 450}}";
+			sepNavIntBoundsRect = "{{0, 0}, {480, 54145}}";
+			sepNavSelRange = "{79355, 0}";
+			sepNavVisRect = "{{0, 29016}, {480, 351}}";
 		};
 	};
 	0BD178DB01298E177F000001 = {
@@ -267,6 +285,20 @@
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRect = "{{0, 0}, {555, 450}}";
 		};
+	};
+	4BD66CA4082C4E320040508B = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXBookmark;
+	};
+	4BD66CA5082C4E320040508B = {
+		fRef = 0BD178D101298E177F000001;
+		isa = PBXTextBookmark;
+		name = "GPGContext.m: 1939";
+		rLen = 0;
+		rLoc = 79355;
+		rType = 0;
+		vrLen = 448;
+		vrLoc = 79056;
 	};
 	4BF7D59C080DEDB800DBC74F = {
 		activeArgIndex = 2147483647;
