@@ -1,7 +1,7 @@
 gpgme library
 =============
 
-*** WARNING These instructions are for MacOS X 10.3.x, and will NOT work as-is for 10.2 ***
+*** WARNING These instructions are for MacOS X >= 10.3.x, and will NOT work as-is for 10.2 ***
 
 In order to build this framework, you need gpgme 1.0.2 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.2), and libgpg-error 1.0. These instructions show you how to build these libraries as static libraries, and not dynamic ones; this way you have no problem when installing your framework (not other dependency than framework's).
 
@@ -21,21 +21,21 @@ curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.0.2.tar.gz.sig
 gpg --verify gpgme-1.0.2.tar.gz.sig
 gnutar xzf gpgme-1.0.2.tar.gz
 cd gpgme-1.0.2
-./configure --enable-static --disable-shared --disable-dependency-tracking
+./configure --enable-static --disable-shared --disable-dependency-tracking --with-gpg-error-prefix=/usr/local --with-gpg=/usr/local/bin/gpg
 sudo make install
 cd ..
 
 
-WARNING: since gpgme 0.4.3, we need to use libgpgme-pthread (instead of libgpgme) if we want support for multithreading. We do that in GPGME.
+WARNING: since gpgme 0.4.3, we need to use libgpgme-pthread (instead of libgpgme) if we want support for multithreading. We do that in MacGPGME.
 
 
-Installing GPGME framework (OR: Using It In Your Code)
+Installing MacGPGME framework (OR: Using It In Your Code)
 =======================================================
 
 In order to do anything useful with this framework you must install it. There are now 4 build styles, 2 of them are for stand-alone framework, the 2 others are for embedding the framework in your application (these are the ones you should use).
-So, compile the framework using the EmbDevelopment or EmbDeployment Build Styles, then add a Copy Phase in your application's project to copy the GPGME.framework (located in your build products directory) in the Frameworks subdirectory of your application. See GPGTester settings to get an example or read Xcode's help about frameworks.
+So, compile the framework using the EmbDevelopment or EmbDeployment Build Styles, then add a Copy Phase in your application's project to copy the MacGPGME.framework (located in your build products directory) in the Frameworks subdirectory of your application. See GPGTester settings to get an example or read Xcode's help about frameworks.
 
-If you prefer to have a standalone installed version of GPGME.framework (why would you do?), then use the Development or Deployment Build Styles. 
+If you prefer to have a standalone installed version of MacGPGME.framework (why would you do?), then use the Development or Deployment Build Styles. 
 /Library/Frameworks is the default install location.
 (Why? It's really hard to create a portable access path to ~/Library/Frameworks. Very easy to create one to /Library/Frameworks)
 
@@ -45,7 +45,7 @@ Documentation generation
 HTML documentation can be generated automatically from code. For this you need to have installed autodoc in /usr/local/bin/, and its templates in one of the searched locations (see AutoDoc documentation).
 To install AutoDoc, type the following commands in a terminal:
 
-On MacOS X 10.3:
+On MacOS X >= 10.3:
 curl -O ftp://ftp.misckit.com/pub/next/misckit/AutoDoc-2.0b8-P-b.tar.gz
 gnutar xzf AutoDoc-2.0b8-P-b.tar.gz
 sudo mkdir -p /usr/local/bin
@@ -55,7 +55,7 @@ mkdir /Developer/AutoDoc/
 cp -pR HTMLTemplate.html LaTeXTemplate.latex RTFTemplate.rtf /Developer/AutoDoc/
 cd ..
 
-To generate and install the documentation, choose target GPGME Documentation, and build; documentation will be installed in /Library/Documentation/GPGME
-Note that if you use the Deployment Build Style for GPGME.framework, documentation will also be copied in GPGME.framework on install.
+To generate and install the documentation, choose target MacGPGME Documentation, and build; documentation will be installed in /Library/Documentation/MacGPGME
+Note that if you use the Deployment Build Style for MacGPGME.framework, documentation will also be copied in MacGPGME.framework on install.
 Tip: To view documentation within Xcode, open the installed files using File/Open..., and bookmark them with Navigation/Add to Bookmarks.
 
