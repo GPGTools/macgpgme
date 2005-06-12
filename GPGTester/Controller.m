@@ -27,7 +27,7 @@
 //
 
 #include "Controller.h"
-#include <GPGME/GPGME.h>
+#include <MacGPGME/MacGPGME.h>
 
 
 @implementation Controller
@@ -808,6 +808,8 @@
     [keyTableView noteNumberOfRowsChanged];
     [keyTableView reloadData];
 }
+
+@end
 
 @interface KeyTableView : NSTableView
 {
