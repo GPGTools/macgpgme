@@ -1,6 +1,6 @@
 //
 //  GPGContext.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,15 +25,15 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGContext.h>
-#include <GPGME/GPGData.h>
-#include <GPGME/GPGExceptions.h>
-#include <GPGME/GPGInternals.h>
-#include <GPGME/GPGKey.h>
-#include <GPGME/GPGKeyGroup.h>
-#include <GPGME/GPGOptions.h>
-#include <GPGME/GPGSignature.h>
-#include <GPGME/GPGTrustItem.h>
+#include <MacGPGME/GPGContext.h>
+#include <MacGPGME/GPGData.h>
+#include <MacGPGME/GPGExceptions.h>
+#include <MacGPGME/GPGInternals.h>
+#include <MacGPGME/GPGKey.h>
+#include <MacGPGME/GPGKeyGroup.h>
+#include <MacGPGME/GPGOptions.h>
+#include <MacGPGME/GPGSignature.h>
+#include <MacGPGME/GPGTrustItem.h>
 #include <Foundation/Foundation.h>
 #include <time.h> /* Needed for GNUstep */
 #include <gpgme.h>
@@ -2104,12 +2104,6 @@ static void progressCallback(void *object, const char *description, int type, in
     }
 }
 
--(NSString *)shortKeyID
-{
-  NSString *keyIDString=[self keyID];
-  return [keyIDString substringFromIndex:[keyIDString length]-8];
-}
-
 - (NSArray *) subkeys
 {
     return nil;
@@ -3225,12 +3219,13 @@ enum {
 }
 
 
--(BOOL)isPerformingAsyncOperation
-  /*"
-  * If the conext is processing an async operation, this method will return True. Otherwise, it will return False.
-   "*/
+- (BOOL) isPerformingAsyncOperation
+/*"
+ * If the context is processing an async operation, this method will return YES.
+ * Otherwise, it will return NO.
+"*/
 {
-  return(NSMapGet(_helperPerContext, self)!=nil);
+    return (NSMapGet(_helperPerContext, self) != nil);
 }
 
 @end
@@ -3457,7 +3452,7 @@ enum {
         gpgme_keylist_result_t	result = gpgme_op_keylist_result([context gpgmeContext]);
 
         if(!!result->truncated)
-            [[NSException exceptionWithGPGError:GPGMakeError(GPG_GPGMEFrameworkErrorSource, GPGErrorTruncatedKeyListing) userInfo:[NSDictionary dictionaryWithObject:context forKey:GPGContextKey]] raise];
+            [[NSException exceptionWithGPGError:GPGMakeError(GPG_MacGPGMEFrameworkErrorSource, GPGErrorTruncatedKeyListing) userInfo:[NSDictionary dictionaryWithObject:context forKey:GPGContextKey]] raise];
         return nil;
     }
     
