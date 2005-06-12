@@ -207,6 +207,8 @@
 				F55CD03C02D65F9C01C07EFC,
 				554F654A062ADCB000BF2446,
 				554F654B062ADCB000BF2446,
+				55994E86084A203700F12EEF,
+				55994E87084A203700F12EEF,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -227,7 +229,7 @@
 			fileEncoding = 4;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
-			path = GPGME.h;
+			path = MacGPGME.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -538,17 +540,17 @@
 				FRAMEWORK_SEARCH_PATHS = "";
 				FRAMEWORK_VERSION = 1.0.2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = GPGME_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILDINGGPGME;
+				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "Info-GPGME.plist";
+				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				LIBRARY_STYLE = DYNAMIC;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-seg1addr 0x686E0000 -headerpad_max_install_names";
-				PRODUCT_NAME = GPGME;
+				PRODUCT_NAME = MacGPGME;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
@@ -557,7 +559,7 @@
 			dependencies = (
 			);
 			isa = PBXNativeTarget;
-			name = GPGME;
+			name = MacGPGME;
 			productInstallPath = Library/Frameworks;
 			productName = GPG;
 			productReference = 554B55C0069F0111005E1C92;
@@ -586,6 +588,7 @@
 				554B55A2069F0111005E1C92,
 				5543FA93071493C4009979E9,
 				55B5189607AC37A6005C1DB3,
+				55994E88084A203700F12EEF,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -790,6 +793,7 @@
 				554B55B7069F0111005E1C92,
 				554B55B8069F0111005E1C92,
 				5543FA94071493C4009979E9,
+				55994E89084A203700F12EEF,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -919,7 +923,7 @@
 		554B55BF069F0111005E1C92 = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.xml;
-			path = "Info-GPGME.plist";
+			path = "Info-MacGPGME.plist";
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -927,7 +931,7 @@
 			explicitFileType = wrapper.framework;
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			path = GPGME.framework;
+			path = MacGPGME.framework;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1080,7 +1084,7 @@
 			isa = PBXContainerItemProxy;
 			proxyType = 1;
 			remoteGlobalIDString = 554B558F069F0111005E1C92;
-			remoteInfo = "GPGME (Upgraded)";
+			remoteInfo = "MacGPGME (Upgraded)";
 		};
 		554B55EE069F025E005E1C92 = {
 			isa = PBXTargetDependency;
@@ -1183,11 +1187,42 @@
 			settings = {
 			};
 		};
+		55994E86084A203700F12EEF = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = GPGMailAdditions.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55994E87084A203700F12EEF = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = GPGMailAdditions.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55994E88084A203700F12EEF = {
+			fileRef = 55994E86084A203700F12EEF;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		55994E89084A203700F12EEF = {
+			fileRef = 55994E87084A203700F12EEF;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		55B5189507AC37A6005C1DB3 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
-			path = GPGME_Prefix.pch;
+			path = MacGPGME_Prefix.pch;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1277,7 +1312,7 @@
 			fileEncoding = 4;
 			isa = PBXFileReference;
 			lastKnownFileType = text.html;
-			path = IntroGPGME.html;
+			path = IntroMacGPGME.html;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1456,11 +1491,11 @@
 			buildPhases = (
 			);
 			buildSettings = {
-				DOC_PATH = /Library/Documentation/GPGME;
+				DOC_PATH = /Library/Documentation/MacGPGME;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "GPGME Documentation";
+				PRODUCT_NAME = "MacGPGME Documentation";
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 			};
@@ -1468,9 +1503,9 @@
 			dependencies = (
 			);
 			isa = PBXLegacyTarget;
-			name = "GPGME Documentation";
+			name = "MacGPGME Documentation";
 			passBuildSettingsInEnvironment = 1;
-			productName = "GPGME Documentation";
+			productName = "MacGPGME Documentation";
 		};
 		F550BC6B0201F8D201A80016 = {
 			fileEncoding = 4;

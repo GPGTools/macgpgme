@@ -1,6 +1,6 @@
 //
-//  GPGME.h
-//  GPGME
+//  MacGPGME.h
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,25 +25,26 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#ifndef GPGME_FRAMEWORK_H
-#define GPGME_FRAMEWORK_H
+#ifndef MAC_GPGME_FRAMEWORK_H
+#define MAC_GPGME_FRAMEWORK_H
 
 #include <Foundation/Foundation.h>
 
-#include <GPGME/GPGDefines.h>
-#include <GPGME/GPGContext.h>
-#include <GPGME/GPGData.h>
-#include <GPGME/GPGEngine.h>
-#include <GPGME/GPGExceptions.h>
-#include <GPGME/GPGKey.h>
-#include <GPGME/GPGKeyGroup.h>
-#include <GPGME/GPGKeySignature.h>
-#include <GPGME/GPGObject.h>
-#include <GPGME/GPGOptions.h>
-#include <GPGME/GPGSignature.h>
-#include <GPGME/GPGSubkey.h>
-#include <GPGME/GPGTrustItem.h>
-#include <GPGME/GPGUserID.h>
-#include <GPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGDefines.h>
+#include <MacGPGME/GPGContext.h>
+#include <MacGPGME/GPGData.h>
+#include <MacGPGME/GPGEngine.h>
+#include <MacGPGME/GPGExceptions.h>
+#include <MacGPGME/GPGKey.h>
+#include <MacGPGME/GPGKeyGroup.h>
+#include <MacGPGME/GPGKeySignature.h>
+#include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGOptions.h>
+//#include <MacGPGME/GPGOptions/GPGOptions.h>
+#include <MacGPGME/GPGSignature.h>
+#include <MacGPGME/GPGSubkey.h>
+#include <MacGPGME/GPGTrustItem.h>
+#include <MacGPGME/GPGUserID.h>
+#include <MacGPGME/GPGPrettyInfo.h>
 
-#endif /* GPGME_FRAMEWORK_H */
+#endif /* MAC_GPGME_FRAMEWORK_H */
