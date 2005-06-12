@@ -1,6 +1,6 @@
 //
 //  GPGKey.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,16 +25,15 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGKey.h>
-#include <GPGME/GPGPrettyInfo.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGKey.h>
+#include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
 
 #define _key	((gpgme_key_t)_internalRepresentation)
 
-@class GPGRemoteKey;
 
 NSString *GPGStringFromChars(const char * chars)
 {
@@ -103,8 +102,8 @@ NSString *GPGStringFromChars(const char * chars)
  * #{-[GPGContext keyOfSignatureAtIndex:]}; you should never need to
  * instantiate objects of that class.
  *
- * Two #GPGKey instances are considered equal (in GPGME) if they have the same
- * %fingerprint, and are both secret or public. #GPGKey instances are
+ * Two #GPGKey instances are considered equal (in MacGPGME) if they have the
+ * same %fingerprint, and are both secret or public. #GPGKey instances are
  * (currently) immutable objects.
 "*/
 
@@ -144,16 +143,38 @@ NSString *GPGStringFromChars(const char * chars)
     return [super hash];
 }
 
-
-
 - (BOOL) isEqual:(id)anObject
 /*"
-* Returns YES if both the receiver and anObject have the same %fingerprint,
-* are of the same class, and are both public or secret keys.
-* If either object is a #GPGRemoteKey (which doesn't hold fingerprint info)
-* make do by comparing on the short version of the %keyID
+ * Returns YES if both the receiver and anObject have the same %fingerprint (
+ * or the same short %keyID, when fingerprint is not available), are of the same
+ * class, and are both public or secret keys.
 "*/
 {
+<<<<<<< GPGKey.m
+    if(anObject != nil && [anObject isMemberOfClass:[self class]] && [self isSecret] == [anObject isSecret]){
+        NSString	*fingerprint = [self fingerprint];
+        BOOL        compareShortKeyIDs = NO;
+        
+        if(fingerprint != nil){
+            NSString	*otherFingerprint = [anObject fingerprint];
+            
+            if(otherFingerprint == nil)
+                compareShortKeyIDs = YES;
+            else if([otherFingerprint isEqualToString:fingerprint])
+                return YES;
+        }
+        else
+            compareShortKeyIDs = YES;
+        
+        if(compareShortKeyIDs){
+            NSString    *shortKeyID = [self shortKeyID];
+            NSString    *otherShortKeyID = [anObject shortKeyID];
+            
+            return shortKeyID != nil && otherShortKeyID != nil && [shortKeyID isEqualToString:otherShortKeyID];
+        }
+    }
+    return NO;
+=======
   if(anObject == nil || ![anObject isKindOfClass:[GPGKey class]])
 	return NO;
   
@@ -171,6 +192,7 @@ NSString *GPGStringFromChars(const char * chars)
 	}
   }
   return NO;
+>>>>>>> 1.30
 }
 
 - (id) copyWithZone:(NSZone *)zone
@@ -372,10 +394,12 @@ NSString *GPGStringFromChars(const char * chars)
 
 - (NSString *) shortKeyID
 /*"
- * Convenience method. Returns %{main key short (128 bit) key ID}.
+ * Convenience method. Returns %{main key short (32 bit) key ID}.
 "*/
 {
-    return [[self keyID] substringFromIndex:8];
+    NSString *keyIDString = [self keyID];
+    
+    return [keyIDString substringFromIndex:[keyIDString length] - 8];
 }
 
 - (NSString *) keyID
