@@ -1,6 +1,6 @@
 //
 //  GPGSubkey.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Jun 08 2003.
 //
@@ -25,8 +25,8 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGSubkey.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGSubkey.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 
 

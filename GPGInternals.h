@@ -1,6 +1,6 @@
 //
 //  GPGInternals.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -28,14 +28,14 @@
 #ifndef GPGINTERNALS_H
 #define GPGINTERNALS_H
 
-#include <GPGME/GPGContext.h>
-#include <GPGME/GPGData.h>
-#include <GPGME/GPGKey.h>
-#include <GPGME/GPGKeySignature.h>
-#include <GPGME/GPGUserID.h>
-#include <GPGME/GPGSubkey.h>
-#include <GPGME/GPGDefines.h>
-#include <GPGME/GPGKeyGroup.h>
+#include <MacGPGME/GPGContext.h>
+#include <MacGPGME/GPGData.h>
+#include <MacGPGME/GPGKey.h>
+#include <MacGPGME/GPGKeySignature.h>
+#include <MacGPGME/GPGUserID.h>
+#include <MacGPGME/GPGSubkey.h>
+#include <MacGPGME/GPGDefines.h>
+#include <MacGPGME/GPGKeyGroup.h>
 #include <gpgme.h>
 
 #ifdef __cplusplus

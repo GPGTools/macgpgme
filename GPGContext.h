@@ -1,6 +1,6 @@
 //
 //  GPGContext.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -28,8 +28,8 @@
 #ifndef GPGCONTEXT_H
 #define GPGCONTEXT_H
 
-#include <GPGME/GPGObject.h>
-#include <GPGME/GPGEngine.h>
+#include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGEngine.h>
 
 #ifdef __cplusplus
 extern "C" {

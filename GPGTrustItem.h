@@ -1,6 +1,6 @@
 //
 //  GPGTrustItem.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -28,8 +28,8 @@
 #ifndef GPGTRUSTITEM_H
 #define GPGTRUSTITEM_H
 
-#include <GPGME/GPGObject.h>
-#include <GPGME/GPGKey.h>
+#include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGKey.h>
 
 #ifdef __cplusplus
 extern "C" {

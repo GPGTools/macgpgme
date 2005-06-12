@@ -1,6 +1,6 @@
 //
 //  GPGSignature.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Sun Jul 14 2002.
 //
@@ -25,9 +25,9 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGSignature.h>
-#include <GPGME/GPGPrettyInfo.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGSignature.h>
+#include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 

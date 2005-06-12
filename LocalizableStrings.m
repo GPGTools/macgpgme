@@ -1,6 +1,6 @@
 //
 //  LocalizableStrings.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by Gordon Worley
 //
@@ -25,7 +25,7 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/LocalizableStrings.h>
+#include <MacGPGME/LocalizableStrings.h>
 
 NSString * const GPGUnknownString = @"GPGUnknownString";
 NSString * const GPGValidityUndefinedString = @"GPGValidityUndefinedString";

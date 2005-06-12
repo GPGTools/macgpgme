@@ -1,6 +1,6 @@
 //
 //  LocalizableStrings.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by Gordon Worley
 //
@@ -29,7 +29,7 @@
 #define LOCALIZABLESTRINGS_H
 
 #include <Foundation/Foundation.h>
-#include <GPGME/GPGDefines.h>
+#include <MacGPGME/GPGDefines.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,6 +1,6 @@
 //
 //  GPGObject.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,7 +25,7 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGObject.h>
+#include <MacGPGME/GPGObject.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
@@ -63,7 +63,7 @@ static NSLock		*mapTableLock = nil;
         setlocale (LC_ALL, "");
         // Let's initialize libgpgme sub-systems now.
         NSAssert(gpgme_check_version(NULL) != NULL, @"### Unable to initialize gpgme sub-systems.");
-        // Let's initialize default locale; we don't use that possibility in GPGME.framework yet
+        // Let's initialize default locale; we don't use that possibility in MacGPGME.framework yet
         gpgme_set_locale(NULL, LC_CTYPE, setlocale(LC_CTYPE, NULL));
         gpgme_set_locale(NULL, LC_MESSAGES, setlocale(LC_MESSAGES, NULL));
     }

@@ -1,6 +1,6 @@
 //
 //  GPGObject.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //

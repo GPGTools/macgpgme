@@ -1,15 +1,15 @@
 //
 //  GPGAsyncHelper.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by Dave Lopper on Mon Apr 12 2004.
 //  Copyright (c) 2004 __MyCompanyName__. All rights reserved.
 //
 
 #import "GPGAsyncHelper.h"
-#include <GPGME/GPGContext.h>
-#include <GPGME/GPGInternals.h>
-#include <GPGME/GPGTrustItem.h>
+#include <MacGPGME/GPGContext.h>
+#include <MacGPGME/GPGInternals.h>
+#include <MacGPGME/GPGTrustItem.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -193,7 +193,7 @@ static gpgme_error_t addCallback(void *data, int fd, int dir, gpgme_io_cb_t fnc,
         result = GPG_ERR_NO_ERROR;
     NS_HANDLER
         NSLog(@"### Error when adding async callback: %@", localException);
-        result = gpg_err_make(GPG_GPGMEFrameworkErrorSource, GPG_ERR_GENERAL);
+        result = gpg_err_make(GPG_MacGPGMEFrameworkErrorSource, GPG_ERR_GENERAL);
     NS_ENDHANDLER
     [_dataLock unlock];
     if([_runSemaphore tryLockWhenCondition:0])

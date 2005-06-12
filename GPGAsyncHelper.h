@@ -1,6 +1,6 @@
 //
 //  GPGAsyncHelper.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by Dave Lopper on Mon Apr 12 2004.
 //  Copyright (c) 2004 __MyCompanyName__. All rights reserved.

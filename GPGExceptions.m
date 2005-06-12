@@ -1,6 +1,6 @@
 //
 //  GPGExceptions.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,8 +25,8 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGExceptions.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGExceptions.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
@@ -96,7 +96,7 @@ NSString *GPGErrorSourceDescription(GPGErrorSource errorSource)
  * and userInfo dictionary filled with #GPGErrorKey = error
  * and additional userInfo.
  *
- * Used internally by the GPGME framework, or by delegates.
+ * Used internally by the MacGPGME framework, or by delegates.
 "*/
 {
     NSParameterAssert(error != GPG_ERR_NO_ERROR);

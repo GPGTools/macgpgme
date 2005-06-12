@@ -1,6 +1,6 @@
 //
 //  GPGKeyGroup.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Wed Oct 6 2004.
 //

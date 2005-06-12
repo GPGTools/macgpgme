@@ -1,6 +1,6 @@
 //
 //  GPGSubkey.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Sun Jun 08 2003.
 //
@@ -28,7 +28,7 @@
 #ifndef GPGSUBKEY_H
 #define GPGSUBKEY_H
 
-#include <GPGME/GPGKey.h>
+#include <MacGPGME/GPGKey.h>
 
 #ifdef __cplusplus
 extern "C" {

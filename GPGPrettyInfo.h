@@ -1,6 +1,6 @@
 //
 //  GPGPrettyInfo.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by Gordon Worley on Tue Jun 18 2002.
 //
@@ -30,8 +30,8 @@
 
 #include <Foundation/Foundation.h>
 
-#include <GPGME/GPGDefines.h>
-#include <GPGME/GPGKey.h>
+#include <MacGPGME/GPGDefines.h>
+#include <MacGPGME/GPGKey.h>
 
 #ifdef __cplusplus
 extern "C" {

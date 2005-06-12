@@ -1,6 +1,6 @@
 //
 //  GPGKey.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -28,9 +28,9 @@
 #ifndef GPGKEY_H
 #define GPGKEY_H
 
-#include <GPGME/GPGObject.h>
-#include <GPGME/GPGEngine.h>
-#include <GPGME/GPGContext.h>
+#include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGEngine.h>
+#include <MacGPGME/GPGContext.h>
 
 #ifdef __cplusplus
 extern "C" {

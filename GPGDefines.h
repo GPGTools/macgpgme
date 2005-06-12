@@ -1,6 +1,6 @@
 //
 //  GPGDefines.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -37,7 +37,7 @@ extern "C" {
 
 #if defined(__WIN32__)
     #undef GPG_EXPORT
-    #if defined(BUILDINGGPGME)
+    #if defined(BUILDING_MAC_GPGME)
     #define GPG_EXPORT __declspec(dllexport) extern
     #else
     #define GPG_EXPORT __declspec(dllimport) extern

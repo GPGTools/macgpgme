@@ -1,6 +1,6 @@
 //
 //  GPGEngine.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,10 +25,10 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGEngine.h>
-#include <GPGME/GPGObject.h>
-#include <GPGME/GPGPrettyInfo.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGEngine.h>
+#include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
@@ -38,21 +38,21 @@
 
 @implementation GPGEngine
 /*"
- * GPGME supports several cryptographic protocols, however, it does not
+ * MacGPGME supports several cryptographic protocols, however, it does not
  * implement them. Rather it uses backends (also called engines) which
- * implement the protocol. GPGME uses inter-process communication to pass data
- * back and forth between the application and the backend, but the details of
- * the communication protocol and invocation of the backend is completely
- * hidden by the interface. All complexity is handled by GPGME. Where an
+ * implement the protocol. MacGPGME uses inter-process communication to pass
+ * data back and forth between the application and the backend, but the details
+ * of the communication protocol and invocation of the backend is completely
+ * hidden by the interface. All complexity is handled by MacGPGME. Where an
  * exchange of information between the application and the backend is
- * necessary, GPGME provides the necessary callback method hooks and further
+ * necessary, MacGPGME provides the necessary callback method hooks and further
  * interfaces.
 "*/
 
 + (GPGError) checkVersionForProtocol:(GPGProtocol)protocol
 /*"
  * Checks that the engine implementing the protocol protocol is installed
- * in the expected path and meets the version requirement of GPGME.
+ * in the expected path and meets the version requirement of MacGPGME.
  *
  * This method returns #GPGErrorNoError if the engine
  * is available and an error whose code is #GPGErrorInvalidEngine if it is not.
@@ -68,7 +68,7 @@
  * requiredVersion is not a valid version number. If requiredVersion is nil,
  * no check is done and the version string is simply returned.
  *
- * Note that this check is automatically performed before any GPGME 
+ * Note that this check is automatically performed before any MacGPGME 
  * object/function is used; it is called from #{+[GPGObject initialize]}.
 "*/
 {
@@ -141,7 +141,7 @@
 - (NSString *) requestedVersion
 /*"
  * Returns a string containing the minimum required version number of the
- * crypto engine for GPGME to work correctly. This is the version number that
+ * crypto engine for MacGPGME to work correctly. This is the version number that
  * #{+checkVersionForProtocol:} verifies against. Currently, it is never nil,
  * but using nil is reserved for future use, so always check before you use it.
 "*/

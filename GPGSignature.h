@@ -1,6 +1,6 @@
 //
 //  GPGSignature.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Sun Jul 14 2002.
 //
@@ -28,8 +28,8 @@
 #ifndef GPGSIGNATURE_H
 #define GPGSIGNATURE_H
 
-#include <GPGME/GPGObject.h>
-#include <GPGME/GPGKey.h>
+#include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGKey.h>
 
 #ifdef __cplusplus
 extern "C" {

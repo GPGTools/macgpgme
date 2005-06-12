@@ -1,6 +1,6 @@
 //
 //  GPGExceptions.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -29,7 +29,7 @@
 #define GPGEXCEPTIONS_H
 
 #include <Foundation/Foundation.h>
-#include <GPGME/GPGDefines.h>
+#include <MacGPGME/GPGDefines.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -149,7 +149,7 @@ extern "C" {
  * _{GPGErrorUser1-GPGErrorUser16         These error codes are not used by
  *                                        any GnuPG component and can be
  *                                        freely used by other software.
- *                                        Applications using GPGME might use
+ *                                        Applications using MacGPGME might use
  *                                        them to mark specific errors
  *                                        returned by callback handlers if no
  *                                        suitable error codes (including the
@@ -514,60 +514,60 @@ typedef enum {
 
 /*"
  * The #GPGErrorSource type defines the different sources of errors/exceptions
- * used in GPGME. The error source has not a precisely defined meaning.
+ * used in MacGPGME. The error source has not a precisely defined meaning.
  * Sometimes it is the place where the error happened, sometimes it is the
  * place where an error was encoded into an error value. Usually the error
  * source will give an indication to where to look for the problem. This is
  * not always true, but it is attempted to achieve this goal.
- * _{GPG_UnknownErrorSource         Unknown error source}
- * _{GPG_GCryptErrorSource          Error comes from C library %gcrypt, which
- *                                  is used by crypto engines to perform
- *                                  cryptographic operations}
- * _{GPG_GPGErrorSource             Error comes from %GnuPG, which is the
- *                                  crypto engine used for the OpenPGP
- *                                  protocol}
- * _{GPG_GPGSMErrorSource           Error comes from %GPGSM, which is the
- *                                  crypto engine used for the CMS protocol}
- * _{GPG_GPGAgentErrorSource        Error comes from %gpg-agent, which is used
- *                                  by crypto engines to perform operations
- *                                  with the secret key}
- * _{GPG_PINEntryErrorSource        Error comes from %pinentry, which is used
- *                                  by %gpg-agent to query the passphrase to
- *                                  unlock a secret key}
- * _{GPG_SCDErrorSource             Error comes from the %{SmartCard Daemon},
- *                                  which is used by %gpg-agent to delegate
- *                                  operations with the secret key to a
- *                                  %SmartCard}
- * _{GPG_GPGMELibErrorSource        Error comes from C library %gpgme}
- * _{GPG_KeyBoxErrorSource          Error comes from %libkbx, a library used
- *                                  by the crypto engines to manage local
- *                                  key-rings}
- * _{GPG_KSBAErrorSource            Error comes from C library %libksba}
- * _{GPG_DirMngrErrorSource         Error comes from %DirMngr}
- * _{GPG_GSTIErrorSource            Error comes from %GSTI}
- * _{GPG_GPGMEFrameworkErrorSource  Error comes from GPGME framework}
- * _{GPG_User2ErrorSource           (reserved)}
- * _{GPG_User3ErrorSource           (reserved)}
- * _{GPG_User4ErrorSource           (reserved)}
+ * _{GPG_UnknownErrorSource            Unknown error source}
+ * _{GPG_GCryptErrorSource             Error comes from C library %gcrypt, which
+ *                                     is used by crypto engines to perform
+ *                                     cryptographic operations}
+ * _{GPG_GPGErrorSource                Error comes from %GnuPG, which is the
+ *                                     crypto engine used for the OpenPGP
+ *                                     protocol}
+ * _{GPG_GPGSMErrorSource              Error comes from %GPGSM, which is the
+ *                                     crypto engine used for the CMS protocol}
+ * _{GPG_GPGAgentErrorSource           Error comes from %gpg-agent, which is
+ *                                     used by crypto engines to perform
+ *                                     operations with the secret key}
+ * _{GPG_PINEntryErrorSource           Error comes from %pinentry, which is used
+ *                                     by %gpg-agent to query the passphrase to
+ *                                     unlock a secret key}
+ * _{GPG_SCDErrorSource                Error comes from the %{SmartCard Daemon},
+ *                                     which is used by %gpg-agent to delegate
+ *                                     operations with the secret key to a
+ *                                     %SmartCard}
+ * _{GPG_GPGMELibErrorSource           Error comes from C library %gpgme}
+ * _{GPG_KeyBoxErrorSource             Error comes from %libkbx, a library used
+ *                                     by the crypto engines to manage local
+ *                                     key-rings}
+ * _{GPG_KSBAErrorSource               Error comes from C library %libksba}
+ * _{GPG_DirMngrErrorSource            Error comes from %DirMngr}
+ * _{GPG_GSTIErrorSource               Error comes from %GSTI}
+ * _{GPG_MacGPGMEFrameworkErrorSource  Error comes from MacGPGME framework}
+ * _{GPG_User2ErrorSource              (reserved)}
+ * _{GPG_User3ErrorSource              (reserved)}
+ * _{GPG_User4ErrorSource              (reserved)}
  * Any other value smaller than 256 can be used for your own purpose.
 "*/
 typedef enum {
-    GPG_UnknownErrorSource         =  0,
-    GPG_GCryptErrorSource          =  1,
-    GPG_GPGErrorSource             =  2,
-    GPG_GPGSMErrorSource           =  3,
-    GPG_GPGAgentErrorSource        =  4,
-    GPG_PINEntryErrorSource        =  5,
-    GPG_SCDErrorSource             =  6,
-    GPG_GPGMELibErrorSource        =  7,
-    GPG_KeyBoxErrorSource          =  8,
-    GPG_KSBAErrorSource            =  9,
-    GPG_DirMngrErrorSource         = 10,
-    GPG_GSTIErrorSource            = 11,
-    GPG_GPGMEFrameworkErrorSource  = 32,
-    GPG_User2ErrorSource           = 33,
-    GPG_User3ErrorSource           = 34,
-    GPG_User4ErrorSource           = 35
+    GPG_UnknownErrorSource            =  0,
+    GPG_GCryptErrorSource             =  1,
+    GPG_GPGErrorSource                =  2,
+    GPG_GPGSMErrorSource              =  3,
+    GPG_GPGAgentErrorSource           =  4,
+    GPG_PINEntryErrorSource           =  5,
+    GPG_SCDErrorSource                =  6,
+    GPG_GPGMELibErrorSource           =  7,
+    GPG_KeyBoxErrorSource             =  8,
+    GPG_KSBAErrorSource               =  9,
+    GPG_DirMngrErrorSource            = 10,
+    GPG_GSTIErrorSource               = 11,
+    GPG_MacGPGMEFrameworkErrorSource  = 32,
+    GPG_User2ErrorSource              = 33,
+    GPG_User3ErrorSource              = 34,
+    GPG_User4ErrorSource              = 35
 }GPGErrorSource;
 
 
@@ -581,7 +581,7 @@ typedef enum {
  * only 0 is used to indicate success (GPGErrorNoError), and that in this case
  * all other parts of the error value are set to 0, too.
  *
- * Note that in GPGME, the error source is used purely for diagnostical
+ * Note that in MacGPGME, the error source is used purely for diagnostical
  * purposes. Only the error code should be checked to test for a certain
  * outcome of a function. The manual only documents the error code part of an
  * error value. The error source is left unspecified and might be anything.
@@ -631,7 +631,7 @@ GPG_EXPORT GPGError GPGMakeError(GPGErrorSource src, GPGErrorCode cde);
 GPG_EXPORT GPGError GPGMakeErrorFromErrno(GPGErrorSource src, int cde);
 
 /*"
- * A #GPGException can be raised by nearly any GPGME call...
+ * A #GPGException can be raised by nearly any MacGPGME call...
  *
  * Reason: description of #GPGError.
  *

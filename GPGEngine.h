@@ -1,6 +1,6 @@
 //
 //  GPGEngine.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -28,8 +28,8 @@
 #ifndef GPGENGINE_H
 #define GPGENGINE_H
 
-#include <GPGME/GPGObject.h>
-#include <GPGME/GPGExceptions.h>
+#include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGExceptions.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,10 +45,10 @@ extern "C" {
 
 /*"
  * The #GPGProtocol type specifies the set of possible protocol values that
- * are supported by GPGME. The following protocols are supported:
+ * are supported by MacGPGME. The following protocols are supported:
  * _{GPGOpenPGPProtocol  Default protocol. OpenPGP is implemented by GnuPG,
  *                       the GNU Privacy Guard. This is the first protocol
- *                       that was supported by GPGME.}
+ *                       that was supported by MacGPGME.}
  * _{GPGCMSProtocol      CMS (Cryptographic Message Syntax) is implemented by
  *                       GpgSM, the S/MIME implementation for GnuPG.
  *                       #CAUTION: currently unsupported on MacOS X.}

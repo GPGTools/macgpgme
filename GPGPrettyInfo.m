@@ -1,6 +1,6 @@
 //
 //  GPGPrettyInfo.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by Gordon Worley on Tue Jun 18 2002.
 //
@@ -25,9 +25,9 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGPrettyInfo.h>
-#include <GPGME/LocalizableStrings.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/LocalizableStrings.h>
+#include <MacGPGME/GPGInternals.h>
 
 
 #define GPGLocalizedString(string)	(string != nil ? NSLocalizedStringFromTableInBundle(string, nil, [NSBundle bundleForClass: [GPGObject class]], ""):nil)

@@ -1,6 +1,6 @@
 //
 //  GPGData.h
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -28,7 +28,7 @@
 #ifndef GPGDATA_H
 #define GPGDATA_H
 
-#include <GPGME/GPGObject.h>
+#include <MacGPGME/GPGObject.h>
 
 #ifdef __cplusplus
 extern "C" {

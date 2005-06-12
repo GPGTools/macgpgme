@@ -1,6 +1,6 @@
 //
 //  GPGData.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,9 +25,9 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGData.h>
-#include <GPGME/GPGExceptions.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGData.h>
+#include <MacGPGME/GPGExceptions.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
@@ -461,7 +461,7 @@ static void releaseCallback(void *object)
     off_t	newPosition = gpgme_data_seek(_data, offset, offsetType);
 
     if(newPosition < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 
     return newPosition;
 }
@@ -482,7 +482,7 @@ static void releaseCallback(void *object)
     if(aReadLength == 0)
         return nil;
     if(aReadLength < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
     [readData setLength:aReadLength];
 
     return readData;
@@ -499,7 +499,7 @@ static void releaseCallback(void *object)
     ssize_t writtenByteCount = gpgme_data_write(_data, [data bytes], [data length]);
     
     if(writtenByteCount < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 
     return writtenByteCount;
 }
@@ -558,7 +558,7 @@ static void releaseCallback(void *object)
     ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
 
     if(availableDataLength < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 
     return availableDataLength;
 }
@@ -593,7 +593,7 @@ static void releaseCallback(void *object)
     ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
 
     if(availableDataLength < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
     else if(availableDataLength == 0)
         return YES;
     
@@ -622,7 +622,7 @@ static void releaseCallback(void *object)
 
     NSZoneFree(aZone, bufferPtr);
     if(aReadLength < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 
     return readData;
 }
@@ -654,7 +654,7 @@ static void releaseCallback(void *object)
     off_t	newPosition = gpgme_data_seek(_data, 0, GPGDataStartPosition);
 
     if(newPosition < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_GPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 }
 
 @end

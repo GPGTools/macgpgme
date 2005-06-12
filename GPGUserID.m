@@ -1,6 +1,6 @@
 //
 //  GPGUserID.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Fri Dec 27 2002.
 //
@@ -25,10 +25,10 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGUserID.h>
-#include <GPGME/GPGKeySignature.h>
-#include <GPGME/GPGPrettyInfo.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGUserID.h>
+#include <MacGPGME/GPGKeySignature.h>
+#include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGInternals.h>
 
 #include <Foundation/Foundation.h>
 

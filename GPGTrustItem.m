@@ -1,6 +1,6 @@
 //
 //  GPGTrustItem.m
-//  GPGME
+//  MacGPGME
 //
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
@@ -25,9 +25,9 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#include <GPGME/GPGTrustItem.h>
-#include <GPGME/GPGPrettyInfo.h>
-#include <GPGME/GPGInternals.h>
+#include <MacGPGME/GPGTrustItem.h>
+#include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
