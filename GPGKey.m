@@ -150,7 +150,6 @@ NSString *GPGStringFromChars(const char * chars)
  * class, and are both public or secret keys.
 "*/
 {
-<<<<<<< GPGKey.m
     if(anObject != nil && [anObject isMemberOfClass:[self class]] && [self isSecret] == [anObject isSecret]){
         NSString	*fingerprint = [self fingerprint];
         BOOL        compareShortKeyIDs = NO;
@@ -174,25 +173,6 @@ NSString *GPGStringFromChars(const char * chars)
         }
     }
     return NO;
-=======
-  if(anObject == nil || ![anObject isKindOfClass:[GPGKey class]])
-	return NO;
-  
-  if([self isKindOfClass:[GPGRemoteKey class]] || [anObject isKindOfClass:[GPGRemoteKey class]])
-	return [[anObject shortKeyID] isEqualToString:[self shortKeyID]];
-  
-  else if([self isSecret] == [anObject isSecret]){
-	NSString	*fingerprint = [self fingerprint];
-    
-	if(fingerprint != nil){
-	  NSString	*otherFingerprint = [anObject fingerprint];
-	  
-	  if(otherFingerprint != nil && [otherFingerprint isEqualToString:fingerprint])
-		return YES;
-	}
-  }
-  return NO;
->>>>>>> 1.30
 }
 
 - (id) copyWithZone:(NSZone *)zone
