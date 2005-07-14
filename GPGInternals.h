@@ -36,6 +36,8 @@
 #include <MacGPGME/GPGSubkey.h>
 #include <MacGPGME/GPGDefines.h>
 #include <MacGPGME/GPGKeyGroup.h>
+#include <MacGPGME/GPGRemoteKey.h>
+#include <MacGPGME/GPGRemoteUserID.h>
 #include <gpgme.h>
 
 #ifdef __cplusplus
@@ -45,6 +47,17 @@ extern "C" {
 #endif
 #endif
 
+@interface GPGRemoteUserID(GPGInternals)
+- (id) initWithKey:(GPGRemoteKey *)key index:(int)index;
+@end
+
+@interface GPGRemoteKey(GPGInternals)
+- (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version;
+- (NSArray *) colonFormatStrings;
+- (int) colonFormatStringsVersion;
+- (NSString *) unescapedString:(NSString *)string;
+- (GPGPublicKeyAlgorithm) algorithmFromName:(NSString *)name;
+@end
 
 @interface GPGContext(GPGInternals)
 - (gpgme_ctx_t) gpgmeContext;

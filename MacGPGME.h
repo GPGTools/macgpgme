@@ -35,6 +35,7 @@
 #include <MacGPGME/GPGData.h>
 #include <MacGPGME/GPGEngine.h>
 #include <MacGPGME/GPGExceptions.h>
+#include <MacGPGME/GPGKeyDefines.h>
 #include <MacGPGME/GPGKey.h>
 #include <MacGPGME/GPGKeyGroup.h>
 #include <MacGPGME/GPGKeySignature.h>
@@ -45,6 +46,8 @@
 #include <MacGPGME/GPGSubkey.h>
 #include <MacGPGME/GPGTrustItem.h>
 #include <MacGPGME/GPGUserID.h>
+#include <MacGPGME/GPGRemoteKey.h>
+#include <MacGPGME/GPGRemoteUserID.h>
 #include <MacGPGME/GPGPrettyInfo.h>
 
 #endif /* MAC_GPGME_FRAMEWORK_H */
