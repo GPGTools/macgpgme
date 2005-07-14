@@ -145,33 +145,12 @@ NSString *GPGStringFromChars(const char * chars)
 
 - (BOOL) isEqual:(id)anObject
 /*"
- * Returns YES if both the receiver and anObject have the same %fingerprint (
- * or the same short %keyID, when fingerprint is not available), are of the same
- * class, and are both public or secret keys.
+ * Returns YES if both the receiver and anObject have the same %fingerprint, are both subclasses of GPGKey,
+ * and are both public or secret keys.
 "*/
 {
-    if(anObject != nil && [anObject isMemberOfClass:[self class]] && [self isSecret] == [anObject isSecret]){
-        NSString	*fingerprint = [self fingerprint];
-        BOOL        compareShortKeyIDs = NO;
-        
-        if(fingerprint != nil){
-            NSString	*otherFingerprint = [anObject fingerprint];
-            
-            if(otherFingerprint == nil)
-                compareShortKeyIDs = YES;
-            else if([otherFingerprint isEqualToString:fingerprint])
-                return YES;
-        }
-        else
-            compareShortKeyIDs = YES;
-        
-        if(compareShortKeyIDs){
-            NSString    *shortKeyID = [self shortKeyID];
-            NSString    *otherShortKeyID = [anObject shortKeyID];
-            
-            return shortKeyID != nil && otherShortKeyID != nil && [shortKeyID isEqualToString:otherShortKeyID];
-        }
-    }
+  if(anObject != nil && [anObject isKindOfClass:[GPGKey class]] && [self isSecret] == [anObject isSecret])
+	return [[self fingerprint] isEqualToString:[anObject fingerprint]];
     return NO;
 }
 
