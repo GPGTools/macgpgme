@@ -29,7 +29,7 @@
 #include <MacGPGME/GPGData.h>
 #include <MacGPGME/GPGExceptions.h>
 #include <MacGPGME/GPGInternals.h>
-#include <MacGPGME/GPGKey.h>
+#include <MacGPGME/GPGRemoteKey.h>
 #include <MacGPGME/GPGKeyGroup.h>
 #include <MacGPGME/GPGOptions.h>
 #include <MacGPGME/GPGSignature.h>
@@ -593,11 +593,11 @@ static void progressCallback(void *object, const char *description, int type, in
  *
  * If last operation was a remote key search operation, dictionary can
  * contain:
- * _{@"keys"             An array of pseudo GPGKey instances: these are not
+ * _{@"keys"             An array of #GPGRemoteKey instances: these are not
  *                       usable keys, they contain no other information than
- *                       keyID, algorithmDescription, length, creationDate,
+ *                       keyID, algorithm, algorithmDescription, length, creationDate,
  *                       expirationDate, userIDs, isKeyRevoked; userIDs are
- *                       also pseudo GPGUserID instances that contain no other
+ *                       also #GPGRemoteUserID instances that contain no other
  *                       information than userID. Returned information depends
  *                       on servers.}
  * _{@"hostName"         Contacted server's host name}
@@ -1922,485 +1922,485 @@ static void progressCallback(void *object, const char *description, int type, in
 - (NSArray *) _subOptionsForName:(NSString *)optionName;
 @end
 
-@interface GPGRemoteKey : GPGKey
-{
-    NSArray	*_colonFormatStrings;
-    int		_version;
-}
-
-- (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version;
-- (NSArray *) colonFormatStrings;
-- (int) colonFormatStringsVersion;
-- (NSString *) unescapedString:(NSString *)string;
-
-@end
-
-
-@interface GPGRemoteUserID : GPGUserID
-{
-    int	_index;
-}
-
-- (id) initWithKey:(GPGRemoteKey *)key index:(int)index;
-
-@end
-
-
-@implementation GPGRemoteKey
-
-+ (BOOL) needsPointerUniquing
-{
-    return NO;
-}
-
-+ (BOOL) usesReferencesCount
-{
-    return NO;
-}
-
-- (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version
-{
-    if(self = [self initWithInternalRepresentation:NULL]){
-        _colonFormatStrings = [strings copyWithZone:[self zone]];
-        _version = version;
-    }
-    
-    return self;
-}
-
-- (void) dealloc
-{
-    [_colonFormatStrings release];
-    
-    [super dealloc];
-}
-
-- (NSArray *) colonFormatStrings
-{
-    return _colonFormatStrings;
-}
-
-- (int) colonFormatStringsVersion
-{
-    return _version;
-}
-
-- (NSString *) unescapedString:(NSString *)string
-{
-    // Version 0: replaces \xXX sequences with ASCII character matching hexcode XX
-    // Version 1: replaces %XX sequences with ASCII character matching hexcode XX
-    NSMutableString	*newString = [NSMutableString stringWithString:string];
-    NSRange			aRange;
-    NSString		*escapeCode = nil;
-    unsigned		escapeCodeLength = 0;
-	BOOL			neededToUnescape = NO;
-
-    switch(_version){
-        case 0:
-            escapeCode = @"\\x";
-            escapeCodeLength = 2;
-            break;
-        case 1:
-            escapeCode = @"%";
-            escapeCodeLength = 1;
-            break;
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-    }
-
-    while((aRange = [newString rangeOfString:escapeCode]).length > 0){
-        NSString	*hexCodeString = [newString substringWithRange:NSMakeRange(aRange.location + escapeCodeLength, 2)];
-        unichar		hiChar = [hexCodeString characterAtIndex:0];
-        unichar		loChar = [hexCodeString characterAtIndex:1];
-
-        if(hiChar >= 'a')
-            hiChar = hiChar - 'a' + 10;
-        else if(hiChar >= 'A')
-            hiChar = hiChar - 'A' + 10;
-        else
-            hiChar -= '0';
-        if(loChar >= 'a')
-            loChar = loChar - 'a' + 10;
-        else if(loChar >= 'A')
-            loChar = loChar - 'A' + 10;
-        else
-            loChar -= '0';
-        hiChar = hiChar * 16 + loChar;
-        
-        [newString replaceCharactersInRange:NSMakeRange(aRange.location, escapeCodeLength + 2) withString:[NSString stringWithCharacters:&hiChar length:1]];
-		neededToUnescape = YES;
-    }
-	
-	if(neededToUnescape && _version == 1){
-		// New in 1.4? Accents are passed correctly, always escaped. This means
-		// that we need _now_ to transform to UTF8: what we got was not UTF8!
-		// Does happen with my key from wwwkeys.us.pgp.net, but not from ldap://keyserver.pgp.com
-		NSData		*rawData = [newString dataUsingEncoding:NSISOLatin1StringEncoding];
-		NSString	*decodedString = [[NSString alloc] initWithData:rawData encoding:NSUTF8StringEncoding];
-		
-		if(decodedString != nil){
-			[newString setString:decodedString];
-			[decodedString release];
-		}
-	}
-
-    return newString;
-}
-
-- (gpgme_key_t) gpgmeKey
-{
-    [NSException raise:NSGenericException format:@"### Not a real key!"];
-    
-    return NULL;
-}
-
-- (NSDictionary *) dictionaryRepresentation
-{
-    NSMutableDictionary	*key_dict = [NSMutableDictionary dictionary];
-    NSArray 			*objects;
-
-    [key_dict setObject: [NSNumber numberWithBool:[self isSecret]] forKey:@"secret"];
-//    [key_dict setObject: [NSNumber numberWithBool:[self isKeyInvalid]] forKey:@"invalid"];
-    [key_dict setObject: [NSNumber numberWithBool:[self isKeyRevoked]] forKey:@"revoked"];
-//    [key_dict setObject: [NSNumber numberWithBool:[self hasKeyExpired]] forKey:@"expired"];
-//    [key_dict setObject: [NSNumber numberWithBool:[self isKeyDisabled]] forKey:@"disabled"];
-    [key_dict setObject: [self shortKeyID] forKey: @"shortkeyid"];
-    [key_dict setObject: [self keyID] forKey: @"keyid"];
-//    [key_dict setObject: [self fingerprint] forKey:@"fpr"];
-//    [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
-//    [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
-    if ([self creationDate])
-        [key_dict setObject: [self creationDate] forKey:@"created"];
-    if ([self expirationDate])
-        [key_dict setObject: [self expirationDate] forKey:@"expire"];
-    if ([self issuerSerial])
-        [key_dict setObject: [self issuerSerial] forKey:@"issuerSerial"];
-    if ([self issuerName])
-        [key_dict setObject: [self issuerName] forKey:@"issuerName"];
-    if ([self chainID])
-        [key_dict setObject: [self chainID] forKey:@"chainID"];
-//    [key_dict setObject: [NSNumber numberWithInt:[self ownerTrust]] forKey:@"ownertrust"];
-
-    objects = [self userIDs];
-    if(objects != nil)
-        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"userids"];
-    objects = [self subkeys];
-    if(objects != nil)
-        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"subkeys"];
-
-    return key_dict;
-}
-
-- (NSString *) keyID
-{
-    switch(_version){
-        case 0:
-            return [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:0];
-        case 1:
-            return [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:1];
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-            return nil; // Never reached
-    }
-}
-
-- (NSArray *) subkeys
-{
-    return nil;
-}
-
-- (GPGPublicKeyAlgorithm) algorithm
-{
-    NSString	*aString;
-    
-    switch(_version){
-        case 0:
-            // We need to make an inverse mapping between name (sometimes given)
-            // and the numerical value
-            aString = [self algorithmDescription];
-            return [self algorithmFromName:aString];
-        case 1:
-            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:2];
-            if([aString length] > 0)
-                return [aString intValue];
-            else
-                return -1;
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-            return -1; // Never reached
-    }
-}
-
-- (NSString *) algorithmDescription
-{
-    switch(_version){
-        case 0:
-            return [self unescapedString:[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:6]]; // Not always available, not localized
-        case 1:
-            return [super algorithmDescription];
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-            return nil; // Never reached
-    }
-}
-
-- (unsigned int) length
-{
-    switch(_version){
-        case 0:
-            // Might return 0, because info was not available
-            return (unsigned)[[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:7] intValue];
-        case 1:
-            return (unsigned)[[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:3] intValue];
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-            return 0; // Never reached
-    }
-}
-
-- (NSCalendarDate *) creationDate
-{
-    int	aValue;
-
-    switch(_version){
-        case 0:
-            aValue = [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:3] intValue]; break;
-        case 1:
-            aValue = [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:4] intValue]; break;
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-            return nil; // Never reached
-    }
-    return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
-}
-
-- (NSCalendarDate *) expirationDate
-{
-    NSString	*aString;
-
-    switch(_version){
-        case 0:
-            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:4]; break;
-        case 1:
-            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:5]; break;
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-            return nil; // Never reached
-    }
-    if([aString length] > 0){
-        int	aValue = [aString intValue];
-
-        if(aValue != 0)
-            return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
-        else
-            return nil;
-    }
-    else
-        return nil; // Information not available
-}
-
-- (GPGValidity) ownerTrust
-{
-    return GPGValidityUnknown; // Information not available
-}
-
-- (NSArray *) userIDs
-{
-    if(_userIDs == nil){
-        int		i = 0;
-        int		max = [_colonFormatStrings count];
-        NSZone	*aZone = [self zone];
-
-        switch(_version){
-            case 0:
-                i = 0; break;
-            case 1:
-                i = 1; break;
-            default:
-                [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-                return nil; // Never reached
-        }
-        _userIDs = [[NSMutableArray allocWithZone:aZone] initWithCapacity:max];
-        for(; i < max; i++){
-            GPGRemoteUserID	*aUserID = [[GPGRemoteUserID allocWithZone:aZone] initWithKey:self index:i];
-
-            [(NSMutableArray *)_userIDs addObject:aUserID];
-            [aUserID release];
-        }
-    }
-    
-    return _userIDs;
-}
-
-- (BOOL) isKeyRevoked
-{
-    switch(_version){
-        case 0:
-            return !![[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:2] intValue];
-        case 1:
-            return [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:6] rangeOfString:@"r"].location != NSNotFound;
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-            return 0; // Never reached
-    }
-}
-
-- (BOOL) isKeyInvalid
-{
-    return NO; // Information not available
-}
-
-- (BOOL) hasKeyExpired
-{
-    NSCalendarDate	*expirationDate = [self expirationDate];
-
-    if(expirationDate != nil && [expirationDate compare:[NSCalendarDate calendarDate]] <= 0)
-        return YES;
-    
-    return NO; // Information not available
-}
-
-- (BOOL) isKeyDisabled
-{
-    return NO; // Information not available
-}
-
-- (BOOL) isSecret
-{
-    return NO;
-}
-
-- (BOOL) canEncrypt
-{
-    return YES; // Information not available
-}
-
-- (BOOL) canSign
-{
-    return YES; // Information not available
-}
-
-- (BOOL) canCertify
-{
-    return YES; // Information not available
-}
-
-- (NSString *) issuerSerial
-{
-    return nil; // Information not available
-}
-
-- (NSString *) issuerName
-{
-    return nil; // Information not available
-}
-
-- (NSString *) chainID
-{
-    return nil; // Information not available
-}
-
-- (GPGProtocol) supportedProtocol
-{
-    return -1; // Information not available
-}
-
-@end
-
-
-@implementation GPGRemoteUserID
-
-- (id) initWithKey:(GPGRemoteKey *)key index:(int)index
-{
-    if(self = [self init]){
-        ((GPGRemoteUserID *)self)->_key = key; // Not retained
-        ((GPGRemoteUserID *)self)->_index = index;
-    }
-
-    return self;
-}
-
-- (NSString *) userID
-{
-    switch([(GPGRemoteKey *)_key colonFormatStringsVersion]){
-        case 0:
-            return [(GPGRemoteKey *)_key unescapedString:[[[[(GPGRemoteKey *)_key colonFormatStrings] objectAtIndex:_index] componentsSeparatedByString:@":"] objectAtIndex:1]];
-        case 1:
-            return [(GPGRemoteKey *)_key unescapedString:[[[[(GPGRemoteKey *)_key colonFormatStrings] objectAtIndex:_index] componentsSeparatedByString:@":"] objectAtIndex:1]];
-        default:
-            [NSException raise:NSGenericException format:@"### Unknown version (%d)", [(GPGRemoteKey *)_key colonFormatStringsVersion]];
-            return nil; // Never reached
-    }
-}
-
-- (NSString *) name
-{
-    return nil;
-}
-
-- (NSString *) email
-{
-    return nil;
-}
-
-- (NSString *) comment
-{
-    return nil;
-}
-
-- (GPGValidity) validity
-{
-    return GPGValidityUnknown; // Information not available
-}
-
-- (BOOL) hasBeenRevoked
-{
-    return NO; // Information not available
-}
-
-- (BOOL) isInvalid
-{
-    return NO; // Information not available
-}
-
-- (NSArray *) signatures
-{
-    return [NSArray array]; // Information not available
-}
-
-- (BOOL) isPhoto
-{
-    return NO; // Information not available
-}
-
-- (NSData *) photoData
-{
-    return nil; // Information not available
-}
-
-- (NSDictionary *) dictionaryRepresentation
-{
-    NSMutableDictionary *aDictionary = [NSMutableDictionary dictionaryWithCapacity:7];
-    NSString			*aString;
-
-//    [aDictionary setObject:[NSNumber numberWithBool:[self isInvalid]] forKey:@"invalid"];
-//    [aDictionary setObject:[NSNumber numberWithBool:[self hasBeenRevoked]] forKey:@"revoked"];
-    [aDictionary setObject:[self userID] forKey:@"raw"];
-    aString = [self name];
-    if(aString != nil)
-        [aDictionary setObject:aString forKey:@"name"];
-    aString = [self email];
-    if(aString != nil)
-        [aDictionary setObject:aString forKey:@"email"];
-    aString = [self comment];
-    if(aString != nil)
-        [aDictionary setObject:aString forKey:@"comment"];
-//    [aDictionary setObject:[NSNumber numberWithInt:[self validity]] forKey:@"validity"];
-
-    return aDictionary;
-}
-
-@end
+//@interface GPGRemoteKey : GPGKey
+//{
+//    NSArray	*_colonFormatStrings;
+//    int		_version;
+//}
+//
+//- (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version;
+//- (NSArray *) colonFormatStrings;
+//- (int) colonFormatStringsVersion;
+//- (NSString *) unescapedString:(NSString *)string;
+//
+//@end
+
+
+//@interface GPGRemoteUserID : GPGUserID
+//{
+//    int	_index;
+//}
+//
+//- (id) initWithKey:(GPGRemoteKey *)key index:(int)index;
+//
+//@end
+
+
+//@implementation GPGRemoteKey
+//
+//+ (BOOL) needsPointerUniquing
+//{
+//    return NO;
+//}
+//
+//+ (BOOL) usesReferencesCount
+//{
+//    return NO;
+//}
+//
+//- (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version
+//{
+//    if(self = [self initWithInternalRepresentation:NULL]){
+//        _colonFormatStrings = [strings copyWithZone:[self zone]];
+//        _version = version;
+//    }
+//    
+//    return self;
+//}
+//
+//- (void) dealloc
+//{
+//    [_colonFormatStrings release];
+//    
+//    [super dealloc];
+//}
+//
+//- (NSArray *) colonFormatStrings
+//{
+//    return _colonFormatStrings;
+//}
+//
+//- (int) colonFormatStringsVersion
+//{
+//    return _version;
+//}
+//
+//- (NSString *) unescapedString:(NSString *)string
+//{
+//    // Version 0: replaces \xXX sequences with ASCII character matching hexcode XX
+//    // Version 1: replaces %XX sequences with ASCII character matching hexcode XX
+//    NSMutableString	*newString = [NSMutableString stringWithString:string];
+//    NSRange			aRange;
+//    NSString		*escapeCode = nil;
+//    unsigned		escapeCodeLength = 0;
+//	BOOL			neededToUnescape = NO;
+//
+//    switch(_version){
+//        case 0:
+//            escapeCode = @"\\x";
+//            escapeCodeLength = 2;
+//            break;
+//        case 1:
+//            escapeCode = @"%";
+//            escapeCodeLength = 1;
+//            break;
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//    }
+//
+//    while((aRange = [newString rangeOfString:escapeCode]).length > 0){
+//        NSString	*hexCodeString = [newString substringWithRange:NSMakeRange(aRange.location + escapeCodeLength, 2)];
+//        unichar		hiChar = [hexCodeString characterAtIndex:0];
+//        unichar		loChar = [hexCodeString characterAtIndex:1];
+//
+//        if(hiChar >= 'a')
+//            hiChar = hiChar - 'a' + 10;
+//        else if(hiChar >= 'A')
+//            hiChar = hiChar - 'A' + 10;
+//        else
+//            hiChar -= '0';
+//        if(loChar >= 'a')
+//            loChar = loChar - 'a' + 10;
+//        else if(loChar >= 'A')
+//            loChar = loChar - 'A' + 10;
+//        else
+//            loChar -= '0';
+//        hiChar = hiChar * 16 + loChar;
+//        
+//        [newString replaceCharactersInRange:NSMakeRange(aRange.location, escapeCodeLength + 2) withString:[NSString stringWithCharacters:&hiChar length:1]];
+//		neededToUnescape = YES;
+//    }
+//	
+//	if(neededToUnescape && _version == 1){
+//		// New in 1.4? Accents are passed correctly, always escaped. This means
+//		// that we need _now_ to transform to UTF8: what we got was not UTF8!
+//		// Does happen with my key from wwwkeys.us.pgp.net, but not from ldap://keyserver.pgp.com
+//		NSData		*rawData = [newString dataUsingEncoding:NSISOLatin1StringEncoding];
+//		NSString	*decodedString = [[NSString alloc] initWithData:rawData encoding:NSUTF8StringEncoding];
+//		
+//		if(decodedString != nil){
+//			[newString setString:decodedString];
+//			[decodedString release];
+//		}
+//	}
+//
+//    return newString;
+//}
+//
+//- (gpgme_key_t) gpgmeKey
+//{
+//    [NSException raise:NSGenericException format:@"### Not a real key!"];
+//    
+//    return NULL;
+//}
+//
+//- (NSDictionary *) dictionaryRepresentation
+//{
+//    NSMutableDictionary	*key_dict = [NSMutableDictionary dictionary];
+//    NSArray 			*objects;
+//
+//    [key_dict setObject: [NSNumber numberWithBool:[self isSecret]] forKey:@"secret"];
+////    [key_dict setObject: [NSNumber numberWithBool:[self isKeyInvalid]] forKey:@"invalid"];
+//    [key_dict setObject: [NSNumber numberWithBool:[self isKeyRevoked]] forKey:@"revoked"];
+////    [key_dict setObject: [NSNumber numberWithBool:[self hasKeyExpired]] forKey:@"expired"];
+////    [key_dict setObject: [NSNumber numberWithBool:[self isKeyDisabled]] forKey:@"disabled"];
+//    [key_dict setObject: [self shortKeyID] forKey: @"shortkeyid"];
+//    [key_dict setObject: [self keyID] forKey: @"keyid"];
+////    [key_dict setObject: [self fingerprint] forKey:@"fpr"];
+////    [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
+////    [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
+//    if ([self creationDate])
+//        [key_dict setObject: [self creationDate] forKey:@"created"];
+//    if ([self expirationDate])
+//        [key_dict setObject: [self expirationDate] forKey:@"expire"];
+//    if ([self issuerSerial])
+//        [key_dict setObject: [self issuerSerial] forKey:@"issuerSerial"];
+//    if ([self issuerName])
+//        [key_dict setObject: [self issuerName] forKey:@"issuerName"];
+//    if ([self chainID])
+//        [key_dict setObject: [self chainID] forKey:@"chainID"];
+////    [key_dict setObject: [NSNumber numberWithInt:[self ownerTrust]] forKey:@"ownertrust"];
+//
+//    objects = [self userIDs];
+//    if(objects != nil)
+//        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"userids"];
+//    objects = [self subkeys];
+//    if(objects != nil)
+//        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"subkeys"];
+//
+//    return key_dict;
+//}
+//
+//- (NSString *) keyID
+//{
+//    switch(_version){
+//        case 0:
+//            return [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:0];
+//        case 1:
+//            return [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:1];
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//            return nil; // Never reached
+//    }
+//}
+//
+//- (NSArray *) subkeys
+//{
+//    return nil;
+//}
+//
+//- (GPGPublicKeyAlgorithm) algorithm
+//{
+//    NSString	*aString;
+//    
+//    switch(_version){
+//        case 0:
+//            // We need to make an inverse mapping between name (sometimes given)
+//            // and the numerical value
+//            aString = [self algorithmDescription];
+//            return [self algorithmFromName:aString];
+//        case 1:
+//            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:2];
+//            if([aString length] > 0)
+//                return [aString intValue];
+//            else
+//                return -1;
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//            return -1; // Never reached
+//    }
+//}
+//
+//- (NSString *) algorithmDescription
+//{
+//    switch(_version){
+//        case 0:
+//            return [self unescapedString:[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:6]]; // Not always available, not localized
+//        case 1:
+//            return [super algorithmDescription];
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//            return nil; // Never reached
+//    }
+//}
+//
+//- (unsigned int) length
+//{
+//    switch(_version){
+//        case 0:
+//            // Might return 0, because info was not available
+//            return (unsigned)[[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:7] intValue];
+//        case 1:
+//            return (unsigned)[[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:3] intValue];
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//            return 0; // Never reached
+//    }
+//}
+//
+//- (NSCalendarDate *) creationDate
+//{
+//    int	aValue;
+//
+//    switch(_version){
+//        case 0:
+//            aValue = [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:3] intValue]; break;
+//        case 1:
+//            aValue = [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:4] intValue]; break;
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//            return nil; // Never reached
+//    }
+//    return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
+//}
+//
+//- (NSCalendarDate *) expirationDate
+//{
+//    NSString	*aString;
+//
+//    switch(_version){
+//        case 0:
+//            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:4]; break;
+//        case 1:
+//            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:5]; break;
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//            return nil; // Never reached
+//    }
+//    if([aString length] > 0){
+//        int	aValue = [aString intValue];
+//
+//        if(aValue != 0)
+//            return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
+//        else
+//            return nil;
+//    }
+//    else
+//        return nil; // Information not available
+//}
+//
+//- (GPGValidity) ownerTrust
+//{
+//    return GPGValidityUnknown; // Information not available
+//}
+//
+//- (NSArray *) userIDs
+//{
+//    if(_userIDs == nil){
+//        int		i = 0;
+//        int		max = [_colonFormatStrings count];
+//        NSZone	*aZone = [self zone];
+//
+//        switch(_version){
+//            case 0:
+//                i = 0; break;
+//            case 1:
+//                i = 1; break;
+//            default:
+//                [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//                return nil; // Never reached
+//        }
+//        _userIDs = [[NSMutableArray allocWithZone:aZone] initWithCapacity:max];
+//        for(; i < max; i++){
+//            GPGRemoteUserID	*aUserID = [[GPGRemoteUserID allocWithZone:aZone] initWithKey:self index:i];
+//
+//            [(NSMutableArray *)_userIDs addObject:aUserID];
+//            [aUserID release];
+//        }
+//    }
+//    
+//    return _userIDs;
+//}
+//
+//- (BOOL) isKeyRevoked
+//{
+//    switch(_version){
+//        case 0:
+//            return !![[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:2] intValue];
+//        case 1:
+//            return [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:6] rangeOfString:@"r"].location != NSNotFound;
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
+//            return 0; // Never reached
+//    }
+//}
+//
+//- (BOOL) isKeyInvalid
+//{
+//    return NO; // Information not available
+//}
+//
+//- (BOOL) hasKeyExpired
+//{
+//    NSCalendarDate	*expirationDate = [self expirationDate];
+//
+//    if(expirationDate != nil && [expirationDate compare:[NSCalendarDate calendarDate]] <= 0)
+//        return YES;
+//    
+//    return NO; // Information not available
+//}
+//
+//- (BOOL) isKeyDisabled
+//{
+//    return NO; // Information not available
+//}
+//
+//- (BOOL) isSecret
+//{
+//    return NO;
+//}
+//
+//- (BOOL) canEncrypt
+//{
+//    return YES; // Information not available
+//}
+//
+//- (BOOL) canSign
+//{
+//    return YES; // Information not available
+//}
+//
+//- (BOOL) canCertify
+//{
+//    return YES; // Information not available
+//}
+//
+//- (NSString *) issuerSerial
+//{
+//    return nil; // Information not available
+//}
+//
+//- (NSString *) issuerName
+//{
+//    return nil; // Information not available
+//}
+//
+//- (NSString *) chainID
+//{
+//    return nil; // Information not available
+//}
+//
+//- (GPGProtocol) supportedProtocol
+//{
+//    return -1; // Information not available
+//}
+//
+//@end
+
+
+//@implementation GPGRemoteUserID
+//
+//- (id) initWithKey:(GPGRemoteKey *)key index:(int)index
+//{
+//    if(self = [self init]){
+//        ((GPGRemoteUserID *)self)->_key = key; // Not retained
+//        ((GPGRemoteUserID *)self)->_index = index;
+//    }
+//
+//    return self;
+//}
+//
+//- (NSString *) userID
+//{
+//    switch([(GPGRemoteKey *)_key colonFormatStringsVersion]){
+//        case 0:
+//            return [(GPGRemoteKey *)_key unescapedString:[[[[(GPGRemoteKey *)_key colonFormatStrings] objectAtIndex:_index] componentsSeparatedByString:@":"] objectAtIndex:1]];
+//        case 1:
+//            return [(GPGRemoteKey *)_key unescapedString:[[[[(GPGRemoteKey *)_key colonFormatStrings] objectAtIndex:_index] componentsSeparatedByString:@":"] objectAtIndex:1]];
+//        default:
+//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", [(GPGRemoteKey *)_key colonFormatStringsVersion]];
+//            return nil; // Never reached
+//    }
+//}
+//
+//- (NSString *) name
+//{
+//    return nil;
+//}
+//
+//- (NSString *) email
+//{
+//    return nil;
+//}
+//
+//- (NSString *) comment
+//{
+//    return nil;
+//}
+//
+//- (GPGValidity) validity
+//{
+//    return GPGValidityUnknown; // Information not available
+//}
+//
+//- (BOOL) hasBeenRevoked
+//{
+//    return NO; // Information not available
+//}
+//
+//- (BOOL) isInvalid
+//{
+//    return NO; // Information not available
+//}
+//
+//- (NSArray *) signatures
+//{
+//    return [NSArray array]; // Information not available
+//}
+//
+//- (BOOL) isPhoto
+//{
+//    return NO; // Information not available
+//}
+//
+//- (NSData *) photoData
+//{
+//    return nil; // Information not available
+//}
+//
+//- (NSDictionary *) dictionaryRepresentation
+//{
+//    NSMutableDictionary *aDictionary = [NSMutableDictionary dictionaryWithCapacity:7];
+//    NSString			*aString;
+//
+////    [aDictionary setObject:[NSNumber numberWithBool:[self isInvalid]] forKey:@"invalid"];
+////    [aDictionary setObject:[NSNumber numberWithBool:[self hasBeenRevoked]] forKey:@"revoked"];
+//    [aDictionary setObject:[self userID] forKey:@"raw"];
+//    aString = [self name];
+//    if(aString != nil)
+//        [aDictionary setObject:aString forKey:@"name"];
+//    aString = [self email];
+//    if(aString != nil)
+//        [aDictionary setObject:aString forKey:@"email"];
+//    aString = [self comment];
+//    if(aString != nil)
+//        [aDictionary setObject:aString forKey:@"comment"];
+////    [aDictionary setObject:[NSNumber numberWithInt:[self validity]] forKey:@"validity"];
+//
+//    return aDictionary;
+//}
+//
+//@end
 
 
 enum {
@@ -3080,9 +3080,9 @@ enum {
 /*"
  * Contacts asynchronously a key server and download keys from it. This method
  * is usually invoked after having searched for keys on the server, and is
- * passed a subset of keys returned by the search. Received keys are then
- * automatically imported in default key-ring. Note that you can also pass
- * keys from user's key-ring to refresh them.
+ * passed a subset of the #GPGRemoteKey instances returned by the search.
+ * Received keys are then automatically imported in default key-ring. Note that
+ * you can also pass keys from user's key-ring (#GPGKey instances) to refresh them.
  *
  * The options dictionary can contain the following key-value pairs:
  * _{@"keyserver"          A keyserver URL, e.g. ldap://keyserver.pgp.com or
