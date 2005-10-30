@@ -42,12 +42,13 @@
 #include <MacGPGME/GPGObject.h>
 #include <MacGPGME/GPGOptions.h>
 //#include <MacGPGME/GPGOptions/GPGOptions.h>
+#include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGRemoteKey.h>
+#include <MacGPGME/GPGRemoteUserID.h>
 #include <MacGPGME/GPGSignature.h>
+#include <MacGPGME/GPGSignatureNotation.h>
 #include <MacGPGME/GPGSubkey.h>
 #include <MacGPGME/GPGTrustItem.h>
 #include <MacGPGME/GPGUserID.h>
-#include <MacGPGME/GPGRemoteKey.h>
-#include <MacGPGME/GPGRemoteUserID.h>
-#include <MacGPGME/GPGPrettyInfo.h>
 
 #endif /* MAC_GPGME_FRAMEWORK_H */

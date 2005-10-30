@@ -16,7 +16,7 @@ fi
 PUBLIC_DOC_INSTALLDIR=$2
 
 # We need to write down file names here
-AUTODOC_FILES="GPGContext.h GPGData.h GPGEngine.h GPGExceptions.h GPGKey.h GPGKeyGroup.h GPGKeySignature.h GPGObject.h GPGOptions/GPGOptions.h GPGPrettyInfo.h GPGSignature.h GPGSubkey.h GPGTrustItem.h GPGUserID.h GPGRemoteKey.h GPGRemoteUserID.h"
+AUTODOC_FILES="GPGContext.h GPGData.h GPGEngine.h GPGExceptions.h GPGKey.h GPGKeyGroup.h GPGKeySignature.h GPGObject.h GPGOptions/GPGOptions.h GPGPrettyInfo.h GPGSignature.h GPGSubkey.h GPGTrustItem.h GPGUserID.h GPGRemoteKey.h GPGRemoteUserID.h GPGSignatureNotation.h"
 AUTODOC_DOCDIR="$PUBLIC_DOC_INSTALLDIR"
 OTHER_FILES="IntroMacGPGME.html"
 
