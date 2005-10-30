@@ -41,27 +41,31 @@ extern "C" {
 #endif
 
 
-@interface GPGRemoteKey : GPGObject
+@interface GPGRemoteKey : GPGObject <NSCopying> /*"NSObject"*/
 {
   NSArray	*_userIDs; /*"Array containing GPGRemoteUserID instances"*/
   NSArray	*_colonFormatStrings;
   int		_version;
 }
 
+- (unsigned) hash;
+- (BOOL)isEqual:(id)anObject;
+
 - (NSDictionary *) dictionaryRepresentation;
+
+- (NSString *) shortKeyID;
 - (NSString *) keyID;
-- (GPGPublicKeyAlgorithm)algorithm;
-- (NSString *)algorithmDescription;
+- (GPGPublicKeyAlgorithm) algorithm;
+- (NSString *) algorithmDescription;
 - (unsigned int) length;
 - (NSCalendarDate *) creationDate;
 - (NSCalendarDate *) expirationDate;
-- (NSArray *)userIDs;
 - (BOOL) isKeyRevoked;
 - (BOOL) hasKeyExpired;
-- (unsigned) hash;
-- (BOOL)isEqual:(id)anObject;
-- (NSString *) shortKeyID;
+
 - (NSString *) userID;
+
+- (NSArray *) userIDs;
 
 @end
 
