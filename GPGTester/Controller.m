@@ -516,6 +516,7 @@
         NS_HANDLER
             outputData = nil;
             NSLog(@"Exception userInfo: %@", [localException userInfo]);
+            NSLog(@"Operation results: %@", [[[localException userInfo] objectForKey:GPGContextKey] operationResults]);
             NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
         NS_ENDHANDLER
 
