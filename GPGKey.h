@@ -96,6 +96,7 @@ extern "C" {
 - (BOOL) hasKeyExpired;
 - (BOOL) isKeyDisabled;
 - (BOOL) isSecret;
+- (BOOL) isQualified;
 - (GPGValidity) ownerTrust;
 - (NSString *) ownerTrustDescription;
 - (NSString *) issuerSerial;

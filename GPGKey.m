@@ -639,6 +639,15 @@ NSString *GPGStringFromChars(const char * chars)
     return !!_key->secret;
 }
 
+- (BOOL) isQualified
+/*"
+ * Returns whether key can be used for qualified signatures according to local
+ * government regulations.
+"*/
+{
+    return !!_key->is_qualified;
+}
+
 - (BOOL) canEncrypt
 /*"
  * Returns whether the %key (i.e. one of its subkeys) can be used for
