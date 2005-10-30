@@ -100,6 +100,7 @@ typedef enum {
     GPGPublicKeyAlgorithm	_algorithm;
     GPGHashAlgorithm		_hashAlgorithm;
     unsigned int			_signatureClass;
+    NSArray                 *_signatureNotations;
 }
 
 /*"
@@ -118,8 +119,7 @@ typedef enum {
 /*"
  * Notations
 "*/
-- (NSDictionary *) notations;
-- (NSArray *) policyURLs;
+- (NSArray *) signatureNotations;
 
 /*"
  * Misc
@@ -135,6 +135,16 @@ typedef enum {
 - (NSString *) algorithmDescription;
 - (NSString *) hashAlgorithmDescription;
 - (NSString *) formattedFingerprint;
+
+@end
+
+@interface GPGSignature(GPGSignatureDeprecated)
+
+/*"
+ * Deprecated methods
+"*/
+- (NSDictionary *) notations;
+- (NSArray *) policyURLs;
 
 @end
 

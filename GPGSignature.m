@@ -27,6 +27,7 @@
 
 #include <MacGPGME/GPGSignature.h>
 #include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGSignatureNotation.h>
 #include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
@@ -53,6 +54,7 @@
     [_expirationDate release];
     [_notations release];
     [_policyURLs release];
+    [_signatureNotations release];
 
     [super dealloc];
 }
@@ -204,30 +206,9 @@
     return _summary;
 }
 
-- (NSDictionary *) notations
-/*"
- * Returns a dictionary of %{notation data} key-value pairs. A notation is a
- * key/value pair that is added to the content, it can be anything. Value
- * is returned as an NSString instance. Not used for new signatures.
-"*/
-{
-    return _notations;
-}
-
-- (NSArray *) policyURLs
-/*"
- * Returns an array of %{policy URLs} as NSString instances. A policy URL is
- * an URL to a document that documents the persons policy in signing other
- * peoples keys. Not used for new signatures.
-"*/
-{
-    return _policyURLs;
-}
-
 - (GPGPublicKeyAlgorithm) algorithm
 /*"
- * Returns the algorithm used to create the signature. Not (yet?) available
- * for signatures returned after a verification operation.
+ * Returns the public key algorithm used to create the signature.
 "*/
 {
     return _algorithm;
@@ -235,9 +216,8 @@
 
 - (NSString *) algorithmDescription
 /*"
- * Returns the localized description of the algorithm used to create the
- * signature. Not (yet?) available for signatures returned after a
- * verification operation.
+ * Returns the localized description of the public key algorithm used to create
+ * the signature.
 "*/
 {
     return GPGLocalizedPublicKeyAlgorithmDescription([self algorithm]);
@@ -245,7 +225,7 @@
 
 - (GPGHashAlgorithm) hashAlgorithm
 /*"
- * Returns the hash algorithm used for the newly-created signature.
+ * Returns the hash algorithm used for the signature.
 "*/
 {
     return _hashAlgorithm;
@@ -253,8 +233,8 @@
 
 - (NSString *) hashAlgorithmDescription
 /*"
- * Returns the localized description of the algorithm used for the
- * newly-created signature.
+ * Returns the localized description of the hash algorithm used for the
+ * signature.
 "*/
 {
     return GPGLocalizedHashAlgorithmDescription([self hashAlgorithm]);
@@ -272,7 +252,45 @@
     return _signatureClass;
 }
 
+- (NSArray *) signatureNotations
+/*"
+ * Returns all signature notations (notation data and policy URLs).   
+"*/
+{
+    return _signatureNotations;
+}
+
 @end
+
+
+@implementation GPGSignature(GPGSignatureDeprecated)
+
+- (NSDictionary *) notations
+/*"
+ * Returns a dictionary of %{notation data} key-value pairs. A notation is a
+ * key/value pair that is added to the content, it can be anything. Value
+ * is returned as an NSString instance. Not used for new signatures.
+ *
+ * #DEPRECATED: use -signatureNotations instead.
+"*/
+{
+    return _notations;
+}
+
+- (NSArray *) policyURLs
+/*"
+ * Returns an array of %{policy URLs} as NSString instances. A policy URL is
+ * an URL to a document that documents the persons policy in signing other
+ * peoples keys. Not used for new signatures.
+ *
+ * #DEPRECATED: use -signatureNotations instead.
+"*/
+{
+    return _policyURLs;
+}
+
+@end
+
 
 @implementation GPGSignature(GPGInternals)
 
@@ -297,9 +315,11 @@
         aNotation = signature->notations;
         _notations = [[NSMutableDictionary alloc] init];
         _policyURLs = [[NSMutableArray alloc] init];
+        _signatureNotations = [[NSMutableArray alloc] init];
         while(aNotation != NULL){
-            char	*name = aNotation->name;
-
+            char                    *name = aNotation->name;
+            GPGSignatureNotation    *anObject;
+            
             if(name != NULL){
                 // WARNING: theoretically there could be more than one notation
                 // data for the same name.
@@ -313,10 +333,16 @@
             }
             else
                 [(NSMutableArray *)_policyURLs addObject:GPGStringFromChars(aNotation->value)];
+            
+            // FIXME Maybe GPGSignatureNotation should also copy attributes, and not keep reference to structure
+            anObject = [[GPGSignatureNotation alloc] initWithInternalRepresentation:aNotation];
+            [(NSMutableArray *)_signatureNotations addObject:anObject];
+            [anObject release];
+            
             aNotation = aNotation->next;
         }
-        _algorithm = 0; // Unsignificant value
-        _hashAlgorithm = 0; // Unsignificant value (GPG_NoHashAlgorithm)
+        _algorithm = signature->pubkey_algo;
+        _hashAlgorithm = signature->hash_algo;
         _signatureClass = 0; // Unsignificant value
     }
 
