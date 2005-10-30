@@ -30,6 +30,7 @@
 
 #include <MacGPGME/GPGObject.h>
 #include <MacGPGME/GPGEngine.h>
+#include <MacGPGME/GPGSignatureNotation.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -100,6 +101,8 @@ typedef unsigned int GPGKeyListMode;
 
 /*"
  * Certificates inclusion (S/MIME only):
+ * _{GPGDefaultCertificatesInclusion        Use whatever the default of the 
+ *                                          backend crypto engine is.}
  * _{GPGAllExceptRootCertificatesInclusion  Include all certificates except
  *                                          the root certificate.}
  * _{GPGAllCertificatesInclusion            Include all certificates.}
@@ -112,10 +115,11 @@ typedef unsigned int GPGKeyListMode;
  *                                          number n must be positive.}
 "*/
 typedef enum {
-    GPGAllExceptRootCertificatesInclusion = -2,
-    GPGAllCertificatesInclusion           = -1,
-    GPGNoCertificatesInclusion            = -0,
-    GPGOnlySenderCertificateInclusion     =  1
+    GPGDefaultCertificatesInclusion       = -256,
+    GPGAllExceptRootCertificatesInclusion =   -2,
+    GPGAllCertificatesInclusion           =   -1,
+    GPGNoCertificatesInclusion            =   -0,
+    GPGOnlySenderCertificateInclusion     =    1
 }GPGCertificatesInclusion;
 
 
@@ -210,13 +214,14 @@ GPG_EXPORT NSString	* const GPGNextTrustItemNotification;
 GPG_EXPORT NSString	* const GPGNextTrustItemKey;
 
 
-@interface GPGContext : GPGObject /*"NSObject"*/
+@interface GPGContext : GPGObject <NSCopying> /*"NSObject"*/
 {
     id					_passphraseDelegate; /*"Passphrase delegate, not retained."*/
     int					_operationMask;
     NSMutableDictionary	*_operationData;
     id					_userInfo; /*"Object set by user; not used by GPGContext itself."*/
     NSMutableSet		*_signerKeys;
+    NSArray             *_engines;
 }
 
 /*"
@@ -278,6 +283,19 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
 "*/
 - (void) setUserInfo:(id)userInfo;
 - (id) userInfo;
+
+/*"
+ * Signature notations    
+"*/
+- (void) clearSignatureNotations;
+- (void) addSignatureNotationWithName:(NSString *)name value:(id)value flags:(GPGSignatureNotationFlags)flags;
+- (NSArray *) signatureNotations;
+
+/*"
+ * Engines
+"*/
+- (NSArray *) engines;
+- (GPGEngine *) engine;
 
 @end
 
@@ -376,9 +394,9 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
 
 
 /*"
-* context is busy with an async operation
+ * context is busy with an async operation
 "*/
--(BOOL)isPerformingAsyncOperation;
+-(BOOL) isPerformingAsyncOperation;
 
 @end
 

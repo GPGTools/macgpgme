@@ -42,7 +42,6 @@
 #define _context	((gpgme_ctx_t)_internalRepresentation)
 
 
-#warning TODO: post distributed notification (object and userInfo objects must be property lists)
 NSString	* const GPGKeyringChangedNotification = @"GPGKeyringChangedNotification";
 NSString	* const GPGContextKey = @"GPGContextKey";
 NSString	* const GPGChangesKey = @"GPGChangesKey";
@@ -154,6 +153,11 @@ enum {
  * - or a substring matching format like that: "Heine" or "*Heine". By case
  *   insensitive substring matching. This is the default mode but applications may
  *   want to explicitely indicate this by putting the asterisk in front.
+ *
+ * You can attach arbitrary notation data to a signature. This information is
+ * then available to the user when the signature is verified. Use method
+ * #{-addSignatureNotationWithName:value:flags:} to set notation data to a 
+ * signature the context will create.
 "*/
 
 static void progressCallback(void *object, const char *description, int type, int current, int total);
@@ -202,11 +206,44 @@ static void progressCallback(void *object, const char *description, int type, in
     if(_userInfo != nil)
         [_userInfo release];
     [_signerKeys release];
+    if(_engines != nil){
+        NSEnumerator    *anEnum = [_engines objectEnumerator];
+        GPGEngine       *anEngine;
+        
+        while((anEngine = [anEnum nextObject]))
+            [anEngine invalidateContext];
+        [_engines release];
+    }
 
     [super dealloc];
 
     if(cachedContext != NULL)
         gpgme_release(cachedContext);
+}
+
+- (id) copyWithZone:(NSZone *)zone
+/*"
+ * Copies engine configurations.  
+"*/
+{
+    GPGContext      *contextCopy = [[[self class] alloc] init];
+    NSEnumerator    *engineEnum = [[self engines] objectEnumerator];
+    GPGEngine       *anEngine;
+    
+    while(anEngine = [engineEnum nextObject]){
+        NSEnumerator    *engineCopyEnum = [[contextCopy engines] objectEnumerator];
+        GPGEngine       *anEngineCopy;
+    
+        while(anEngineCopy = [engineCopyEnum nextObject]){
+            if([anEngineCopy engineProtocol] == [anEngine engineProtocol]){
+                [anEngineCopy setExecutablePath:[anEngine executablePath]];
+                [anEngineCopy setHomeDirectory:[anEngine homeDirectory]];
+                break;
+            }
+        }
+    }
+    
+    return contextCopy;
 }
 
 - (void) setUsesArmor:(BOOL)armor
@@ -343,7 +380,7 @@ static gpgme_error_t passphraseCallback(void *object, const char *uid_hint, cons
         GPGContext	*keySearchContext = nil;
 
 		NS_DURING
-			keySearchContext = [[GPGContext alloc] init];
+			keySearchContext = [((GPGContext *)object) copy];
 			// Do NOT use the whole uid_hint, because it causes problems with
 			// uids that have ISOLatin1 data (instead of UTF8), and can also
 			// lead to "ambiguous name" error. Use only the keyID, taken from
@@ -549,6 +586,8 @@ static void progressCallback(void *object, const char *description, int type, in
  * If last operation was a verification operation, dictionary can contain:
  * _{@"signatures"  An NSArray of GPGSignature instance. Same result is
  *                  returned by #{-signatures}.}
+ * _{@"filename"    The original filename of the plaintext message, if 
+ *                  available.}
  *
  * If last operation was a decryption operation, dictionary can contain:
  * _{@"unsupportedAlgorithm"  An NSString instance describing the algorithm
@@ -557,6 +596,11 @@ static void progressCallback(void *object, const char *description, int type, in
  * _{@"wrongKeyUsage"         A boolean result as a NSNumber instance indicating
  *                            that the key should not have been used for
  *                            encryption.}
+ * _{@"filename"              The original filename of the plaintext message, if 
+ *                            available.}
+ * _{@"keyErrors"             Dictionary containing GPGKey or GPGRemoteKey 
+ *                            instances as keys, and GPGError NSNumber
+ *                            instances as values.}
  *
  * If last operation was an import operation, dictionary can contain:
  * _{@"keys"                     Dictionary whose keys are #GPGKey instances,
@@ -681,20 +725,55 @@ static void progressCallback(void *object, const char *description, int type, in
     }
     
     if(_operationMask & VerifyOperation){
-        NSArray	*signatures = [self signatures];
-
-        if(signatures != nil)
-            [operationResults setObject:signatures forKey:@"signatures"];
+        gpgme_verify_result_t	aResult = gpgme_op_verify_result(_context);
+        
+        if(aResult != NULL){
+            NSArray	*signatures = [self signatures];
+            
+            if(signatures != nil)
+                [operationResults setObject:signatures forKey:@"signatures"];
+            if(aResult->file_name != NULL)
+                [operationResults setObject:GPGStringFromChars(aResult->file_name) forKey:@"filename"];
+        }
     }
     
     if(_operationMask & DecryptOperation){
         gpgme_decrypt_result_t	aResult = gpgme_op_decrypt_result(_context);
 
         if(aResult != NULL){
+            gpgme_recipient_t   recipients = aResult->recipients;
+            NSMutableDictionary *keyErrors = [[NSMutableDictionary alloc] init];
+            GPGContext          *aContext = [self copy];
+            
             if(aResult->unsupported_algorithm != NULL)
                 [operationResults setObject:GPGStringFromChars(aResult->unsupported_algorithm) forKey:@"unsupportedAlgorithm"];
             if(!!aResult->wrong_key_usage)
                 [operationResults setObject:[NSNumber numberWithBool:!!aResult->wrong_key_usage] forKey:@"wrongKeyUsage"];
+            if(aResult->file_name != NULL)
+                [operationResults setObject:GPGStringFromChars(aResult->file_name) forKey:@"filename"];
+            
+            while(recipients != NULL){
+                // Try to get secret then public GPGKey for that keyID.
+                // If none, create GPGRemoteKey
+                NSString        *aKeyID = [[NSString alloc] initWithFormat:@"%s", recipients->keyid];
+                id              aKey;
+                
+                if(recipients->status == GPGErrorNoError){
+                    aKey = [aContext keyFromFingerprint:aKeyID secretKey:YES];
+                    NSAssert1(aKey != nil, @"### Unable to find decryption secret key %s?!", recipients->keyid);
+                }
+                else{
+                    aKey = [aContext keyFromFingerprint:aKeyID secretKey:NO];
+                    if(aKey == nil)
+                        aKey = [[[GPGRemoteKey alloc] initWithRecipient:recipients] autorelease];
+                }
+                [keyErrors setObject:[NSNumber numberWithUnsignedInt:recipients->status] forKey:aKey];
+                recipients = recipients->next;
+                [aKeyID release];
+            }
+            [aContext release];
+            [operationResults setObject:keyErrors forKey:@"keyErrors"];
+            [keyErrors release];
         }
     }
     
@@ -837,6 +916,100 @@ static void progressCallback(void *object, const char *description, int type, in
         [self setUsesTextMode:NO];
     else
         [super setNilValueForKey:key];
+}
+
+- (void) clearSignatureNotations
+/*"
+ * Clear all notation data from the context. Subsequent signing operations from
+ * this context will not include any notation data.
+ *
+ * Every context starts with an empty notation data list.
+"*/
+{
+    gpgme_sig_notation_clear(_context);
+}
+
+- (void) addSignatureNotationWithName:(NSString *)name value:(id)value flags:(GPGSignatureNotationFlags)flags
+/*"
+ * Add the human-readable notation data with name and value to the context, 
+ * using the flags. 
+ *
+ * If name is nil, then value should be a policy URL, as a NSString; the 
+ * notation data is forced not to be a human-readable notation data.
+ *
+ * If name is not nil, then value may be a NSString (the notation data is forced
+ * to be a human-readable notation data). Else value has to be a NSData, and
+ * notation data is forced not to be a human-readable notation data.
+ *
+ * Subsequent signing operations will include this notation data, as well as any
+ * other notation data that was added since the creation of the context or the
+ * last -clearSignatureNotations invocation.
+ *
+ * Can raise a #GPGException for any error that is reported by the crypto engine
+ * support routines.
+ *
+ *#WARNING: Non-human-readable notation data is currently not supported.
+"*/
+{
+    const char      *aCStringName;
+    const char      *aCStringValue;
+    gpgme_error_t	anError;
+    
+    NSParameterAssert([value isKindOfClass:[NSString class]]);
+    
+    aCStringName = (name != nil ? [name UTF8String] : NULL);
+    aCStringValue = [value UTF8String];
+    anError = gpgme_sig_notation_add(_context, aCStringName, aCStringValue, flags);
+    if(anError != GPG_ERR_NO_ERROR)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
+}
+
+- (NSArray *) signatureNotations
+/*"
+ * Returns the signature notations for this context.
+"*/
+{
+    NSMutableArray          *signatureNotations = [NSMutableArray array];
+    gpgme_sig_notation_t    eachNotation = gpgme_sig_notation_get(_context);
+    
+    while(eachNotation != NULL){
+        GPGSignatureNotation    *anObject = [[GPGSignatureNotation alloc] initWithInternalRepresentation:eachNotation];
+        
+        [signatureNotations addObject:anObject];
+        eachNotation = eachNotation->next;
+        [anObject release];
+    }
+    
+    return signatureNotations;
+}
+
+- (NSArray *) engines
+/*"
+ * Returns the engines as used by the current context.
+"*/
+{
+    if(_engines == nil){
+        gpgme_engine_info_t engineInfo = gpgme_ctx_get_engine_info(_context);
+        
+        _engines = [[GPGEngine enginesFromEngineInfo:engineInfo context:self] retain];
+    }
+    
+    return _engines;
+}
+
+- (GPGEngine *) engine
+/*"
+ * Convenience method. Returns the engine for the protocol currently used.
+"*/
+{
+    NSEnumerator    *engineEnum = [[self engines] objectEnumerator];
+    GPGEngine       *anEngine;
+    
+    while((anEngine = [engineEnum nextObject]))
+        if([anEngine engineProtocol] == [self protocol])
+            return anEngine;
+    
+    return nil;
 }
 
 @end
@@ -1157,6 +1330,7 @@ static void progressCallback(void *object, const char *description, int type, in
     GPGKey			*aKey;
 
     while(aKey = [anEnum nextObject])
+        // Maybe we'd better compare keyID to key's ID/fingerprint or one of its _subkeys_ ID
         if([[aKey fingerprint] isEqualToString:aFingerprint] || [[aKey keyID] isEqualToString:aFingerprint])
             return aKey;
 
@@ -1499,26 +1673,19 @@ static void progressCallback(void *object, const char *description, int type, in
     // WARNING: we need to call this method in a context other than self,
     // because we start a new operation, thus rendering current operation results
     // invalid.
-    GPGContext		*localContext = [[GPGContext alloc] init];
-    gpgme_error_t	anError;
-    gpgme_key_t		aKey = NULL;
-    GPGKey			*returnedKey = nil;
-
-    anError = gpgme_get_key([localContext gpgmeContext], fpr, &aKey, isSecret);
-    if(anError != GPG_ERR_NO_ERROR){
-        if(gpgme_err_code(anError) == GPG_ERR_EOF)
-            aKey = NULL;
-        else{
-            [localContext release];
-            [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
-        }
-    }
-
-    if(aKey != NULL)
-        returnedKey = [[GPGKey alloc] initWithInternalRepresentation:aKey];
+    GPGContext	*localContext = [self copy];
+    GPGKey      *aKey = nil;
+    
+    NS_DURING
+        aKey = [localContext keyFromFingerprint:[NSString stringWithUTF8String:fpr] secretKey:isSecret];
+    NS_HANDLER
+        [localContext release];
+        [localException raise];
+    NS_ENDHANDLER
+    
     [localContext release];
-
-    return [returnedKey autorelease];
+    
+    return aKey;
 }
 
 - (NSDictionary *) convertedChangesDictionaryForDistributedNotification:(NSDictionary *)dictionary
@@ -1922,486 +2089,6 @@ static void progressCallback(void *object, const char *description, int type, in
 - (NSArray *) _subOptionsForName:(NSString *)optionName;
 @end
 
-//@interface GPGRemoteKey : GPGKey
-//{
-//    NSArray	*_colonFormatStrings;
-//    int		_version;
-//}
-//
-//- (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version;
-//- (NSArray *) colonFormatStrings;
-//- (int) colonFormatStringsVersion;
-//- (NSString *) unescapedString:(NSString *)string;
-//
-//@end
-
-
-//@interface GPGRemoteUserID : GPGUserID
-//{
-//    int	_index;
-//}
-//
-//- (id) initWithKey:(GPGRemoteKey *)key index:(int)index;
-//
-//@end
-
-
-//@implementation GPGRemoteKey
-//
-//+ (BOOL) needsPointerUniquing
-//{
-//    return NO;
-//}
-//
-//+ (BOOL) usesReferencesCount
-//{
-//    return NO;
-//}
-//
-//- (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version
-//{
-//    if(self = [self initWithInternalRepresentation:NULL]){
-//        _colonFormatStrings = [strings copyWithZone:[self zone]];
-//        _version = version;
-//    }
-//    
-//    return self;
-//}
-//
-//- (void) dealloc
-//{
-//    [_colonFormatStrings release];
-//    
-//    [super dealloc];
-//}
-//
-//- (NSArray *) colonFormatStrings
-//{
-//    return _colonFormatStrings;
-//}
-//
-//- (int) colonFormatStringsVersion
-//{
-//    return _version;
-//}
-//
-//- (NSString *) unescapedString:(NSString *)string
-//{
-//    // Version 0: replaces \xXX sequences with ASCII character matching hexcode XX
-//    // Version 1: replaces %XX sequences with ASCII character matching hexcode XX
-//    NSMutableString	*newString = [NSMutableString stringWithString:string];
-//    NSRange			aRange;
-//    NSString		*escapeCode = nil;
-//    unsigned		escapeCodeLength = 0;
-//	BOOL			neededToUnescape = NO;
-//
-//    switch(_version){
-//        case 0:
-//            escapeCode = @"\\x";
-//            escapeCodeLength = 2;
-//            break;
-//        case 1:
-//            escapeCode = @"%";
-//            escapeCodeLength = 1;
-//            break;
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//    }
-//
-//    while((aRange = [newString rangeOfString:escapeCode]).length > 0){
-//        NSString	*hexCodeString = [newString substringWithRange:NSMakeRange(aRange.location + escapeCodeLength, 2)];
-//        unichar		hiChar = [hexCodeString characterAtIndex:0];
-//        unichar		loChar = [hexCodeString characterAtIndex:1];
-//
-//        if(hiChar >= 'a')
-//            hiChar = hiChar - 'a' + 10;
-//        else if(hiChar >= 'A')
-//            hiChar = hiChar - 'A' + 10;
-//        else
-//            hiChar -= '0';
-//        if(loChar >= 'a')
-//            loChar = loChar - 'a' + 10;
-//        else if(loChar >= 'A')
-//            loChar = loChar - 'A' + 10;
-//        else
-//            loChar -= '0';
-//        hiChar = hiChar * 16 + loChar;
-//        
-//        [newString replaceCharactersInRange:NSMakeRange(aRange.location, escapeCodeLength + 2) withString:[NSString stringWithCharacters:&hiChar length:1]];
-//		neededToUnescape = YES;
-//    }
-//	
-//	if(neededToUnescape && _version == 1){
-//		// New in 1.4? Accents are passed correctly, always escaped. This means
-//		// that we need _now_ to transform to UTF8: what we got was not UTF8!
-//		// Does happen with my key from wwwkeys.us.pgp.net, but not from ldap://keyserver.pgp.com
-//		NSData		*rawData = [newString dataUsingEncoding:NSISOLatin1StringEncoding];
-//		NSString	*decodedString = [[NSString alloc] initWithData:rawData encoding:NSUTF8StringEncoding];
-//		
-//		if(decodedString != nil){
-//			[newString setString:decodedString];
-//			[decodedString release];
-//		}
-//	}
-//
-//    return newString;
-//}
-//
-//- (gpgme_key_t) gpgmeKey
-//{
-//    [NSException raise:NSGenericException format:@"### Not a real key!"];
-//    
-//    return NULL;
-//}
-//
-//- (NSDictionary *) dictionaryRepresentation
-//{
-//    NSMutableDictionary	*key_dict = [NSMutableDictionary dictionary];
-//    NSArray 			*objects;
-//
-//    [key_dict setObject: [NSNumber numberWithBool:[self isSecret]] forKey:@"secret"];
-////    [key_dict setObject: [NSNumber numberWithBool:[self isKeyInvalid]] forKey:@"invalid"];
-//    [key_dict setObject: [NSNumber numberWithBool:[self isKeyRevoked]] forKey:@"revoked"];
-////    [key_dict setObject: [NSNumber numberWithBool:[self hasKeyExpired]] forKey:@"expired"];
-////    [key_dict setObject: [NSNumber numberWithBool:[self isKeyDisabled]] forKey:@"disabled"];
-//    [key_dict setObject: [self shortKeyID] forKey: @"shortkeyid"];
-//    [key_dict setObject: [self keyID] forKey: @"keyid"];
-////    [key_dict setObject: [self fingerprint] forKey:@"fpr"];
-////    [key_dict setObject: [NSNumber numberWithInt:[self algorithm]] forKey:@"algo"];
-////    [key_dict setObject: [NSNumber numberWithInt:[self length]] forKey:@"len"];
-//    if ([self creationDate])
-//        [key_dict setObject: [self creationDate] forKey:@"created"];
-//    if ([self expirationDate])
-//        [key_dict setObject: [self expirationDate] forKey:@"expire"];
-//    if ([self issuerSerial])
-//        [key_dict setObject: [self issuerSerial] forKey:@"issuerSerial"];
-//    if ([self issuerName])
-//        [key_dict setObject: [self issuerName] forKey:@"issuerName"];
-//    if ([self chainID])
-//        [key_dict setObject: [self chainID] forKey:@"chainID"];
-////    [key_dict setObject: [NSNumber numberWithInt:[self ownerTrust]] forKey:@"ownertrust"];
-//
-//    objects = [self userIDs];
-//    if(objects != nil)
-//        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"userids"];
-//    objects = [self subkeys];
-//    if(objects != nil)
-//        [key_dict setObject: [objects valueForKey:@"dictionaryRepresentation"] forKey:@"subkeys"];
-//
-//    return key_dict;
-//}
-//
-//- (NSString *) keyID
-//{
-//    switch(_version){
-//        case 0:
-//            return [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:0];
-//        case 1:
-//            return [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:1];
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//            return nil; // Never reached
-//    }
-//}
-//
-//- (NSArray *) subkeys
-//{
-//    return nil;
-//}
-//
-//- (GPGPublicKeyAlgorithm) algorithm
-//{
-//    NSString	*aString;
-//    
-//    switch(_version){
-//        case 0:
-//            // We need to make an inverse mapping between name (sometimes given)
-//            // and the numerical value
-//            aString = [self algorithmDescription];
-//            return [self algorithmFromName:aString];
-//        case 1:
-//            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:2];
-//            if([aString length] > 0)
-//                return [aString intValue];
-//            else
-//                return -1;
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//            return -1; // Never reached
-//    }
-//}
-//
-//- (NSString *) algorithmDescription
-//{
-//    switch(_version){
-//        case 0:
-//            return [self unescapedString:[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:6]]; // Not always available, not localized
-//        case 1:
-//            return [super algorithmDescription];
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//            return nil; // Never reached
-//    }
-//}
-//
-//- (unsigned int) length
-//{
-//    switch(_version){
-//        case 0:
-//            // Might return 0, because info was not available
-//            return (unsigned)[[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:7] intValue];
-//        case 1:
-//            return (unsigned)[[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:3] intValue];
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//            return 0; // Never reached
-//    }
-//}
-//
-//- (NSCalendarDate *) creationDate
-//{
-//    int	aValue;
-//
-//    switch(_version){
-//        case 0:
-//            aValue = [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:3] intValue]; break;
-//        case 1:
-//            aValue = [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:4] intValue]; break;
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//            return nil; // Never reached
-//    }
-//    return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
-//}
-//
-//- (NSCalendarDate *) expirationDate
-//{
-//    NSString	*aString;
-//
-//    switch(_version){
-//        case 0:
-//            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:4]; break;
-//        case 1:
-//            aString = [[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:5]; break;
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//            return nil; // Never reached
-//    }
-//    if([aString length] > 0){
-//        int	aValue = [aString intValue];
-//
-//        if(aValue != 0)
-//            return [NSCalendarDate dateWithTimeIntervalSince1970:aValue];
-//        else
-//            return nil;
-//    }
-//    else
-//        return nil; // Information not available
-//}
-//
-//- (GPGValidity) ownerTrust
-//{
-//    return GPGValidityUnknown; // Information not available
-//}
-//
-//- (NSArray *) userIDs
-//{
-//    if(_userIDs == nil){
-//        int		i = 0;
-//        int		max = [_colonFormatStrings count];
-//        NSZone	*aZone = [self zone];
-//
-//        switch(_version){
-//            case 0:
-//                i = 0; break;
-//            case 1:
-//                i = 1; break;
-//            default:
-//                [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//                return nil; // Never reached
-//        }
-//        _userIDs = [[NSMutableArray allocWithZone:aZone] initWithCapacity:max];
-//        for(; i < max; i++){
-//            GPGRemoteUserID	*aUserID = [[GPGRemoteUserID allocWithZone:aZone] initWithKey:self index:i];
-//
-//            [(NSMutableArray *)_userIDs addObject:aUserID];
-//            [aUserID release];
-//        }
-//    }
-//    
-//    return _userIDs;
-//}
-//
-//- (BOOL) isKeyRevoked
-//{
-//    switch(_version){
-//        case 0:
-//            return !![[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:2] intValue];
-//        case 1:
-//            return [[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:6] rangeOfString:@"r"].location != NSNotFound;
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", _version];
-//            return 0; // Never reached
-//    }
-//}
-//
-//- (BOOL) isKeyInvalid
-//{
-//    return NO; // Information not available
-//}
-//
-//- (BOOL) hasKeyExpired
-//{
-//    NSCalendarDate	*expirationDate = [self expirationDate];
-//
-//    if(expirationDate != nil && [expirationDate compare:[NSCalendarDate calendarDate]] <= 0)
-//        return YES;
-//    
-//    return NO; // Information not available
-//}
-//
-//- (BOOL) isKeyDisabled
-//{
-//    return NO; // Information not available
-//}
-//
-//- (BOOL) isSecret
-//{
-//    return NO;
-//}
-//
-//- (BOOL) canEncrypt
-//{
-//    return YES; // Information not available
-//}
-//
-//- (BOOL) canSign
-//{
-//    return YES; // Information not available
-//}
-//
-//- (BOOL) canCertify
-//{
-//    return YES; // Information not available
-//}
-//
-//- (NSString *) issuerSerial
-//{
-//    return nil; // Information not available
-//}
-//
-//- (NSString *) issuerName
-//{
-//    return nil; // Information not available
-//}
-//
-//- (NSString *) chainID
-//{
-//    return nil; // Information not available
-//}
-//
-//- (GPGProtocol) supportedProtocol
-//{
-//    return -1; // Information not available
-//}
-//
-//@end
-
-
-//@implementation GPGRemoteUserID
-//
-//- (id) initWithKey:(GPGRemoteKey *)key index:(int)index
-//{
-//    if(self = [self init]){
-//        ((GPGRemoteUserID *)self)->_key = key; // Not retained
-//        ((GPGRemoteUserID *)self)->_index = index;
-//    }
-//
-//    return self;
-//}
-//
-//- (NSString *) userID
-//{
-//    switch([(GPGRemoteKey *)_key colonFormatStringsVersion]){
-//        case 0:
-//            return [(GPGRemoteKey *)_key unescapedString:[[[[(GPGRemoteKey *)_key colonFormatStrings] objectAtIndex:_index] componentsSeparatedByString:@":"] objectAtIndex:1]];
-//        case 1:
-//            return [(GPGRemoteKey *)_key unescapedString:[[[[(GPGRemoteKey *)_key colonFormatStrings] objectAtIndex:_index] componentsSeparatedByString:@":"] objectAtIndex:1]];
-//        default:
-//            [NSException raise:NSGenericException format:@"### Unknown version (%d)", [(GPGRemoteKey *)_key colonFormatStringsVersion]];
-//            return nil; // Never reached
-//    }
-//}
-//
-//- (NSString *) name
-//{
-//    return nil;
-//}
-//
-//- (NSString *) email
-//{
-//    return nil;
-//}
-//
-//- (NSString *) comment
-//{
-//    return nil;
-//}
-//
-//- (GPGValidity) validity
-//{
-//    return GPGValidityUnknown; // Information not available
-//}
-//
-//- (BOOL) hasBeenRevoked
-//{
-//    return NO; // Information not available
-//}
-//
-//- (BOOL) isInvalid
-//{
-//    return NO; // Information not available
-//}
-//
-//- (NSArray *) signatures
-//{
-//    return [NSArray array]; // Information not available
-//}
-//
-//- (BOOL) isPhoto
-//{
-//    return NO; // Information not available
-//}
-//
-//- (NSData *) photoData
-//{
-//    return nil; // Information not available
-//}
-//
-//- (NSDictionary *) dictionaryRepresentation
-//{
-//    NSMutableDictionary *aDictionary = [NSMutableDictionary dictionaryWithCapacity:7];
-//    NSString			*aString;
-//
-////    [aDictionary setObject:[NSNumber numberWithBool:[self isInvalid]] forKey:@"invalid"];
-////    [aDictionary setObject:[NSNumber numberWithBool:[self hasBeenRevoked]] forKey:@"revoked"];
-//    [aDictionary setObject:[self userID] forKey:@"raw"];
-//    aString = [self name];
-//    if(aString != nil)
-//        [aDictionary setObject:aString forKey:@"name"];
-//    aString = [self email];
-//    if(aString != nil)
-//        [aDictionary setObject:aString forKey:@"email"];
-//    aString = [self comment];
-//    if(aString != nil)
-//        [aDictionary setObject:aString forKey:@"comment"];
-////    [aDictionary setObject:[NSNumber numberWithInt:[self validity]] forKey:@"validity"];
-//
-//    return aDictionary;
-//}
-//
-//@end
-
 
 enum {
     _GPGContextHelperSearchCommand,
@@ -2619,7 +2306,7 @@ enum {
             GPGKey		*aKey = [theArgument objectAtIndex:0];
             NSString	*aKeyID = [aKey keyID];
 #warning FIXME Could we not use current context?
-            GPGContext	*tempContext = [[GPGContext alloc] init];
+            GPGContext	*tempContext = [theContext copy];
             NSString	*asciiExport = nil;
 
             [tempContext setUsesArmor:YES];
