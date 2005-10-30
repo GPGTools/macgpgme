@@ -38,7 +38,7 @@ extern "C" {
 @interface GPGRemoteUserID : GPGObject
 {
   GPGRemoteKey	*_key; /*"Key owning the user ID; not retained"*/  
-  int	_index;
+  int           _index;
 }
 
 - (NSString *) userID;
