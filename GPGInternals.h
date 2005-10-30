@@ -38,6 +38,7 @@
 #include <MacGPGME/GPGKeyGroup.h>
 #include <MacGPGME/GPGRemoteKey.h>
 #include <MacGPGME/GPGRemoteUserID.h>
+#include <MacGPGME/GPGSignatureNotation.h>
 #include <gpgme.h>
 
 #ifdef __cplusplus
@@ -53,6 +54,7 @@ extern "C" {
 
 @interface GPGRemoteKey(GPGInternals)
 - (id) initWithColonOutputStrings:(NSArray *)strings version:(int)version;
+- (id) initWithRecipient:(gpgme_recipient_t)recipient;
 - (NSArray *) colonFormatStrings;
 - (int) colonFormatStringsVersion;
 - (NSString *) unescapedString:(NSString *)string;
@@ -107,8 +109,22 @@ extern "C" {
 @end
 
 
+@interface GPGSignatureNotation(GPGInternals)
+- (id) initWithName:(NSString *)name value:(id)value flags:(GPGSignatureNotationFlags)flags;
+@end
+
+
 @interface GPGObject(GPGInternals)
 + (BOOL) needsPointerUniquing;
+- (void) registerUniquePointer;
+- (void) unregisterUniquePointer;
+@end
+
+@interface GPGEngine(GPGInternals)
++ (NSArray *) enginesFromEngineInfo:(gpgme_engine_info_t)engineInfo context:(GPGContext *)context;
+- (void) setContext:(GPGContext *)context;
+- (void) invalidateContext;
+- (void) reloadContextEngineInfo;
 @end
 
 
