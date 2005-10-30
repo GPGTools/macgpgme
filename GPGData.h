@@ -134,6 +134,12 @@ typedef enum {
 - (NSData *) readDataOfLength:(unsigned long long)length;
 - (unsigned long long) writeData:(NSData *)data;
 
+/*"
+ * Manipulating meta-data
+"*/
+- (NSString *) filename;
+- (void) setFilename:(NSString *)filename;
+
 @end
 
 

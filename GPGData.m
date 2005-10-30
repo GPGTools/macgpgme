@@ -42,7 +42,8 @@
  * keys. The technical details about exchanging the data information are
  * completely abstracted by GPGME. The user provides and receives the data via
  * #GPGData instances, regardless of the communication protocol between GPGME
- * and the crypto engine in use.
+ * and the crypto engine in use. GPGData contains both data and meta-data, e.g.
+ * file name.
  *
  * Data objects can be based on memory, files, or callback methods provided by
  * the user (data source). Not all operations are supported by all objects.
@@ -300,7 +301,7 @@ static void releaseCallback(void *object)
 }
 
 - (id) initWithContentsOfFileNoCopy:(NSString *)filename
-#warning Not yet supported as of 1.0.x
+#warning Not yet supported as of 1.1.x
 // Can raise a GPGException; in this case, a release is sent to self
 {
     gpgme_data_t	aData;
@@ -502,6 +503,34 @@ static void releaseCallback(void *object)
         [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 
     return writtenByteCount;
+}
+
+- (NSString *) filename
+/*"
+ * Return the filename associated with the data object, or nil if there is none
+ * or if there is an error.
+"*/
+{
+    const char	*aCString = gpgme_data_get_file_name(_data); // CHECK Statically allocated string or NULL
+    
+    return GPGStringFromChars(aCString);
+}
+
+- (void) setFilename:(NSString *)filename
+/*"
+ * Set the filename associated with the data object. The filename will be stored
+ * in the output when encrypting or signing the data and will be returned to the
+ * user when decrypting or verifying the output data.
+ *
+ * Can raise a #GPGException of type #GPGError_ENOMEM if not enough memory is 
+ * available.
+"*/
+{
+    const char      *aCString = (filename != nil ? [filename UTF8String] : NULL); // CHECK Encoding is correct?    
+    gpgme_error_t	anError = gpgme_data_set_file_name(_data, aCString);
+    
+    if(anError != GPG_ERR_NO_ERROR)
+        [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 }
 
 @end
