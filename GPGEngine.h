@@ -41,6 +41,7 @@ extern "C" {
 
 @class NSString;
 @class NSArray;
+@class GPGContext;
 
 
 /*"
@@ -61,17 +62,24 @@ typedef enum {
 
 @interface GPGEngine : GPGObject /*"NSObject"*/
 {
+    GPGContext  *_context; // Not retained
 }
 
 + (GPGError) checkVersionForProtocol:(GPGProtocol)protocol;
 + (NSString *) checkFrameworkVersion:(NSString *)requiredVersion;
++ (NSString *) defaultHomeDirectory;
 
 + (NSArray *) availableEngines;
 
 - (GPGProtocol) engineProtocol;
-- (NSString *) executablePath;
 - (NSString *) version;
 - (NSString *) requestedVersion;
+
+- (NSString *) executablePath;
+- (void) setExecutablePath:(NSString *)executablePath;
+
+- (NSString *) homeDirectory;
+- (void) setHomeDirectory:(NSString *)homeDirectory;
 
 @end
 

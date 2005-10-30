@@ -28,12 +28,14 @@
 #include <MacGPGME/GPGEngine.h>
 #include <MacGPGME/GPGObject.h>
 #include <MacGPGME/GPGPrettyInfo.h>
+#include <MacGPGME/GPGContext.h>
 #include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
 
-#define _engine	((gpgme_engine_info_t)_internalRepresentation)
+#define _engine ((gpgme_engine_info_t)_internalRepresentation)
+#define INVALID_CONTEXT ((GPGContext *)-1)
 
 
 @implementation GPGEngine
@@ -47,6 +49,10 @@
  * exchange of information between the application and the backend is
  * necessary, MacGPGME provides the necessary callback method hooks and further
  * interfaces.
+ *
+ * You can modify some parameters of the engines, like their executable path and
+ * their home directory. This can be done either on the default engines, or the
+ * engines proper to a GPGContext (see -[GPGContext engine]).
 "*/
 
 + (GPGError) checkVersionForProtocol:(GPGProtocol)protocol
@@ -58,6 +64,7 @@
  * is available and an error whose code is #GPGErrorInvalidEngine if it is not.
 "*/
 {
+#warning This method does not work correctly in 1.1 when you change the default executable path!
     return gpgme_engine_check_version(protocol);
 }
 
@@ -85,23 +92,34 @@
  * configured backend.
 "*/
 {
+#warning FIXME Should unique instance on pointer, in this case
     gpgme_engine_info_t	anEngine = NULL;
     gpgme_error_t		anError = gpgme_get_engine_info(&anEngine); // The memory for the info structures is allocated the first time this function is invoked, and must not be freed by the caller.
-    NSMutableArray		*engines;
 
     if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 
-    engines = [NSMutableArray arrayWithCapacity:2];
-    while(anEngine != NULL){
-        GPGEngine	*newEngine = [[GPGEngine alloc] initWithInternalRepresentation:anEngine];
+    return [self enginesFromEngineInfo:anEngine context:nil];
+}
 
-        [engines addObject:newEngine];
-        anEngine = anEngine->next;
-        [newEngine release];
++ (NSString *) defaultHomeDirectory
+/*"
+ * Returns the default home directory (constant).
+"*/
+{
+    static NSString *defaultHomeDirectory = nil;
+    
+#warning VERIFY
+    if(defaultHomeDirectory == nil){
+        NSString    *gnupgHome = [[[NSProcessInfo processInfo] environment] objectForKey:@"GNUPGHOME"];
+        
+        if(gnupgHome != nil)
+            defaultHomeDirectory = [gnupgHome copy];
+        else
+            defaultHomeDirectory = [[NSHomeDirectory() stringByAppendingString:@".gnupg"] copy];
     }
 
-    return engines;
+    return defaultHomeDirectory;
 }
 
 - (GPGProtocol) engineProtocol
@@ -111,6 +129,8 @@
  * #{GPGLocalizedProtocolDescription()} for printing
 "*/
 {
+    NSAssert(_context != INVALID_CONTEXT, @"### GPGEngine instance was associated to a GPGContext that has been freed.");
+
     return _engine->protocol;
 }
 
@@ -121,9 +141,38 @@
  * use, so always check before you use it.
 "*/
 {
-    const char	*aCString = _engine->file_name;
+    NSAssert(_context != INVALID_CONTEXT, @"### GPGEngine instance was associated to a GPGContext that has been freed.");
 
-    return GPGStringFromChars(aCString);
+    return GPGStringFromChars(_engine->file_name);
+}
+
+- (void) setExecutablePath:(NSString *)executablePath
+/*"
+ * Sets the path to the executable of the crypto engine. Currently may never be
+ * nil.
+"*/
+{
+#warning Verify
+    NSParameterAssert(executablePath != nil);
+    
+    if(![[self executablePath] isEqualToString:executablePath]){
+        const char      *aCString = [executablePath UTF8String];
+        gpgme_error_t   anError;        
+        
+        // Different implementation when default or context's
+        if(_context != nil)
+            anError = gpgme_ctx_set_engine_info([_context gpgmeContext], [self engineProtocol], aCString, _engine->home_dir); // Will duplicate strings
+        else
+            anError = gpgme_set_engine_info([self engineProtocol], aCString, _engine->home_dir);
+        
+        if(anError != GPGErrorNoError)
+            [[NSException exceptionWithGPGError:anError userInfo:(_context != nil ? [NSDictionary dictionaryWithObject:_context forKey:GPGContextKey] : nil)] raise];
+        
+        if(_context != nil){
+            // Previous gpgme_engine_info_t struct is now invalid; we need to retrieve new one
+            [self reloadContextEngineInfo];
+        }
+    }
 }
 
 - (NSString *) version
@@ -133,7 +182,10 @@
  * because the executable doesn't exist or is invalid.
 "*/
 {
-    const char	*aCString = _engine->version;
+    const char	*aCString;
+
+    NSAssert(_context != INVALID_CONTEXT, @"### GPGEngine instance was associated to a GPGContext that has been freed.");
+    aCString = _engine->version;
 
     return GPGStringFromChars(aCString);
 }
@@ -146,14 +198,110 @@
  * but using nil is reserved for future use, so always check before you use it.
 "*/
 {
-    const char	*aCString = _engine->req_version;
+    const char	*aCString;
+
+    NSAssert(_context != INVALID_CONTEXT, @"### GPGEngine instance was associated to a GPGContext that has been freed.");
+    aCString = _engine->req_version;
 
     return GPGStringFromChars(aCString);
 }
 
+- (NSString *) homeDirectory
+/*"
+ * Returns the directory name of the crypto engine's configuration directory. If
+ * it is nil, then the default directory is used, i.e. $HOME/.gnupg for the 
+ * OpenPGP engine.
+"*/
+{
+    const char	*aCString;
+    
+    NSAssert(_context != INVALID_CONTEXT, @"### GPGEngine instance was associated to a GPGContext that has been freed.");
+    aCString = _engine->home_dir;
+
+    return GPGStringFromChars(aCString);
+}
+
+- (void) setHomeDirectory:(NSString *)homeDirectory
+/*"
+ * Sets the directory name of the crypto engine's configuration directory. If it
+ * is nil, then the default directory is used, i.e. $HOME/.gnupg for the OpenPGP
+ * engine.
+"*/
+{
+    NSString    *myHomeDirectory = [self homeDirectory];
+    
+#warning Verify    
+    if(myHomeDirectory != homeDirectory && ![myHomeDirectory isEqualToString:homeDirectory]){
+        const char      *aCString = [homeDirectory UTF8String];
+        gpgme_error_t   anError;
+        
+        // different implementation when default or context's
+        if(_context)
+            anError = gpgme_ctx_set_engine_info([_context gpgmeContext], [self engineProtocol], _engine->file_name, aCString); // Will duplicate strings
+        else
+            anError = gpgme_set_engine_info([self engineProtocol], _engine->file_name, aCString); // Will duplicate strings
+        
+        if(anError != GPGErrorNoError)
+            [[NSException exceptionWithGPGError:anError userInfo:(_context != nil ? [NSDictionary dictionaryWithObject:_context forKey:GPGContextKey] : nil)] raise];
+        
+        if(_context != nil){
+            // Previous gpgme_engine_info_t struct is now invalid; we need to retrieve new one
+            [self reloadContextEngineInfo];
+        }
+    }
+}
+
 - (NSString *) debugDescription
 {
-    return [NSString stringWithFormat:@"<%@ %p> %@ %@ (%@), %@", NSStringFromClass([self class]), self, GPGProtocolDescription([self engineProtocol]), [self version], [self requestedVersion], [self executablePath]];
+    if(_context == INVALID_CONTEXT)
+        return [NSString stringWithFormat:@"<%@ %p> [freed context]", NSStringFromClass([self class]), self];
+    else
+        return [NSString stringWithFormat:@"<%@ %p> %@ (min. %@), %@ (%@), %@ - %@", NSStringFromClass([self class]), self, GPGProtocolDescription([self engineProtocol]), [self requestedVersion], [self executablePath], [self version], [self homeDirectory], (_context != nil ? _context : @"global")];
+}
+
+@end
+
+@implementation GPGEngine(GPGInternals)
+
++ (NSArray *) enginesFromEngineInfo:(gpgme_engine_info_t)engineInfo context:(GPGContext *)context
+{
+    NSMutableArray  *engines = [NSMutableArray arrayWithCapacity:2];
+    
+    while(engineInfo != NULL){
+        GPGEngine	*newEngine = [[GPGEngine alloc] initWithInternalRepresentation:engineInfo];
+        
+        [engines addObject:newEngine];
+        [newEngine setContext:context];
+        engineInfo = engineInfo->next;
+        [newEngine release];
+    }
+    
+    return engines;
+}
+
+- (void) setContext:(GPGContext *)context
+{
+    _context = context; // Not retained
+}
+
+- (void) invalidateContext
+{
+    [self setContext:INVALID_CONTEXT];
+}
+
+- (void) reloadContextEngineInfo
+{
+    GPGProtocol myProtocol = [self engineProtocol];
+
+    // For the moment, we don't unique GPGEngines according to their _internalRepresentation pointer
+    // that's why we simply change pointer value.
+    _internalRepresentation = gpgme_ctx_get_engine_info([_context gpgmeContext]);
+    while(_internalRepresentation != NULL){
+        if(_engine->protocol == myProtocol)
+            break;
+        _internalRepresentation = _engine->next;
+    }
+    NSAssert1(_engine != NULL, @"### Unable to refresh engine for protocol %@", GPGProtocolDescription(myProtocol));
 }
 
 @end
