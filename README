@@ -3,7 +3,7 @@ gpgme library
 
 *** WARNING These instructions are for MacOS X >= 10.3.x, and will NOT work as-is for 10.2 ***
 
-In order to build this framework, you need gpgme 1.0.2 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.2), and libgpg-error 1.0. These instructions show you how to build these libraries as static libraries, and not dynamic ones; this way you have no problem when installing your framework (not other dependency than framework's).
+In order to build this framework, you need gpg 1.0.2 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.2), and libgpg-error 1.0. These instructions show you how to build these libraries as static libraries, and not dynamic ones; this way you have no problem when installing your framework (not other dependency than framework's).
 
 To download and install it, proceed like this:
 
@@ -16,12 +16,12 @@ cd libgpg-error-1.0
 sudo make install
 cd ..
 
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.0.2.tar.gz
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.0.2.tar.gz.sig
-gpg --verify gpgme-1.0.2.tar.gz.sig
-gnutar xzf gpgme-1.0.2.tar.gz
-cd gpgme-1.0.2
-./configure --enable-static --disable-shared --disable-dependency-tracking --with-gpg-error-prefix=/usr/local --with-gpg=/usr/local/bin/gpg
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.1.0.tar.bz2
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.1.0.tar.bz2.sig
+gpg --verify gpgme-1.1.0.tar.bz2.sig
+gnutar xjf gpgme-1.1.0.tar.bz2
+cd gpgme-1.1.0
+./configure --enable-static --disable-shared --disable-dependency-tracking --with-gpg-error-prefix=/usr/local --with-gpg=/usr/local/bin/gpg --without-pth
 sudo make install
 cd ..
 
