@@ -58,6 +58,8 @@
 		554B55E2069F0245005E1C92 /* Controller.m in Sources */ = {isa = PBXBuildFile; fileRef = F550BC4E0201F2BB01A80016 /* Controller.m */; };
 		554B55E3069F0245005E1C92 /* GPGTester_main.m in Sources */ = {isa = PBXBuildFile; fileRef = F550BC680201F49001A80016 /* GPGTester_main.m */; };
 		554B55E6069F0245005E1C92 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		554CA68F08F9608F00E135BC /* GPGSignatureNotation.h in Headers */ = {isa = PBXBuildFile; fileRef = 554CA68D08F9608F00E135BC /* GPGSignatureNotation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		554CA69008F9608F00E135BC /* GPGSignatureNotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */; };
 		555E7F6F07A3114C00B1F725 /* libgpg-error.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555E7F6D07A3114C00B1F725 /* libgpg-error.a */; };
 		555E7F7007A3114C00B1F725 /* libgpgme-pthread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 555E7F6E07A3114C00B1F725 /* libgpgme-pthread.a */; };
 		555E7F7107A311A500B1F725 /* MacGPGME.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
@@ -188,6 +190,8 @@
 		554B55C0069F0111005E1C92 /* MacGPGME.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacGPGME.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		554B55EA069F0245005E1C92 /* Info-GPGTester.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-GPGTester.plist"; sourceTree = "<group>"; };
 		554B55EB069F0245005E1C92 /* GPGTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GPGTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		554CA68D08F9608F00E135BC /* GPGSignatureNotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGSignatureNotation.h; sourceTree = "<group>"; };
+		554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignatureNotation.m; sourceTree = "<group>"; };
 		554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGAsyncHelper.h; sourceTree = "<group>"; };
 		554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGAsyncHelper.m; sourceTree = "<group>"; };
 		555E7F6D07A3114C00B1F725 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "/usr/local/lib/libgpg-error.a"; sourceTree = "<absolute>"; };
@@ -333,6 +337,8 @@
 				4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */,
 				F5F6E05602E18E8B01000002 /* GPGSignature.h */,
 				F5F6E05702E18E8B01000002 /* GPGSignature.m */,
+				554CA68D08F9608F00E135BC /* GPGSignatureNotation.h */,
+				554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */,
 				551033F104C1912B00000001 /* GPGSubkey.h */,
 				551033F204C1912B00000001 /* GPGSubkey.m */,
 				0BD178E001298E177F000001 /* GPGTrustItem.h */,
@@ -463,6 +469,7 @@
 				4B68559B087F451800859ACB /* GPGRemoteKey.h in Headers */,
 				4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */,
 				4B6856FD088004DA00859ACB /* GPGKeyDefines.h in Headers */,
+				554CA68F08F9608F00E135BC /* GPGSignatureNotation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -708,6 +715,7 @@
 				5543FA94071493C4009979E9 /* GPGKeyGroup.m in Sources */,
 				4B68559C087F451800859ACB /* GPGRemoteKey.m in Sources */,
 				4B6855E7087F4A6B00859ACB /* GPGRemoteUserID.m in Sources */,
+				554CA69008F9608F00E135BC /* GPGSignatureNotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -821,7 +829,7 @@
 			};
 			name = EmbDeployment;
 		};
-		55541F69085AE6E100548474 /* Development */ = {
+		55541F69085AE6E100548474 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -843,7 +851,7 @@
 				);
 				ZERO_LINK = YES;
 			};
-			name = Development;
+			name = Debug;
 		};
 		55541F6A085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -909,11 +917,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DYLIB_COMPATIBILITY_VERSION = 12;
-				DYLIB_CURRENT_VERSION = 13;
+				DYLIB_CURRENT_VERSION = 14;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.0.2;
+				FRAMEWORK_VERSION = 1.1.0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
@@ -947,12 +955,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEBUGGING_SYMBOLS = NO;
 				DYLIB_COMPATIBILITY_VERSION = 12;
-				DYLIB_CURRENT_VERSION = 13;
+				DYLIB_CURRENT_VERSION = 14;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.0.2;
+				FRAMEWORK_VERSION = 1.1.0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
@@ -982,15 +990,15 @@
 			};
 			name = EmbDeployment;
 		};
-		55541F70085AE6E100548474 /* Development */ = {
+		55541F70085AE6E100548474 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DYLIB_COMPATIBILITY_VERSION = 12;
-				DYLIB_CURRENT_VERSION = 13;
+				DYLIB_CURRENT_VERSION = 14;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.0.2;
+				FRAMEWORK_VERSION = 1.1.0;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -1022,18 +1030,18 @@
 				WRAPPER_EXTENSION = framework;
 				ZERO_LINK = YES;
 			};
-			name = Development;
+			name = Debug;
 		};
 		55541F71085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEBUGGING_SYMBOLS = NO;
 				DYLIB_COMPATIBILITY_VERSION = 12;
-				DYLIB_CURRENT_VERSION = 13;
+				DYLIB_CURRENT_VERSION = 14;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.0.2;
+				FRAMEWORK_VERSION = 1.1.0;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
@@ -1069,11 +1077,11 @@
 			buildSettings = {
 				CC = "/usr/bin/gcc-3.3";
 				CPLUSPLUS = "/usr/bin/g++-3.3";
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DYLIB_COMPATIBILITY_VERSION = 12;
-				DYLIB_CURRENT_VERSION = 13;
+				DYLIB_CURRENT_VERSION = 14;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.0.2;
+				FRAMEWORK_VERSION = 1.1.0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
@@ -1106,11 +1114,11 @@
 		55541F73085AE6E100548474 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DYLIB_COMPATIBILITY_VERSION = 12;
-				DYLIB_CURRENT_VERSION = 13;
+				DYLIB_CURRENT_VERSION = 14;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.0.2;
+				FRAMEWORK_VERSION = 1.1.0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
@@ -1185,7 +1193,7 @@
 			};
 			name = EmbDeployment;
 		};
-		55541F77085AE6E100548474 /* Development */ = {
+		55541F77085AE6E100548474 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1210,7 +1218,7 @@
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
-			name = Development;
+			name = Debug;
 		};
 		55541F78085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1293,11 +1301,11 @@
 			};
 			name = EmbDeployment;
 		};
-		55541F7E085AE6E100548474 /* Development */ = {
+		55541F7E085AE6E100548474 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
-			name = Development;
+			name = Debug;
 		};
 		55541F7F085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1325,7 +1333,7 @@
 			buildConfigurations = (
 				55541F67085AE6E100548474 /* EmbDevelopment */,
 				55541F68085AE6E100548474 /* EmbDeployment */,
-				55541F69085AE6E100548474 /* Development */,
+				55541F69085AE6E100548474 /* Debug */,
 				55541F6A085AE6E100548474 /* Release */,
 				55541F6B085AE6E100548474 /* GCC3.3 */,
 				55541F6C085AE6E100548474 /* Default */,
@@ -1338,7 +1346,7 @@
 			buildConfigurations = (
 				55541F6E085AE6E100548474 /* EmbDevelopment */,
 				55541F6F085AE6E100548474 /* EmbDeployment */,
-				55541F70085AE6E100548474 /* Development */,
+				55541F70085AE6E100548474 /* Debug */,
 				55541F71085AE6E100548474 /* Release */,
 				55541F72085AE6E100548474 /* GCC3.3 */,
 				55541F73085AE6E100548474 /* Default */,
@@ -1351,7 +1359,7 @@
 			buildConfigurations = (
 				55541F75085AE6E100548474 /* EmbDevelopment */,
 				55541F76085AE6E100548474 /* EmbDeployment */,
-				55541F77085AE6E100548474 /* Development */,
+				55541F77085AE6E100548474 /* Debug */,
 				55541F78085AE6E100548474 /* Release */,
 				55541F79085AE6E100548474 /* GCC3.3 */,
 				55541F7A085AE6E100548474 /* Default */,
@@ -1364,7 +1372,7 @@
 			buildConfigurations = (
 				55541F7C085AE6E100548474 /* EmbDevelopment */,
 				55541F7D085AE6E100548474 /* EmbDeployment */,
-				55541F7E085AE6E100548474 /* Development */,
+				55541F7E085AE6E100548474 /* Debug */,
 				55541F7F085AE6E100548474 /* Release */,
 				55541F80085AE6E100548474 /* GCC3.3 */,
 				55541F81085AE6E100548474 /* Default */,
