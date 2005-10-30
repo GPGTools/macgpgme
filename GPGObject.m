@@ -26,6 +26,7 @@
 //
 
 #include <MacGPGME/GPGObject.h>
+#include <MacGPGME/GPGInternals.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
@@ -102,15 +103,28 @@ static NSLock		*mapTableLock = nil;
         }
         else{
             _internalRepresentation = aPtr;
-            if(needsPointerUniquing){
-                [mapTableLock lock];
-                NSMapInsertKnownAbsent(mapTable, _internalRepresentation, self);
-                [mapTableLock unlock];
-            }
+            if(needsPointerUniquing)
+                [self registerUniquePointer];
         }
     }
 
     return self;
+}
+
+- (void) registerUniquePointer
+{
+    NSAssert(_internalRepresentation != NULL, @"### Unable to register NULL pointer!");
+    [mapTableLock lock];
+    NSMapInsertKnownAbsent(mapTable, _internalRepresentation, self);
+    [mapTableLock unlock];
+}
+
+- (void) unregisterUniquePointer
+{
+    NSAssert(_internalRepresentation != NULL, @"### Unable to unregister NULL pointer!");
+    [mapTableLock lock];
+    NSMapRemove(mapTable, _internalRepresentation);
+    [mapTableLock unlock];
 }
 
 - (void) dealloc
@@ -121,9 +135,7 @@ static NSLock		*mapTableLock = nil;
 {
     if([[self class] needsPointerUniquing]){
         if(_internalRepresentation != NULL){
-            [mapTableLock lock];
-            NSMapRemove(mapTable, _internalRepresentation);
-            [mapTableLock unlock];
+            [self unregisterUniquePointer];
         }
     }
     else{
