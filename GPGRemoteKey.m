@@ -150,6 +150,7 @@
 - (NSString *) algorithmDescription
 /*"
  * Convenience method. Returns a non-localized description of the algorithm.
+ * Not always available.
 "*/
 {
     switch(_version){
