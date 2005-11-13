@@ -283,7 +283,7 @@ static void releaseCallback(void *object)
 - (id) initWithContentsOfFile:(NSString *)filename
 /*"
  * Immediately opens file named filename (which must be an absolute path) and
- * copies content into memory; then it closes file.
+ * copies content into memory; then it closes file. File name is saved in data.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
@@ -296,6 +296,7 @@ static void releaseCallback(void *object)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
     self = [self initWithInternalRepresentation:aData];
+    [self setFilename:[filename lastPathComponent]];
     
     return self;
 }
@@ -312,6 +313,7 @@ static void releaseCallback(void *object)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
     self = [self initWithInternalRepresentation:aData];
+    [self setFilename:[filename lastPathComponent]];
     
     return self;
 }
@@ -319,7 +321,7 @@ static void releaseCallback(void *object)
 - (id) initWithContentsOfFile:(NSString *)filename atOffset:(unsigned long long)offset length:(unsigned long long)length
 /*"
  * Immediately opens file and copies partial content into memory; then it
- * closes file.
+ * closes file. File name is saved in data.
  *
  * Can raise a #GPGException; in this case, a #release is sent to self.
 "*/
@@ -335,6 +337,7 @@ static void releaseCallback(void *object)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
     self = [self initWithInternalRepresentation:aData];
+    [self setFilename:[filename lastPathComponent]];
 
     return self;
 }
@@ -511,7 +514,7 @@ static void releaseCallback(void *object)
  * or if there is an error.
 "*/
 {
-    const char	*aCString = gpgme_data_get_file_name(_data); // CHECK Statically allocated string or NULL
+    const char	*aCString = gpgme_data_get_file_name(_data); // Returns original string -> make a copy
     
     return GPGStringFromChars(aCString);
 }
@@ -526,8 +529,8 @@ static void releaseCallback(void *object)
  * available.
 "*/
 {
-    const char      *aCString = (filename != nil ? [filename UTF8String] : NULL); // CHECK Encoding is correct?    
-    gpgme_error_t	anError = gpgme_data_set_file_name(_data, aCString);
+    const char      *aCString = (filename != nil ? [filename fileSystemRepresentation] : NULL);    
+    gpgme_error_t	anError = gpgme_data_set_file_name(_data, aCString); // Will duplicate string
     
     if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
