@@ -334,7 +334,6 @@
             else
                 [(NSMutableArray *)_policyURLs addObject:GPGStringFromChars(aNotation->value)];
             
-            // FIXME Maybe GPGSignatureNotation should also copy attributes, and not keep reference to structure
             anObject = [[GPGSignatureNotation alloc] initWithInternalRepresentation:aNotation];
             [(NSMutableArray *)_signatureNotations addObject:anObject];
             [anObject release];
