@@ -353,6 +353,11 @@
         return nil;
 }
 
+- (NSString *) debugDescription
+{
+    return [NSString stringWithFormat:@"<%@: %p> keyID = 0x%@", NSStringFromClass([self class]), self, [self keyID]];
+}
+
 @end
 
 
