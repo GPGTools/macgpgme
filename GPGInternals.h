@@ -77,7 +77,6 @@ extern "C" {
 @interface GPGKey(GPGInternals)
 - (gpgme_key_t) gpgmeKey;
 + (BOOL) usesReferencesCount;
-- (GPGPublicKeyAlgorithm) algorithmFromName:(NSString *)name;
 @end
 
 
@@ -116,6 +115,7 @@ extern "C" {
 
 @interface GPGObject(GPGInternals)
 + (BOOL) needsPointerUniquing;
++ (NSRecursiveLock *) pointerUniquingTableLock;
 - (void) registerUniquePointer;
 - (void) unregisterUniquePointer;
 @end

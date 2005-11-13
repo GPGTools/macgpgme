@@ -39,8 +39,8 @@
  * all classes wrapping %gpgme structures.
 "*/
 
-static NSMapTable	*mapTable = NULL;
-static NSLock		*mapTableLock = nil;
+static NSMapTable       *mapTable = NULL;
+static NSRecursiveLock	*mapTableLock = nil;
 
 + (void) initialize
 /*"
@@ -53,7 +53,7 @@ static NSLock		*mapTableLock = nil;
         NSObject	*aThreadStarter = [[NSObject alloc] init];	
 
         mapTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks, NSNonRetainedObjectMapValueCallBacks, 100);
-        mapTableLock = [[NSLock alloc] init];
+        mapTableLock = [[NSRecursiveLock alloc] init];
     
         // gpgme library uses pthreads; to avoid any problems with
         // Foundation's NSThreads, we must ensure that that at least
@@ -73,6 +73,11 @@ static NSLock		*mapTableLock = nil;
 + (BOOL) needsPointerUniquing
 {
     return NO;
+}
+
++ (NSRecursiveLock *) pointerUniquingTableLock
+{
+    return mapTableLock;
 }
 
 - (id) initWithInternalRepresentation:(void *)aPtr
@@ -130,7 +135,7 @@ static NSLock		*mapTableLock = nil;
 - (void) dealloc
 /*"
  * #WARNING: %_internalRepresentation pointer MUST still be valid when
- * #{-[GPGObject dealloc]} method is called!!!
+ * #{-[GPGObject dealloc]} method is called!!! It can be NULL though.
 "*/
 {
     if([[self class] needsPointerUniquing]){
@@ -140,7 +145,7 @@ static NSLock		*mapTableLock = nil;
     }
     else{
         if(_internalRepresentation != NULL){
-            // Free pointer?
+            // Free pointer? No. Subclasses should take care of it, when necessary.
         }
     }
     
