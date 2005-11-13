@@ -56,7 +56,11 @@ typedef unsigned int GPGSignatureNotationFlags;
 
 @interface GPGSignatureNotation : GPGObject /*"NSObject"*/
 {
-
+    NSString                    *_name;
+    id                          _value;
+    GPGSignatureNotationFlags   _flags;
+    BOOL                        _isHumanReadable;
+    BOOL                        _isCritical;
 }
 
 - (NSString *) name;

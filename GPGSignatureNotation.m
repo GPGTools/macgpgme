@@ -11,15 +11,48 @@
 #include <gpgme.h>
 
 
-#define _notation		((gpgme_sig_notation_t)_internalRepresentation)
-
-
-#warning Subclass NSObject and copy data in ivars
 @implementation GPGSignatureNotation
 /*"
  * You can attach arbitrary notation data to a signature. This information is
  * then available to the user when the signature is verified.
 "*/
+
+#define _notation		((gpgme_sig_notation_t)aPtr)
+- (id) initWithInternalRepresentation:(void *)aPtr
+{
+    NSParameterAssert(aPtr != NULL);
+    
+    if(self = [super initWithInternalRepresentation:NULL]){
+        const char  *aCString = _notation->name;
+        
+        if(aCString != NULL)
+            _name = [[NSString alloc] initWithBytes:aCString length:_notation->name_len encoding:NSUTF8StringEncoding];
+        
+        aCString = _notation->value;
+        
+        if(aCString != NULL){
+            if(_notation->name == NULL || !!_notation->human_readable)
+                _value = [[NSString alloc] initWithBytes:aCString length:_notation->value_len encoding:NSUTF8StringEncoding];
+        }
+        else
+            _value = [[NSData alloc] initWithBytes:aCString length:_notation->value_len];
+        
+        _flags = _notation->flags;
+        _isHumanReadable = !!_notation->human_readable;
+        _isCritical = !!_notation->critical;
+    }
+    
+    return self;
+}
+#undef _notation
+
+- (void) dealloc
+{
+    [_name release];
+    [_value release];
+    
+    [super dealloc];
+}
 
 - (NSString *) name
 /*"
@@ -27,17 +60,7 @@
  * policy URL (string).
 "*/
 {
-    const char  *aCString = _notation->name;
-    NSString    *aName;
-    
-    if(aCString != NULL){
-        aName = [[NSString alloc] initWithBytes:aCString length:_notation->name_len encoding:NSUTF8StringEncoding];
-        [aName autorelease];
-    }
-    else
-        aName = nil;
-    
-    return aName;
+    return _name;
 }
 
 - (id) value
@@ -47,21 +70,7 @@
  * a NSData is returned.
 "*/
 {
-    const char  *aCString = _notation->value;
-    id          aValue;
-    
-    if(aCString != NULL){
-        if(_notation->name == NULL || !!_notation->human_readable){
-            aValue = [[NSString alloc] initWithBytes:aCString length:_notation->value_len encoding:NSUTF8StringEncoding];
-            [aValue autorelease];
-        }
-        else
-            aValue = [NSData dataWithBytes:aCString length:_notation->value_len];
-    }
-    else
-        aValue = nil;
-    
-    return aValue;
+    return _value;
 }
 
 - (GPGSignatureNotationFlags) flags
@@ -74,7 +83,7 @@
  * #GPGSignatureNotationCriticalMask. 
 "*/
 {
-    return _notation->flags;
+    return _flags;
 }
 
 - (BOOL) isHumanReadable
@@ -85,16 +94,28 @@
  * URLs which are always strings).
 "*/
 {
-    return !!_notation->human_readable;
+    return _isHumanReadable;
 }
 
 - (BOOL) isCritical
 /*"
  * Convenience method. Returns whether flags indicates that notation data is 
  * critical or not.
+ *
+ * #WARNING: with gpg <= 1.4.x, always return NO
 "*/
 {
-    return !!_notation->critical;
+    return _isCritical;
+}
+
+- (NSString *) description
+{
+    NSString    *aName = [self name];
+    
+    if(aName != nil)
+        return [NSString stringWithFormat:@"%@%@ = \"%@\"", ([self isCritical] ? @"!":@""), aName, ([self isHumanReadable] ? [self value]:[[self value] propertyList])];
+    else
+        return [NSString stringWithFormat:@"%@%@", ([self isCritical] ? @"!":@""), [self value]];
 }
 
 @end
