@@ -804,30 +804,4 @@ NSString *GPGStringFromChars(const char * chars)
     return _key;
 }
 
-- (GPGPublicKeyAlgorithm) algorithmFromName:(NSString *)name
-{
-    static NSDictionary	*algoForNameDict = nil;
-    NSNumber			*aNumber;
-
-    if(algoForNameDict == nil)
-#warning CHECK!
-        algoForNameDict = [[NSDictionary alloc] initWithObjectsAndKeys:
-            [NSNumber numberWithInt:GPG_RSAAlgorithm], @"RSA", // OK
-            [NSNumber numberWithInt:GPG_RSAEncryptOnlyAlgorithm], @"RSA-S",
-            [NSNumber numberWithInt:GPG_RSASignOnlyAlgorithm], @"RSA-E",
-            [NSNumber numberWithInt:GPG_ElgamalEncryptOnlyAlgorithm], @"ELG-E", // OK
-            [NSNumber numberWithInt:GPG_DSAAlgorithm], @"DSA", // OK
-            [NSNumber numberWithInt:GPG_DSAAlgorithm], @"DSS/DH", // OK; there are 2 names, but it's very complicated; google ("DSS/DH" DSA) to learn more
-            [NSNumber numberWithInt:GPG_EllipticCurveAlgorithm], @"Elliptic",
-            [NSNumber numberWithInt:GPG_ECDSAAlgorithm], @"ECDSA",
-            [NSNumber numberWithInt:GPG_ElgamalAlgorithm], @"ELG",
-            [NSNumber numberWithInt:GPG_DiffieHellmanAlgorithm], @"DH", nil];
-
-    aNumber = [algoForNameDict objectForKey:name];
-    if(aNumber == nil)
-        return -1;
-    else
-        return [aNumber intValue];
-}
-
 @end
