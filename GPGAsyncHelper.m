@@ -256,6 +256,7 @@ static void eventCallback(void *data, gpgme_event_io_t type, void *type_data)
             GPGKey			*aKey = [[GPGKey alloc] initWithInternalRepresentation:((gpgme_key_t)type_data)];
             NSNotification	*aNotification = [NSNotification notificationWithName:GPGNextKeyNotification object:context userInfo:[NSDictionary dictionaryWithObject:aKey forKey:GPGNextKeyKey]];
 
+            gpgme_key_unref((gpgme_key_t)type_data);
             [self performSelectorOnMainThread:@selector(postNotificationInMainThread:) withObject:aNotification waitUntilDone:NO];
             // Post notification in main thread
             NSLog(@"eventCallback: GPGME_EVENT_NEXT_KEY");
@@ -267,6 +268,7 @@ static void eventCallback(void *data, gpgme_event_io_t type, void *type_data)
             GPGTrustItem	*aTrustItem = [[GPGTrustItem alloc] initWithInternalRepresentation:((gpgme_trust_item_t)type_data)];
             NSNotification	*aNotification = [NSNotification notificationWithName:GPGNextTrustItemNotification object:context userInfo:[NSDictionary dictionaryWithObject:aTrustItem forKey:GPGNextTrustItemKey]];
 
+            gpgme_trust_item_unref((gpgme_trust_item_t)type_data);
             [self performSelectorOnMainThread:@selector(postNotificationInMainThread:) withObject:aNotification waitUntilDone:NO];
             // Post notification in main thread
             NSLog(@"eventCallback: GPGME_EVENT_NEXT_TRUSTITEM");
