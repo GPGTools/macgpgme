@@ -67,9 +67,10 @@ typedef enum {
 
 + (GPGError) checkVersionForProtocol:(GPGProtocol)protocol;
 + (NSString *) checkFrameworkVersion:(NSString *)requiredVersion;
-+ (NSString *) defaultHomeDirectory;
++ (NSString *) defaultHomeDirectoryForProtocol:(GPGProtocol)protocol;
 
 + (NSArray *) availableEngines;
++ (GPGEngine *) engineForProtocol:(GPGProtocol)protocol;
 
 - (GPGProtocol) engineProtocol;
 - (NSString *) version;
