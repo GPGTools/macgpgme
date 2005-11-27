@@ -27,6 +27,7 @@
 
 #include <MacGPGME/GPGObject.h>
 #include <MacGPGME/GPGInternals.h>
+#include <MacGPGME/GPGOptions.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
@@ -50,8 +51,8 @@ static NSRecursiveLock	*mapTableLock = nil;
 {
     [super initialize];
     if(mapTable == NULL){
-        NSObject	*aThreadStarter = [[NSObject alloc] init];	
-
+        NSString    *aPath;
+        
         mapTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks, NSNonRetainedObjectMapValueCallBacks, 100);
         mapTableLock = [[NSRecursiveLock alloc] init];
     
@@ -59,7 +60,11 @@ static NSRecursiveLock	*mapTableLock = nil;
         // Foundation's NSThreads, we must ensure that that at least
         // one NSThread has been created, that's why we create a dummy
         // thread before doing anything with gpgme.
-        [NSThread detachNewThreadSelector:@selector(release) toTarget:aThreadStarter withObject:nil];
+        if(![NSThread isMultiThreaded]){
+            NSObject	*aThreadStarter = [[NSObject alloc] init];	
+            
+            [NSThread detachNewThreadSelector:@selector(release) toTarget:aThreadStarter withObject:nil];
+        }
 
         setlocale (LC_ALL, "");
         // Let's initialize libgpgme sub-systems now.
@@ -67,6 +72,19 @@ static NSRecursiveLock	*mapTableLock = nil;
         // Let's initialize default locale; we don't use that possibility in MacGPGME.framework yet
         gpgme_set_locale(NULL, LC_CTYPE, setlocale(LC_CTYPE, NULL));
         gpgme_set_locale(NULL, LC_MESSAGES, setlocale(LC_MESSAGES, NULL));
+        
+        // Let's add new user defaults suite, the one containing global prefs
+        // for all MacGPGME-based apps
+        [[NSUserDefaults standardUserDefaults] addSuiteNamed:GPGUserDefaultsSuiteName];
+        aPath = [[NSUserDefaults standardUserDefaults] stringForKey:GPGOpenPGPExecutablePathKey];
+        if(aPath != nil){
+            NS_DURING
+                [[GPGEngine engineForProtocol:GPGOpenPGPProtocol] setExecutablePath:aPath];
+            NS_HANDLER
+                // Ignore error and log it
+                NSLog(@"No valid gpg engine at '%@'; you need to change default engine path", aPath);
+            NS_ENDHANDLER
+        }
     }
 }
 
