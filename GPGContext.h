@@ -77,7 +77,8 @@ typedef enum {
  *                             The type of external source is dependant on the
  *                             crypto engine used. For example, it can be a 
  *                             remote %{key server} or LDAP certificate
- *                             server.}
+ *                             server. Currently only implemented for the S/MIME
+ *                             backend and ignored for other backends.}
  * _{GPGKeyListModeSignatures  Specifies that signatures on keys shall be
  *                             retrieved too. This is a time-consuming 
  *                             operation, and that mode should not be used
@@ -201,7 +202,8 @@ GPG_EXPORT NSString	* const GPGProgressNotification;
  * Notification is always posted in the main thread.
  *
  * UserInfo:
- * _{GPGErrorKey  A #NSNumber containing a #GPGError value}
+ * _{GPGErrorKey             A #NSNumber containing a #GPGError value}
+ * _{GPGAdditionalReasonKey  An additional unlocalized error message; optional}
 "*/
 GPG_EXPORT NSString	* const GPGAsynchronousOperationDidTerminateNotification;
 

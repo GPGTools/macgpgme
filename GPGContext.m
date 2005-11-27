@@ -223,12 +223,19 @@ static void progressCallback(void *object, const char *description, int type, in
 
 - (id) copyWithZone:(NSZone *)zone
 /*"
- * Copies engine configurations.  
+ * Copies engine configurations, as well as all context attributes except
+ * passphraseDelegate, userInfo and signatureNotations.
 "*/
 {
     GPGContext      *contextCopy = [[[self class] alloc] init];
     NSEnumerator    *engineEnum = [[self engines] objectEnumerator];
     GPGEngine       *anEngine;
+    
+    [contextCopy setUsesArmor:[self usesArmor]];
+    [contextCopy setUsesTextMode:[self usesTextMode]];
+    [contextCopy setKeyListMode:[self keyListMode]];
+    [contextCopy setProtocol:[self protocol]];
+    [contextCopy setCertificatesInclusion:[self certificatesInclusion]];
     
     while(anEngine = [engineEnum nextObject]){
         NSEnumerator    *engineCopyEnum = [[contextCopy engines] objectEnumerator];
@@ -410,7 +417,7 @@ static gpgme_error_t passphraseCallback(void *object, const char *uid_hint, cons
     if(aPassphrase == nil){
         // Cancel operation
         aPassphrase = @"";
-        error = gpgme_error(GPG_ERR_CANCELED);
+        error = gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPG_ERR_CANCELED);
     }
 
     resultFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fd];
@@ -428,14 +435,13 @@ static gpgme_error_t passphraseCallback(void *object, const char *uid_hint, cons
 static void progressCallback(void *object, const char *description, int type, int current, int total)
 {
     // The <type> parameter is the letter printed during key generation 
-    NSString			*aDescription = nil;
+    NSString			*aDescription;
     unichar				typeChar = type;
     NSNotification		*aNotification;
     GPGContext			*aContext = (GPGContext *)object;
     NSAutoreleasePool	*localAP = [[NSAutoreleasePool alloc] init];
 
-    if(description != NULL)
-        aDescription = [NSString stringWithUTF8String:description];
+    aDescription = GPGStringFromChars(description);
     aNotification = [NSNotification notificationWithName:GPGProgressNotification object:aContext userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithCharacters:&typeChar length:1], @"type", [NSNumber numberWithInt:current], @"current", [NSNumber numberWithInt:total], @"total", aDescription, @"description", nil]];
     // Note that if aDescription is nil, it will not be put into dictionary (ends argument list).
     [aContext performSelectorOnMainThread:@selector(postNotificationInMainThread:) withObject:aNotification waitUntilDone:NO];
@@ -600,14 +606,12 @@ static void progressCallback(void *object, const char *description, int type, in
  *                            available.}
  * _{@"keyErrors"             Dictionary containing GPGKey or GPGRemoteKey 
  *                            instances as keys, and GPGError NSNumber
- *                            instances as values.}
+ *                            instances as values. Contains all keys used for
+ *                            encryption.}
  *
  * If last operation was an import operation, dictionary can contain:
- * _{@"keys"                     Dictionary whose keys are #GPGKey instances,
- *                               and values are also dictionaries; these can
- *                               contain a key-value pair 'error' with an
- *                               #GPGError, and a key-value pair 'status' with
- *                               a #GPGImportStatus (bit-field)}
+ * _{#GPGChangesKey              See #GPGKeyringChangedNotification notification
+ *                               for more information about #GPGChangesKey.}
  * _{@"consideredKeyCount"       Total number of considered keys}
  * _{@"keysWithoutUserIDCount"   Number of keys without user ID}
  * _{@"importedKeyCount"         Total number of imported keys}
@@ -812,7 +816,7 @@ static void progressCallback(void *object, const char *description, int type, in
                 [keys setObject:statusDict forKey:aKey];
                 importStatus = importStatus->next;
             }
-            [operationResults setObject:keys forKey:@"keys"];
+            [operationResults setObject:keys forKey:GPGChangesKey];
         }
     }
     
@@ -871,11 +875,18 @@ static void progressCallback(void *object, const char *description, int type, in
         if(anObject != nil)
             [operationResults setObject:anObject forKey:@"port"];
     }
-/*
+
     if(_operationMask & KeyUploadOperation){
-#warning Missing implementation
+        id	anObject;
+        
+        [operationResults setObject:[_operationData objectForKey:@"hostName"] forKey:@"hostName"];
+        [operationResults setObject:[_operationData objectForKey:@"protocol"] forKey:@"protocol"];
+        [operationResults setObject:[_operationData objectForKey:@"options"] forKey:@"options"];
+        anObject = [_operationData objectForKey:@"port"] ;
+        if(anObject != nil)
+            [operationResults setObject:anObject forKey:@"port"];
     }
-*/
+    
     return operationResults;
 }
 
@@ -914,6 +925,8 @@ static void progressCallback(void *object, const char *description, int type, in
         [self setUsesArmor:NO];
     else if([key isEqualToString:@"usesTextMode"])
         [self setUsesTextMode:NO];
+    else if([key isEqualToString:@"protocol"])
+        [self setProtocol:GPGOpenPGPProtocol];
     else
         [super setNilValueForKey:key];
 }
@@ -939,7 +952,9 @@ static void progressCallback(void *object, const char *description, int type, in
  *
  * If name is not nil, then value may be a NSString (the notation data is forced
  * to be a human-readable notation data). Else value has to be a NSData, and
- * notation data is forced not to be a human-readable notation data.
+ * notation data is forced not to be a human-readable notation data. Note that
+ * a user notation name must contain the '@' character and must have only 
+ * printable characters or spaces.
  *
  * Subsequent signing operations will include this notation data, as well as any
  * other notation data that was added since the creation of the context or the
@@ -948,17 +963,68 @@ static void progressCallback(void *object, const char *description, int type, in
  * Can raise a #GPGException for any error that is reported by the crypto engine
  * support routines.
  *
- *#WARNING: Non-human-readable notation data is currently not supported.
+ * #WARNING: Non-human-readable notation data is currently not supported.
+ *
+ * #WARNING: Notations are silently ignored if user configured gpg with
+ * #force-v3-sigs option on.
 "*/
 {
-    const char      *aCStringName;
-    const char      *aCStringValue;
-    gpgme_error_t	anError;
+    static NSCharacterSet   *notPrintableNorSpaceCharset = nil;
+    const char              *aCStringName;
+    const char              *aCStringValue;
+    gpgme_error_t           anError;
+
+    if(notPrintableNorSpaceCharset == nil){            
+        notPrintableNorSpaceCharset = [NSCharacterSet characterSetWithRange:NSMakeRange(040, 0176 - 040 + 1)]; // Octal values - see isgraph()
+        notPrintableNorSpaceCharset = [[notPrintableNorSpaceCharset invertedSet] retain];
+    }
     
-    NSParameterAssert([value isKindOfClass:[NSString class]]);
+    // We need to duplicate work done in gpg (g10/g10.c: add_notation_data()) because
+    // gpg/gpgme doesn't report any error, and operation would fail silently.
+    if(name != nil){
+        NSRange     atRange;
+        unsigned    nameLength = [name length];
+        
+        if(nameLength == 0)
+            [NSException raise:NSInvalidArgumentException format:@"a notation name cannot be empty"];
+        if([name rangeOfCharacterFromSet:notPrintableNorSpaceCharset].location != NSNotFound)
+            [NSException raise:NSInvalidArgumentException format:@"a notation name must have only printable characters or spaces"];
+        
+        atRange = [name rangeOfString:@"@"];
+        if(atRange.location == NSNotFound)
+            [NSException raise:NSInvalidArgumentException format:@"a user notation name must contain the '@' character"];
+        if(atRange.location + 1 < nameLength){
+            atRange = [name rangeOfString:@"@" options:0 range:NSMakeRange(atRange.location + 1, nameLength - (atRange.location + 1))];
+            if(atRange.location != NSNotFound)
+                [NSException raise:NSInvalidArgumentException format:@"a notation name must not contain more than one '@' character"];
+        }
+    }
+    
+    if(![value isKindOfClass:[NSString class]])
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
     
     aCStringName = (name != nil ? [name UTF8String] : NULL);
-    aCStringValue = [value UTF8String];
+    
+    if(value != nil && [(NSString *)value length] > 0){
+        static NSMutableCharacterSet    *controlCharset = nil;
+        
+        if(controlCharset == nil){
+            controlCharset = (NSMutableCharacterSet *)[NSMutableCharacterSet characterSetWithRange:NSMakeRange(0, 037 + 1)]; // Octal values - see iscntrl()
+            [controlCharset addCharactersInRange:NSMakeRange(0177, 1)];
+            [controlCharset retain];
+        }
+        
+        if(name == nil){
+            if([value rangeOfCharacterFromSet:notPrintableNorSpaceCharset].location != NSNotFound)
+                [NSException raise:NSInvalidArgumentException format:@"the policy URL is invalid"];
+        }
+        else{
+            if([value rangeOfCharacterFromSet:controlCharset].location != NSNotFound)
+                [NSException raise:NSInvalidArgumentException format:@"a notation value must not use any control characters"];
+        }
+    }
+    
+    aCStringValue = (value == nil ? "":[value UTF8String]);
     anError = gpgme_sig_notation_add(_context, aCStringName, aCStringValue, flags);
     if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
@@ -1137,9 +1203,24 @@ static void progressCallback(void *object, const char *description, int type, in
 
 @implementation GPGContext(GPGSynchronousOperations)
 
+- (GPGData *) _decryptedData:(gpgme_data_t)gpgme_data
+{
+    GPGData                 *returnedData;
+    gpgme_decrypt_result_t	aResult;
+    
+    returnedData = [[[GPGData alloc] initWithInternalRepresentation:gpgme_data] autorelease];
+    aResult = gpgme_op_decrypt_result(_context);
+    NSAssert(aResult != NULL, @"### No decryption result after successful decryption!?");
+    if(aResult->file_name != NULL)
+        [returnedData setFilename:GPGStringFromChars(aResult->file_name)];
+    
+    return returnedData;
+}
+
 - (GPGData *) decryptedData:(GPGData *)inputData
 /*"
- * Decrypts the ciphertext in the inputData and returns the plain data.
+ * Decrypts the ciphertext in the inputData and returns the plain data. Returned
+ * data's filename is set automatically, when available.
  * 
  * Can raise a #GPGException:
  * _{GPGErrorNoData            inputData does not contain any data to
@@ -1152,9 +1233,9 @@ static void progressCallback(void *object, const char *description, int type, in
  * Others exceptions could be raised too.
 "*/
 {
-    gpgme_data_t	outputData;
-    gpgme_error_t	anError;
-
+    gpgme_data_t    outputData;
+    gpgme_error_t   anError;
+    
     anError = gpgme_data_new(&outputData);
     if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
@@ -1169,7 +1250,7 @@ static void progressCallback(void *object, const char *description, int type, in
         [[NSException exceptionWithGPGError:anError userInfo:aUserInfo] raise];
     }
 
-    return [[[GPGData alloc] initWithInternalRepresentation:outputData] autorelease];
+    return [self _decryptedData:outputData];
 }
 
 - (NSArray *) verifySignatureData:(GPGData *)signatureData againstData:(GPGData *)inputData
@@ -1212,7 +1293,8 @@ static void progressCallback(void *object, const char *description, int type, in
 - (NSArray *) verifySignedData:(GPGData *)signedData originalData:(GPGData **)originalDataPtr
 /*"
  * Returns an array of #GPGSignature instances. originalDataPtr will contain
- * (on success) the data that has been signed. It can be NULL.
+ * (on success) the data that has been signed, with eventually the original
+ * file name. It can be NULL.
  *
  * Can raise a #GPGException:
  * _{GPGErrorNoData            inputData does not contain any data to verify.}
@@ -1237,8 +1319,15 @@ static void progressCallback(void *object, const char *description, int type, in
 
     if(originalDataPtr == NULL)
         gpgme_data_release(uninitializedData);
-    else
+    else{
+        gpgme_verify_result_t	aResult;
+        
         *originalDataPtr = [[[GPGData alloc] initWithInternalRepresentation:uninitializedData] autorelease];
+        aResult = gpgme_op_verify_result(_context);
+        NSAssert(aResult != NULL, @"### No verification result after successful verification!?");
+        if(aResult->file_name != NULL)
+            [*originalDataPtr setFilename:GPGStringFromChars(aResult->file_name)];
+    }
 
     return [self signatures];
 }
@@ -1281,7 +1370,8 @@ static void progressCallback(void *object, const char *description, int type, in
 /*"
  * Decrypts the ciphertext in inputData and returns it as plain. If cipher
  * contains signatures, they will be verified and returned in *signaturesPtr,
- * if signaturesPtr is not NULL, by invoking #{-signatures}.
+ * if signaturesPtr is not NULL, by invoking #{-signatures}. Returned data's
+ * filename is set automatically, when available.
  *
  * With OpenPGP engine, user has 3 attempts for passphrase in case of public
  * key encryption, else only 1 attempt.
@@ -1299,8 +1389,8 @@ static void progressCallback(void *object, const char *description, int type, in
  * Others exceptions could be raised too.
 "*/
 {
-    gpgme_data_t	outputData;
-    gpgme_error_t	anError;
+    gpgme_data_t    outputData;
+    gpgme_error_t   anError;
 
     anError = gpgme_data_new(&outputData);
     if(anError != GPG_ERR_NO_ERROR)
@@ -1319,7 +1409,7 @@ static void progressCallback(void *object, const char *description, int type, in
     if(signaturesPtr != NULL)
         *signaturesPtr = [self signatures];
 
-    return [[[GPGData alloc] initWithInternalRepresentation:outputData] autorelease];
+    return [self _decryptedData:outputData];
 }
 
 - (GPGKey *) _keyWithFpr:(const char *)fpr fromKeys:(NSArray *)keys
@@ -1671,13 +1761,12 @@ static void progressCallback(void *object, const char *description, int type, in
 - (GPGKey *) _keyWithFpr:(const char *)fpr isSecret:(BOOL)isSecret
 {
     // WARNING: we need to call this method in a context other than self,
-    // because we start a new operation, thus rendering current operation results
-    // invalid.
+    // because we start a new operation, thus changing operation results.
     GPGContext	*localContext = [self copy];
     GPGKey      *aKey = nil;
     
     NS_DURING
-        aKey = [localContext keyFromFingerprint:[NSString stringWithUTF8String:fpr] secretKey:isSecret];
+        aKey = [localContext keyFromFingerprint:GPGStringFromChars(fpr) secretKey:isSecret];
     NS_HANDLER
         [localContext release];
         [localException raise];
@@ -1916,8 +2005,7 @@ static void progressCallback(void *object, const char *description, int type, in
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     deletedKeyFingerprints = [NSArray arrayWithObject:aFingerprint];
     [_operationData setObject:deletedKeyFingerprints forKey:@"deletedKeyFingerprints"];
-#warning TODO
-    // We should mark GPGKey as deleted, and it would raise an exception on any method invocation
+#warning TODO We should mark GPGKey as deleted, and it would raise an exception on any method invocation
     [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, GPGContextKey, deletedKeyFingerprints, @"deletedKeyFingerprints", nil]];
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:GPGImportDeletedKeyMask] forKey:aFingerprint] forKey:GPGChangesKey]]; // FIXME No difference between secret and public keys
     [aFingerprint release];
@@ -1942,7 +2030,7 @@ static void progressCallback(void *object, const char *description, int type, in
     gpgme_key_t		aKey = NULL;
 
     NSParameterAssert(fingerprint != nil);
-    anError = gpgme_get_key(_context, [fingerprint UTF8String], &aKey, secretKey);
+    anError = gpgme_get_key(_context, [fingerprint UTF8String], &aKey, secretKey); // Returned key has one reference
     [self setOperationMask:SingleKeyListingOperation];
     [_operationData setObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey];
     if(anError != GPG_ERR_NO_ERROR){
@@ -1952,8 +2040,13 @@ static void progressCallback(void *object, const char *description, int type, in
             [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
 
-    if(aKey != NULL)
-        return [[[GPGKey alloc] initWithInternalRepresentation:aKey] autorelease];
+    if(aKey != NULL){
+        GPGKey  *returnedKey = [[[GPGKey alloc] initWithInternalRepresentation:aKey] autorelease];
+        
+        gpgme_key_unref(aKey);
+        
+        return returnedKey;
+    }
     else
         return nil;
 }
@@ -2113,6 +2206,9 @@ enum {
     NSMutableArray  *resultKeys;
     BOOL			interrupted;
     int				version;
+    NSData          *errorData;
+    NSData          *outputData;
+    NSConditionLock *taskHandlerLock;
 }
 
 + (void) helpContext:(GPGContext *)theContext searchingForKeysMatchingPatterns:(NSArray *)theSearchPatterns serverOptions:(NSDictionary *)options;
@@ -2139,10 +2235,14 @@ enum {
     NSRange				aRange;
     NSPipe				*inputPipe, *anOutputPipe, *anErrorPipe;
     NSString			*launchPath = nil;
-    NSArray 			*options;
+    NSArray             *options;
+    NSArray             *defaultOptions;
+    NSArray             *customOptions;
     NSEnumerator		*anEnum;
     int					formatVersion = 0;
     NSNumber			*formatVersionNumber = nil;
+    int                 urlSchemeSeparatorLength = 3; // Length of ://
+    BOOL                passHostArgument = YES;
 
 	if(executableVersions == nil)
 		executableVersions = [[NSMutableDictionary alloc] initWithCapacity:5];
@@ -2154,7 +2254,7 @@ enum {
 
         if([optionValues count] == 0){
             [gpgOptions release];
-            [[NSException exceptionWithGPGError:gpgme_error(GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"No keyserver set" forKey:GPGAdditionalReasonKey]] raise];
+            [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"No keyserver set" forKey:GPGAdditionalReasonKey]] raise];
         }
         else
             aHostName = [optionValues objectAtIndex:0];
@@ -2162,8 +2262,17 @@ enum {
 
     aRange = [aHostName rangeOfString:@"://"];
     if(aRange.length <= 0){
-        aHostName = [@"x-hkp://" stringByAppendingString:aHostName];
-        aRange = [aHostName rangeOfString:@"://"];
+        if([aHostName hasPrefix:@"finger:"]){
+            // Special case
+            // Format is finger:user@domain - finger://relay/user scheme is not yet supported
+            aRange = [aHostName rangeOfString:@":"];
+            urlSchemeSeparatorLength = 1;
+            passHostArgument = NO;
+        }
+        else{
+            aHostName = [@"x-hkp://" stringByAppendingString:aHostName];
+            aRange = [aHostName rangeOfString:@"://"];
+        }
     }
     aString = [aHostName lowercaseString];
     if([aString hasPrefix:@"ldap://"]){
@@ -2194,37 +2303,44 @@ enum {
         launchPath = @"gpgkeys_curl"; // Hardcoded
         aProtocol = @"ftps";
     }
-    else if([aString hasPrefix:@"finger://"]){
-#warning FIXME Not sure that finger URLs start with finger:// 
+    else if([aString hasPrefix:@"finger:"]){
         launchPath = @"gpgkeys_finger"; // Hardcoded
         aProtocol = @"finger";
     }
     else{
         [gpgOptions release];
-        [[NSException exceptionWithGPGError:gpgme_error(GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
     }
-    aHostName = [aHostName substringFromIndex:aRange.location + 3]; // 3 = length of '://'
+    aHostName = [aHostName substringFromIndex:aRange.location + urlSchemeSeparatorLength];
 
-#warning FIXME No longer hardcode path
-    aString = [@"/usr/local/libexec/gnupg/" stringByAppendingPathComponent:launchPath]; // Hardcoded
+    aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"libexec/gnupg"]; // E.g. from /usr/local/bin/gpg to /usr/local/libexec/gnupg
+    aString = [aString stringByAppendingPathComponent:launchPath];
     if(![[NSFileManager defaultManager] fileExistsAtPath:aString]){
-		BOOL	tryEmbeddedOnes = YES;
-		
-		if([aProtocol isEqualToString:@"http"]){
-			launchPath = @"gpgkeys_http"; // Hardcoded
-			aString = [@"/usr/local/libexec/gnupg/" stringByAppendingPathComponent:launchPath]; // Hardcoded
-			tryEmbeddedOnes = ![[NSFileManager defaultManager] fileExistsAtPath:aString];
-		}
-		
-		if(tryEmbeddedOnes){
-			// Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
+        aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"lib/gnupg"]; // E.g. from /usr/local/bin/gpg to /usr/local/lib/gnupg (needed for Fink installations!)
+        aString = [aString stringByAppendingPathComponent:launchPath];
+        if(![[NSFileManager defaultManager] fileExistsAtPath:aString]){
+            BOOL	tryEmbeddedOnes = YES;
+            
+            if([aProtocol isEqualToString:@"http"]){
+                launchPath = @"gpgkeys_http"; // Hardcoded
+                aString = [[aString stringByDeletingLastPathComponent] stringByAppendingPathComponent:launchPath];
+                tryEmbeddedOnes = ![[NSFileManager defaultManager] fileExistsAtPath:aString];
+            }
+            
+            if(tryEmbeddedOnes){
+                // Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
 #warning FIXME Emdeb gpgkeys_* 1.2 binaries (backwards compatible)
-			launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
-			if(!launchPath || ![[NSFileManager defaultManager] fileExistsAtPath:launchPath]){
-				[gpgOptions release];
-				[[NSException exceptionWithGPGError:gpgme_error(GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
-			}
-		}
+                launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
+                if(!launchPath || ![[NSFileManager defaultManager] fileExistsAtPath:launchPath]){
+                    [gpgOptions release];
+                    [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
+                }
+            }
+            else
+                launchPath = aString;
+        }
+        else
+            launchPath = aString;
 	}
     else
         launchPath = aString;
@@ -2242,7 +2358,7 @@ enum {
 			[aTask setArguments:[NSArray arrayWithObject:@"-V"]]; // Get version
 			anOutputPipe = [NSPipe pipe];
 			[aTask setStandardOutput:[anOutputPipe fileHandleForWriting]];
-			[aTask launch];
+			[aTask launch]; // FIXME Shouldn't we do that asynchronously too?
 			// Output is on 2 lines: first contains format version,
 			// second contains executable version; we are interested only in format version,
 			// and reading first 2 bytes should be enough. If we use -readDataToEndOfFile
@@ -2268,26 +2384,45 @@ enum {
         aHostName = [aHostName substringToIndex:aRange.location];
     }
 
+    commandString = [[NSMutableString alloc] init];
+    if(formatVersion > 0){
+        [commandString appendFormat:@"VERSION %d\n", formatVersion]; // For gpg >= 1.3.x, optional
+        [commandString appendFormat:@"PROGRAM %@\n", [[theContext engine] version]]; // For gpg >= 1.3.x, optional(?)
+        [commandString appendFormat:@"SCHEME %@\n", aProtocol]; // For gpg >= 1.3.x, optional(?)
+        [commandString appendFormat:@"OPAQUE %@\n", aHostName]; // For gpg >= 1.3.x, optional(?)
+    }
+    
     switch(theCommand){
         case _GPGContextHelperSearchCommand:
-            commandString = [[NSMutableString alloc] initWithString:@"COMMAND search\n"]; break;
+            [commandString appendString:@"COMMAND search\n"]; break;
         case _GPGContextHelperGetCommand:
-            commandString = [[NSMutableString alloc] initWithString:@"COMMAND get\n"]; break;
+            [commandString appendString:@"COMMAND get\n"]; break;
         case _GPGContextHelperUploadCommand:
-            commandString = [[NSMutableString alloc] initWithString:@"COMMAND send\n"]; break;
+            [commandString appendString:@"COMMAND send\n"]; break;
     }
-    [commandString appendFormat:@"HOST %@\n", aHostName];
-    if(port != nil)
-        [commandString appendFormat:@"PORT %@\n", port];
-
-    if(formatVersion > 0)
-        [commandString appendFormat:@"VERSION %d\n", formatVersion]; // For gpg >= 1.3.x, optional
-    options = [thePassedOptions objectForKey:@"keyserver-options"];
-    if(options == nil){
-        options = [gpgOptions _subOptionsForName:@"keyserver-options"];
+    if(passHostArgument){
+        [commandString appendFormat:@"HOST %@\n", aHostName];
+        if(port != nil)
+            [commandString appendFormat:@"PORT %@\n", port];
+    }
+    
+    // We pass all default options and custom options, but custom ones are passed after default
+    // ones, so they have higher priority.
+    customOptions = [thePassedOptions objectForKey:@"keyserver-options"];
+    defaultOptions = ([gpgOptions optionStateForName:@"keyserver-options"] ? [gpgOptions _subOptionsForName:@"keyserver-options"] : nil);
+    if(customOptions == nil){
+        if(defaultOptions == nil)
+            options = [NSArray array];
+        else
+            options = defaultOptions;
+    }
+    else{
+        if(defaultOptions == nil)
+            options = customOptions;
+        else
+            options = [defaultOptions arrayByAddingObjectsFromArray:customOptions];
     }
     anEnum = [options objectEnumerator];
-
     while(aString = [anEnum nextObject]){
         [commandString appendFormat:@"OPTION %@\n", aString];
     }
@@ -2305,8 +2440,7 @@ enum {
             // We start with the first key.
             GPGKey		*aKey = [theArgument objectAtIndex:0];
             NSString	*aKeyID = [aKey keyID];
-#warning FIXME Could we not use current context?
-            GPGContext	*tempContext = [theContext copy];
+            GPGContext	*tempContext = [theContext copy]; // We cannot use current context, to avoid changing its state
             NSString	*asciiExport = nil;
 
             [tempContext setUsesArmor:YES];
@@ -2356,6 +2490,7 @@ enum {
     if(helper->resultKeys == nil)
         helper->resultKeys = [[NSMutableArray alloc] init];
     helper->version = formatVersion;
+    helper->taskHandlerLock = [[NSConditionLock alloc] initWithCondition:2]; // 2 pipes to read
 
     if(needsLocking)
         [_helperPerContextLock lock];
@@ -2374,11 +2509,12 @@ enum {
         [aTask launch];
         [[inputPipe fileHandleForWriting] writeData:[commandString dataUsingEncoding:NSUTF8StringEncoding]];
     NS_HANDLER
-        gpgme_error_t	anError = gpgme_error(GPGErrorGeneralError);
+        gpgme_error_t	anError = gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorGeneralError);
 
         [[inputPipe fileHandleForWriting] closeFile];
         [gpgOptions release];
         [commandString release];
+        [helper->taskHandlerLock unlock];
         [helper release];
         [[theContext operationData] setObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey];
         NSMapRemove(_helperPerContext, theContext);
@@ -2420,6 +2556,67 @@ enum {
 {
     interrupted = YES;
     [task interrupt];
+}
+
+- (void) handleResults
+{
+    // WARNING: might be executed in a secondary thread
+    NSNotification	*aNotification = nil;
+    
+    [_helperPerContextLock lock];
+    NS_DURING
+        int	terminationStatus = [task terminationStatus];
+        
+        if(!interrupted){
+            if(terminationStatus != 0){
+                // In case of multiple search patterns, we stop after first error
+                gpgme_error_t	anError = gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorKeyServerError);
+                NSString        *aString = [[NSString alloc] initWithData:errorData encoding:NSUTF8StringEncoding];
+                
+                if([aString hasPrefix:@"gpgkeys: "])
+                    aString = [[[aString autorelease] substringFromIndex:9] copy];
+                
+                aNotification = [NSNotification notificationWithName:GPGAsynchronousOperationDidTerminateNotification object:context userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:anError], GPGErrorKey, aString, GPGAdditionalReasonKey, nil]];
+                [aString release];
+            }
+            else{
+                NSMutableDictionary	*passedData = [NSMutableDictionary dictionaryWithObject:outputData forKey:@"readData"];
+                unsigned            aCount = [argument count];
+                
+                [self performSelectorOnMainThread:@selector(passResultsBackFromData:) withObject:passedData waitUntilDone:YES];
+                
+                if(command == _GPGContextHelperSearchCommand && aCount > 1)
+                    [self performSelectorOnMainThread:@selector(startSearchForNextPattern:) withObject:[passedData objectForKey:@"_keys"] waitUntilDone:YES];
+                else if(command == _GPGContextHelperUploadCommand && aCount > 1)
+                    [self performSelectorOnMainThread:@selector(startUploadForNextKey:) withObject:[passedData objectForKey:@"_keys"] waitUntilDone:YES];
+                else
+                    aNotification = [NSNotification notificationWithName:GPGAsynchronousOperationDidTerminateNotification object:context userInfo:[NSDictionary dictionaryWithObject:[passedData objectForKey:GPGErrorKey] forKey:GPGErrorKey]];
+            }
+        }
+        else{
+            // When interrupted, when send notif anyway with error?
+            gpgme_error_t	anError = gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPG_ERR_CANCELED);
+            
+            aNotification = [NSNotification notificationWithName:GPGAsynchronousOperationDidTerminateNotification object:context userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey]];
+        }
+    NS_HANDLER
+        NSMapRemove(_helperPerContext, context);
+        [self autorelease];
+        [_helperPerContextLock unlock];
+        [taskHandlerLock unlock];
+        [localException raise];
+    NS_ENDHANDLER
+    
+    [taskHandlerLock unlock];
+    if(aNotification != nil){
+        NSMapRemove(_helperPerContext, context);
+        [_helperPerContextLock unlock];
+        [self performSelectorOnMainThread:@selector(postNotificationInMainThread:) withObject:aNotification waitUntilDone:YES];
+    }
+    else
+        [_helperPerContextLock unlock];
+    
+    [self release];
 }
 
 - (void) taskEnded:(NSNotification *)notification
@@ -2626,72 +2823,30 @@ enum {
     [[self class] performCommand:command forContext:context argument:[argument subarrayWithRange:NSMakeRange(1, [argument count] - 1)] serverOptions:aDict needsLocking:NO];
 }
 
+- (void) handleResultsIfPossible
+{
+    // WARNING: might be executed in a secondary thread
+    BOOL    handleResults;
+    
+    [taskHandlerLock lock];
+    handleResults = ([taskHandlerLock condition] == 1);
+    [taskHandlerLock unlockWithCondition:[taskHandlerLock condition] - 1];
+    if(handleResults)
+        [self handleResults];
+}
+
 - (void) gotErrorResults:(NSNotification *)notification
 {
     // WARNING: might be executed in a secondary thread
-    NSData		*readData = [[notification userInfo] objectForKey:NSFileHandleNotificationDataItem];
-    NSString	*aString = [[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"%@", aString);
-#warning TODO parse results and returns them in exception, if any
-    [aString release];
+    errorData = [[[notification userInfo] objectForKey:NSFileHandleNotificationDataItem] copy];
+    [self handleResultsIfPossible];
 }
 
 - (void) gotOutputResults:(NSNotification *)notification
 {
     // WARNING: might be executed in a secondary thread
-    NSNotification	*aNotification = nil;
-
-    [_helperPerContextLock lock];
-    NS_DURING
-        int	terminationStatus = [task terminationStatus];
-        
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:[notification name] object:[notification object]];
-
-        if(!interrupted){
-            if(terminationStatus != 0){
-                // In case of multiple search patterns, we stop after first error
-                gpgme_error_t	anError = gpgme_error(GPGErrorKeyServerError);
-
-                aNotification = [NSNotification notificationWithName:GPGAsynchronousOperationDidTerminateNotification object:context userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey]];
-            }
-            else{
-                NSData				*readData = [[notification userInfo] objectForKey:NSFileHandleNotificationDataItem];
-                NSMutableDictionary	*passedData = [NSMutableDictionary dictionaryWithObject:readData forKey:@"readData"];
-                unsigned            aCount = [argument count];
-
-                [self performSelectorOnMainThread:@selector(passResultsBackFromData:) withObject:passedData waitUntilDone:YES];
-
-                if(command == _GPGContextHelperSearchCommand && aCount > 1)
-                    [self performSelectorOnMainThread:@selector(startSearchForNextPattern:) withObject:[passedData objectForKey:@"_keys"] waitUntilDone:YES];
-                else if(command == _GPGContextHelperUploadCommand && aCount > 1)
-                        [self performSelectorOnMainThread:@selector(startUploadForNextKey:) withObject:[passedData objectForKey:@"_keys"] waitUntilDone:YES];
-                else
-                    aNotification = [NSNotification notificationWithName:GPGAsynchronousOperationDidTerminateNotification object:context userInfo:[NSDictionary dictionaryWithObject:[passedData objectForKey:GPGErrorKey] forKey:GPGErrorKey]];
-            }
-        }
-        else{
-            // When interrupted, when send notif anyway with error?
-            gpgme_error_t	anError = gpgme_error(GPG_ERR_CANCELED);
-
-            aNotification = [NSNotification notificationWithName:GPGAsynchronousOperationDidTerminateNotification object:context userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey]];
-        }
-    NS_HANDLER
-        NSMapRemove(_helperPerContext, context);
-        [self autorelease];
-        [_helperPerContextLock unlock];
-        [localException raise];
-    NS_ENDHANDLER
-
-    if(aNotification != nil){
-        NSMapRemove(_helperPerContext, context);
-        [_helperPerContextLock unlock];
-        [self performSelectorOnMainThread:@selector(postNotificationInMainThread:) withObject:aNotification waitUntilDone:YES];
-    }
-    else
-        [_helperPerContextLock unlock];
-
-    [self release];
+    outputData = [[[notification userInfo] objectForKey:NSFileHandleNotificationDataItem] copy];
+    [self handleResultsIfPossible];
 }
 
 - (void) dealloc
@@ -2708,6 +2863,9 @@ enum {
     [serverOptions release];
     [passedOptions release];
     [resultKeys release];
+    [errorData release];
+    [outputData release];
+    [taskHandlerLock release];
 
     [super dealloc];
 }
@@ -2718,7 +2876,6 @@ enum {
 @implementation GPGContext(GPGExtendedKeyManagement)
 
 - (void) asyncSearchForKeysMatchingPatterns:(NSArray *)searchPatterns serverOptions:(NSDictionary *)options
-// FIXME Are there any new options with gpg 1.4?
 /*"
  * Contacts asynchronously a key server and asks it for keys matching 
  * searchPatterns.
@@ -2730,11 +2887,18 @@ enum {
  *                         is used.}
  * _{@"keyserver-options"  An array which can contain the following string
  *                         values: @"include-revoked", @"include-disabled",
- *                         @"honor-http-proxy", @"broken-http-proxy",
- *                         @"try-dns-srv" or the same options but prefixed by
- *                         @"no-". If this pair is not given, values are taken
- *                         from gpg configuration. Not all types of servers
- *                         support all these options, but unsupported ones are
+ *                         @"check-cert", @"try-dns-srv", 
+ *                         @"include-subkeys" options but prefixed by @"no-".
+ *                         You can also pass the following strings followed by 
+ *                         an equal sign and a value: @"broken-http-proxy" and a
+ *                         host name, @"http-proxy" and a host name, @"timeout"
+ *                         and an integer value (seconds), @"ca-cert-file" and a
+ *                         full path to a SSL certificate file, @"tls" and 
+ *                         @"try"/@"require"/@"warn" or @"no-tls", @"basedn" and
+ *                         a base DN, @"follow-redirects" and an integer value.
+ *                         Passed options are merged with gpg configuration 
+ *                         options, but are prioritary. Not all types of servers
+ *                         support all these options, but unsupported ones are 
  *                         silently ignored.}
  *
  * A #GPGAsynchronousOperationDidTerminateNotification notification will be 
@@ -2758,7 +2922,7 @@ enum {
     NSParameterAssert(searchPatterns != nil && [searchPatterns count] > 0);
 
     if([self protocol] != GPGOpenPGPProtocol)
-        [[NSException exceptionWithGPGError:gpgme_error(GPGErrorNotImplemented) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
 
     [_GPGContextHelper helpContext:self searchingForKeysMatchingPatterns:searchPatterns serverOptions:options];
 }
@@ -2778,11 +2942,18 @@ enum {
  *                         is used.}
  * _{@"keyserver-options"  An array which can contain the following string
  *                         values: @"include-revoked", @"include-disabled",
- *                         @"honor-http-proxy", @"broken-http-proxy",
- *                         @"try-dns-srv" or the same options but prefixed by
- *                         @"no-". If this pair is not given, values are taken
- *                         from gpg configuration. Not all types of servers
- *                         support all these options, but unsupported ones are
+ *                         @"check-cert", @"try-dns-srv", 
+ *                         @"include-subkeys" options but prefixed by @"no-".
+ *                         You can also pass the following strings followed by 
+ *                         an equal sign and a value: @"broken-http-proxy" and a
+ *                         host name, @"http-proxy" and a host name, @"timeout"
+ *                         and an integer value (seconds), @"ca-cert-file" and a
+ *                         full path to a SSL certificate file, @"tls" and 
+ *                         @"try"/@"require"/@"warn" or @"no-tls", @"basedn" and
+ *                         a base DN, @"follow-redirects" and an integer value.
+ *                         Passed options are merged with gpg configuration 
+ *                         options, but are prioritary. Not all types of servers
+ *                         support all these options, but unsupported ones are 
  *                         silently ignored.}
  *
  * A #GPGAsynchronousOperationDidTerminateNotification notification will be
@@ -2797,16 +2968,20 @@ enum {
  * Method cannot be used yet to download CMS keys.
  *
  * Can raise a #GPGException:
- * _{GPGErrorInvalidValue  gpg is not configured correctly.
- *                         More information in #GPGAdditionalReasonKey userInfo key}
- * _{GPGErrorGeneralError  An unknown error occurred during search.
- *                         More information in #GPGAdditionalReasonKey userInfo key}
+ * _{GPGErrorKeyServerError  gpg is not configured correctly. More information
+ *                           in #GPGAdditionalReasonKey userInfo key}
+ * _{GPGErrorInvalidValue    gpg is not configured correctly.
+ *                           More information in #GPGAdditionalReasonKey
+ *                           userInfo key}
+ * _{GPGErrorGeneralError    An unknown error occurred during search.
+ *                           More information in #GPGAdditionalReasonKey
+ *                           userInfo key}
 "*/
 {
     NSParameterAssert(keys != nil && [keys count] > 0);
 
     if([self protocol] != GPGOpenPGPProtocol)
-        [[NSException exceptionWithGPGError:gpgme_error(GPGErrorNotImplemented) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
     [_GPGContextHelper helpContext:self downloadingKeys:keys serverOptions:options];
 }
 
@@ -2850,11 +3025,18 @@ enum {
  *                         is used.}
  * _{@"keyserver-options"  An array which can contain the following string
  *                         values: @"include-revoked", @"include-disabled",
- *                         @"honor-http-proxy", @"broken-http-proxy",
- *                         @"try-dns-srv" or the same options but prefixed by
- *                         @"no-". If this pair is not given, values are taken
- *                         from gpg configuration. Not all types of servers
- *                         support all these options, but unsupported ones are
+ *                         @"check-cert", @"try-dns-srv", 
+ *                         @"include-subkeys" options but prefixed by @"no-".
+ *                         You can also pass the following strings followed by 
+ *                         an equal sign and a value: @"broken-http-proxy" and a
+ *                         host name, @"http-proxy" and a host name, @"timeout"
+ *                         and an integer value (seconds), @"ca-cert-file" and a
+ *                         full path to a SSL certificate file, @"tls" and 
+ *                         @"try"/@"require"/@"warn" or @"no-tls", @"basedn" and
+ *                         a base DN, @"follow-redirects" and an integer value.
+ *                         Passed options are merged with gpg configuration 
+ *                         options, but are prioritary. Not all types of servers
+ *                         support all these options, but unsupported ones are 
  *                         silently ignored.}
  *
  * A #GPGAsynchronousOperationDidTerminateNotification notification will be
@@ -2872,11 +3054,10 @@ enum {
 "*/
 {
 #warning TEST!
-//    [[NSException exceptionWithGPGError:gpgme_error(GPGErrorNotImplemented) userInfo:nil] raise];
     NSParameterAssert(keys != nil && [keys count] > 0);
 
     if([self protocol] != GPGOpenPGPProtocol)
-        [[NSException exceptionWithGPGError:gpgme_error(GPGErrorNotImplemented) userInfo:nil] raise];
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
     [_GPGContextHelper helpContext:self uploadingKeys:keys serverOptions:options];
 }
 
@@ -3132,7 +3313,8 @@ enum {
 {
     gpgme_key_t		aKey;
     gpgme_error_t	anError;
-
+    GPGKey          *returnedKey;
+    
     NSAssert(context != nil, @"### Enumerator is invalid now, because an exception was raised during enumeration.");
     anError = gpgme_op_keylist_next([context gpgmeContext], &aKey); // Returned key has one reference
     if(gpg_err_code(anError) == GPG_ERR_EOF){
@@ -3155,7 +3337,10 @@ enum {
 
     NSAssert(aKey != NULL, @"### Returned key is NULL, but no error?!");
 
-    return [[[GPGKey alloc] initWithInternalRepresentation:aKey] autorelease];
+    returnedKey = [[[GPGKey alloc] initWithInternalRepresentation:aKey] autorelease];
+    gpgme_key_unref(aKey);
+    
+    return returnedKey;
 }
 
 @end
@@ -3219,6 +3404,7 @@ enum {
 
     NSAssert(aTrustItem != NULL, @"### Returned trustItem is NULL, but no error?!");
 
+    // Always return a new trustItem, with 1 ref -> will be unref'd when dealloc'd
     return [[[GPGTrustItem alloc] initWithInternalRepresentation:aTrustItem] autorelease];
 }
 
