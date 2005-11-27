@@ -87,6 +87,7 @@ NSString *GPGStringFromChars(const char * chars)
 // The following attributes are in fact always 0 for secret keys, because gpg
 // doesn't return the information!
 // -isKeyDisabled, ...
+// Problem has been fixed in gpg 1.4
 
 /*"
  * Some of the cryptographic operations require that %recipients or %signers
