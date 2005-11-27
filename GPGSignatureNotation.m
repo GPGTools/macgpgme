@@ -89,7 +89,7 @@
 - (BOOL) isHumanReadable
 /*"
  * Convenience method. Returns whether flags indicates that notation data is 
- * human-readable or not; policy URL notation data always return NO. When 
+ * human-readable or not; policy URL notation data always returns NO. When 
  * returns YES, value is a NSString, else value is a NSData (except for policy 
  * URLs which are always strings).
 "*/
@@ -102,7 +102,7 @@
  * Convenience method. Returns whether flags indicates that notation data is 
  * critical or not.
  *
- * #WARNING: with gpg <= 1.4.x, always return NO
+ * #WARNING: with gpg <= 1.4.x, always returns NO
 "*/
 {
     return _isCritical;
