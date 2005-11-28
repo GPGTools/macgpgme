@@ -30,12 +30,19 @@
 #include <MacGPGME/MacGPGME.h>
 
 
+@interface Controller(Private)
++ (GPGContext *) keySignatureBrowserContext;
++ (NSMutableDictionary *) signerPerUserIDCache;
+- (void) reloadSelectedKeyUserIDsWithSignaturesFromKey:(GPGKey *)key;
+@end
+
 @implementation Controller
 
 - (id)init
 {
 	[super init];
     selectedDownloadedKeys = [[NSMutableSet alloc] init];
+
 	return self;
 }
 
@@ -65,6 +72,7 @@
     [supportMatrix release];
     [[downloadOutlineView window] release];
     [downloadedKeys release];
+    [selectedKeyUserIDsWithSignatures release];
     
     [super dealloc];
 }
@@ -115,14 +123,19 @@
     if([aString length] == 0)
         return;
 
-    [keys release];
-    keys = nil;
+//    [[aContext engine] setExecutablePath:[NSString stringWithFormat:@"/tmp/g%Cp%Cg%C", 0x00e9, 0x00e9, 0x00e9]];
+//    [[aContext engine] setExecutablePath:@"/sw/bin/gpg"];
     [progressIndicator startAnimation:nil];
     if([aKeyserver length] > 0)
         options = [NSDictionary dictionaryWithObject:aKeyserver forKey:@"keyserver"];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(foundKeys:) name:GPGAsynchronousOperationDidTerminateNotification object:aContext];
-//    [aContext asyncSearchForKeysMatchingPatterns:[NSArray arrayWithObject:aString] serverOptions:options];
-    [aContext asyncSearchForKeysMatchingPatterns:[aString componentsSeparatedByString:@","] serverOptions:options];
+    NS_DURING
+//      [aContext asyncSearchForKeysMatchingPatterns:[NSArray arrayWithObject:aString] serverOptions:options];
+        [aContext asyncSearchForKeysMatchingPatterns:[aString componentsSeparatedByString:@","] serverOptions:options];
+    NS_HANDLER
+        [progressIndicator stopAnimation:nil];
+        NSBeginAlertSheet(@"Error during key search", nil, nil, nil, [keyTableView window], nil, NULL, NULL, NULL, @"%@", [localException reason]);
+    NS_ENDHANDLER
 }
 
 - (IBAction) searchKeys:(id)sender
@@ -179,16 +192,29 @@
     NSBeginInformationalAlertSheet(@"Import results", nil, nil, nil, [keyTableView window], nil, NULL, NULL, NULL, @"Total number of considered keys: %@\nNumber of keys without user ID: %@\nTotal number of imported keys: %@\nNumber of imported RSA keys: %@\nNumber of unchanged keys: %@\nNumber of new user IDs: %@\nNumber of new subkeys: %@\nNumber of new signatures: %@\nNumber of new revocations: %@\nTotal number of secret keys read: %@\nNumber of imported secret keys: %@\nNumber of unchanged secret keys: %@\nNumber of new keys skipped: %@\nNumber of keys not imported: %@", [importResults objectForKey:@"consideredKeyCount"], [importResults objectForKey:@"keysWithoutUserIDCount"], [importResults objectForKey:@"importedKeyCount"], [importResults objectForKey:@"importedRSAKeyCount"], [importResults objectForKey:@"unchangedKeyCount"], [importResults objectForKey:@"newUserIDCount"], [importResults objectForKey:@"newSubkeyCount"], [importResults objectForKey:@"newSignatureCount"], [importResults objectForKey:@"newRevocationCount"], [importResults objectForKey:@"readSecretKeyCount"], [importResults objectForKey:@"importedSecretKeyCount"], [importResults objectForKey:@"unchangedSecretKeyCount"], [importResults objectForKey:@"skippedNewKeyCount"], [importResults objectForKey:@"notImportedKeyCount"]);
 }
 
+- (void) uploadedKeys:(NSNotification *)notification
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:[notification name] object:[notification object]];
+    NSLog(@"uploadedKeys -> operation results = %@", [[notification object] operationResults]);
+    [[notification object] release]; // the GPGContext
+}
+
 - (void) downloadedKeys:(NSNotification *)notification
 {
-    [[notification object] release]; // the GPPContext
     [[NSNotificationCenter defaultCenter] removeObserver:self name:[notification name] object:[notification object]];
     [progressIndicator stopAnimation:nil];
     [keys release];
     keys = [[[[[notification object] operationResults] objectForKey:GPGChangesKey] allKeys] retain];
+/*    if([keys count] > 0){ // only for tests
+        GPGContext  *aContext = [[GPGContext alloc] init];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedKeys:) name:GPGAsynchronousOperationDidTerminateNotification object:aContext];
+        [aContext asyncUploadKeys:keys serverOptions:nil];
+    }*/
     [keyTableView noteNumberOfRowsChanged];
     [keyTableView reloadData];
     [self showImportResults:[[notification object] operationResults]];
+    [[notification object] release]; // the GPGContext
 }
 
 - (void) downloadSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
@@ -209,8 +235,8 @@
     GPGError	anError = [[[notification userInfo] objectForKey:GPGErrorKey] intValue];
 
     [progressIndicator stopAnimation:nil];
-    if(anError != GPGErrorNoError){
-        NSRunAlertPanel(@"Search Error", @"%@", nil, nil, nil, GPGErrorDescription(anError));
+    if(GPGErrorCodeFromError(anError) != GPGErrorNoError){
+        NSRunAlertPanel(@"Search Error", @"%@\n%@", nil, nil, nil, GPGErrorDescription(anError), [[notification userInfo] objectForKey:GPGAdditionalReasonKey]);
         [[notification object] release]; // the context
     }
     else{
@@ -321,6 +347,7 @@
             }
             else
                 [imageView setImage:nil];
+            [self reloadSelectedKeyUserIDsWithSignaturesFromKey:selectedKey];
         }
         else{
             [xmlTextView setString:@""];
@@ -445,6 +472,7 @@
         decryptedData = [[aContext decryptedData:(GPGData *)inputData] retain];
 
         [(GPGData *)inputData release];
+        NSLog(@"Keys used for encryption: %@", [[[aContext operationResults] objectForKey:@"keyErrors"] allKeys]);
     NS_HANDLER
         NSLog(@"Exception userInfo: %@", [localException userInfo]);
         NSRunAlertPanel(@"Error", @"%@", nil, nil, nil, [localException reason]);
@@ -457,7 +485,7 @@
     savePanel = [NSSavePanel savePanel];
     [savePanel setTreatsFilePackagesAsDirectories:YES];
 
-    if([savePanel runModal] == NSOKButton){
+    if([savePanel runModalForDirectory:nil file:[decryptedData filename]] == NSOKButton){
         [[(GPGData *)decryptedData data] writeToFile:[savePanel filename] atomically:NO];
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:GPGProgressNotification object:aContext];
@@ -493,15 +521,16 @@
         GPGContext			*aContext;
         GPGData				*inputData;
         volatile GPGData	*outputData;
+        NSString            *filePath = [encryptionInputFilenameTextField stringValue];
 
-        if([[encryptionInputFilenameTextField stringValue] length] == 0 || [[encryptionOutputFilenameTextField stringValue] length] == 0){
+        if([filePath length] == 0 || [[encryptionOutputFilenameTextField stringValue] length] == 0){
             NSRunAlertPanel(@"Error", @"You need to give a filename for input and output files.", nil, nil, nil);
             return;
         }
 
         aContext = [[GPGContext alloc] init];
         [aContext setUsesArmor:[encryptionArmoredSwitch state]];
-        inputData = [[GPGData alloc] initWithContentsOfFile:[encryptionInputFilenameTextField stringValue]];
+        inputData = [[GPGData alloc] initWithContentsOfFile:filePath];
 
         NS_DURING
             NSArray	*selectedRecipients = [self selectedRecipients];
@@ -667,10 +696,20 @@
         NS_DURING
             NSEnumerator	*anEnum = [keyTableView selectedRowEnumerator];
             NSNumber		*aRow;
-
+//            unsigned        deadBeef = 0xdeadbeef;
+            
             while(aRow = [anEnum nextObject])
                 [aContext addSignerKey:[keys objectAtIndex:[aRow intValue]]];
-            
+
+            [aContext addSignatureNotationWithName:@"me@TEST_HUMAN_READABLE_NOTATION" value:@"My human-readable notation" flags:GPGSignatureNotationCriticalMask];
+//            [aContext addSignatureNotationWithName:@"TEST_HUMAN_READABLE_NOTATION" value:@"My human-readable notation" flags:GPGSignatureNotationCriticalMask];
+//            [aContext addSignatureNotationWithName:@"@@" value:@"My human-readable notation" flags:GPGSignatureNotationCriticalMask];
+//            [aContext addSignatureNotationWithName:@"" value:@"My human-readable notation" flags:GPGSignatureNotationCriticalMask];
+//            [aContext addSignatureNotationWithName:[NSString stringWithFormat:@"%C", 0x00e9] value:@"My human-readable notation" flags:GPGSignatureNotationCriticalMask];
+//            [aContext addSignatureNotationWithName:@"TEST_DATA_NOTATION" value:[NSData dataWithBytes:&deadBeef length:sizeof(deadBeef)] flags:GPGSignatureNotationCriticalMask]; // Not yet implemented
+            [aContext addSignatureNotationWithName:nil value:@"http://macgpg.sf.net/" flags:0];
+//            [aContext addSignatureNotationWithName:nil value:[NSString stringWithFormat:@"%C", 0x00e9] flags:0];
+//            [aContext addSignatureNotationWithName:nil value:@"http://macgpg.sf.net/" flags:GPGSignatureNotationCriticalMask];
             outputData = [aContext signedData:inputData signatureMode:[signingDetachedSwitch state]];
         NS_HANDLER
             outputData = nil;
@@ -705,6 +744,7 @@
         inputData = [[GPGData alloc] initWithContentsOfFile:inputFilename];
         if(signatureFilename != nil)
             signatureData = [[GPGData alloc] initWithContentsOfFile:signatureFilename];
+//[[aContext engine] setExecutablePath:@"/Users/dave/Developer/gpgkeys_wrapper.sh"];
         if(signatureData != nil)
             signatures = [aContext verifySignatureData:(GPGData *)signatureData againstData:(GPGData *)inputData];
         else
@@ -718,9 +758,10 @@
             while(aSig = [anEnum nextObject]){
                 GPGKey	*signerKey = [aContext keyFromFingerprint:[aSig fingerprint] secretKey:NO];
 
-                statusString = [statusString stringByAppendingFormat:@"\nStatus: %@,  Summary: 0x%04x, Signer: %@, Signature Date: %@, Expiration Date: %@, Validity: %@, Validity Error: %@, Notations: %@, Policy URLs: %@", GPGErrorDescription([aSig status]), [aSig summary], (signerKey ? [signerKey userID]:[aSig fingerprint]), [aSig creationDate], [aSig expirationDate], [aSig validityDescription], GPGErrorDescription([aSig validityError]), [aSig notations], [aSig policyURLs]];
+                statusString = [statusString stringByAppendingFormat:@"\nStatus: %@,  Summary: 0x%04x, Signer: %@, Signature Date: %@, Expiration Date: %@, Validity: %@, Validity Error: %@, Notations/Policy URLs: %@", GPGErrorDescription([aSig status]), [aSig summary], (signerKey ? [signerKey userID]:[aSig fingerprint]), [aSig creationDate], [aSig expirationDate], [aSig validityDescription], GPGErrorDescription([aSig validityError]), [aSig signatureNotations]];
             }
         }
+        NSLog(@"Signature notations/policies = %@", [aContext signatureNotations]);
         NSRunInformationalAlertPanel(@"Authentication result", statusString, nil, nil, nil);
     NS_HANDLER
         NSString		*statusString = @"Signatures";
@@ -808,6 +849,172 @@
     NSLog(@"keyringChanged: %@", [notif userInfo]);
     [keyTableView noteNumberOfRowsChanged];
     [keyTableView reloadData];
+}
+
++ (GPGContext *) keySignatureBrowserContext
+{
+    static GPGContext   *keySignatureBrowserContext = nil;
+    
+    if(keySignatureBrowserContext == nil){
+        keySignatureBrowserContext = [[GPGContext alloc] init];
+        [keySignatureBrowserContext setKeyListMode:GPGKeyListModeSignatures];
+    }
+    
+    return keySignatureBrowserContext;
+}
+
++ (NSMutableDictionary *) signerPerUserIDCache
+{
+    static NSMutableDictionary  *signerPerUserIDCache = nil;
+    
+    if(signerPerUserIDCache == nil){
+        signerPerUserIDCache = [[NSMutableDictionary alloc] init];
+    }
+    
+    return signerPerUserIDCache;
+}
+
+- (void) reloadSelectedKeyUserIDsWithSignaturesFromKey:(GPGKey *)key
+{
+    if(key != nil){
+        GPGContext  *aContext = [[self class] keySignatureBrowserContext];
+        
+        key = [aContext keyFromFingerprint:[key fingerprint] secretKey:NO];
+        [self willChangeValueForKey:@"selectedKeyUserIDsWithSignatures"];
+        [selectedKeyUserIDsWithSignatures autorelease];
+        if(key != nil)
+            selectedKeyUserIDsWithSignatures = [[key userIDs] retain];
+        else
+            selectedKeyUserIDsWithSignatures = nil;
+        [[[self class] signerPerUserIDCache] removeAllObjects];
+        [self didChangeValueForKey:@"selectedKeyUserIDsWithSignatures"];
+    }
+}
+
+- (NSArray *) selectedKeyUserIDsWithSignatures
+{
+    return selectedKeyUserIDsWithSignatures;
+}
+
+- (IBAction) testKeyFromFingerprintLeaks:(id)sender
+{
+    volatile int                i = 0;
+    volatile NSAutoreleasePool  *localAP = nil;
+    
+    NS_DURING
+        for(i = 0; i < 100; i++){
+            localAP = [[NSAutoreleasePool alloc] init];
+            
+            (void)[[[self class] keySignatureBrowserContext] keyFromFingerprint:@"0x992020D4" secretKey:NO];
+            [localAP release];
+        }
+    NS_HANDLER
+        [localAP release];
+        NSLog(@"Failed after %d attempts: %@", i, localException);
+    NS_ENDHANDLER
+}
+
+@end
+
+@implementation GPGKey(KeySignatureBrowser)
+
+- (NSArray *) userIDsOrSignerKeys
+{
+    return [self userIDs];
+}
+
+- (unsigned) userIDsOrSignerKeysCount
+{
+    return [[self userIDs] count];
+}
+
+- (NSString *) keyIDOrUserID
+{
+    return [@"0x" stringByAppendingString:[self shortKeyID]];
+}
+
+- (BOOL) isNotInKeyring
+{
+    return NO;
+}
+
+@end
+
+@implementation GPGUserID(KeySignatureBrowser)
+
+- (BOOL) isNotInKeyring
+{
+    return NO;
+}
+
+- (NSArray *) uniqueSignerKeyIDs
+{
+    NSArray *signerKeyIDs = [self valueForKeyPath:@"signatures.signerKeyID"];
+    
+    return [[NSSet setWithArray:signerKeyIDs] allObjects];
+}
+
+static NSComparisonResult userIDsOrSignerKeysCompare(id firstObject, id secondObject, void *signedKey){
+    if(firstObject == secondObject)
+        return NSOrderedSame;
+
+    if([firstObject isKindOfClass:[NSDictionary class]]){
+        if([secondObject isKindOfClass:[NSDictionary class]])
+            return NSOrderedSame;
+        else
+            return NSOrderedDescending;
+    }
+    else{
+        if([secondObject isKindOfClass:[NSDictionary class]])
+            return NSOrderedAscending;
+        else{
+            if([[(GPGKey *)signedKey shortKeyID] compare:[firstObject shortKeyID]] == NSOrderedSame)
+                return NSOrderedAscending;
+            if([[(GPGKey *)signedKey shortKeyID] compare:[secondObject shortKeyID]] == NSOrderedSame)
+                return NSOrderedDescending;
+            return [[firstObject shortKeyID] compare:[secondObject shortKeyID]];
+        }
+    }
+}
+
+- (NSArray *) userIDsOrSignerKeys
+{
+    NSArray *signerKeys = [[Controller signerPerUserIDCache] objectForKey:self];
+    
+    if(signerKeys == nil){
+        NSArray         *signerKeyIDs = [self uniqueSignerKeyIDs];
+        NSMutableArray  *userIDsOrSignerKeys = [[NSMutableArray alloc] init];
+        NSEnumerator    *anEnum = [signerKeyIDs objectEnumerator];
+        NSString        *aKeyID;
+        GPGContext      *aContext = [Controller keySignatureBrowserContext];
+        
+        while(aKeyID = [anEnum nextObject]){
+            NSLog(@"Looking for %@", aKeyID);
+            GPGKey  *aKey = [aContext keyFromFingerprint:aKeyID secretKey:NO];
+            
+            if(aKey == nil){
+                [userIDsOrSignerKeys addObject:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"(0x%@)", aKeyID], @"keyIDOrUserID", [NSNumber numberWithBool:YES], @"isNotInKeyring", nil]];
+            }
+            else{
+                [userIDsOrSignerKeys addObject:aKey];
+            }
+        }
+        signerKeys = [userIDsOrSignerKeys sortedArrayUsingFunction:userIDsOrSignerKeysCompare context:[self key]];
+        [[Controller signerPerUserIDCache] setObject:signerKeys forKey:self];
+        [userIDsOrSignerKeys release];
+    }
+    
+    return signerKeys;
+}
+
+- (unsigned) userIDsOrSignerKeysCount
+{
+    return [[self uniqueSignerKeyIDs] count];
+}
+
+- (NSString *) keyIDOrUserID
+{
+    return [self userID];
 }
 
 @end

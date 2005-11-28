@@ -18,6 +18,7 @@
                 searchKeys = id; 
                 sign = id; 
                 synchronizeKeyGroupsWithAddressBookGroups = id; 
+                testKeyFromFingerprintLeaks = id; 
                 verify = id; 
                 verifyDetachedSignature = id; 
             }; 

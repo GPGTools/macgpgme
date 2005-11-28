@@ -41,6 +41,7 @@ extern "C" {
 @interface Controller : NSObject
 {
     NSArray					*keys;
+    NSArray                 *selectedKeyUserIDsWithSignatures;
     
     IBOutlet NSTableView	*keyTableView;
     IBOutlet NSTableView	*userIDTableView;
@@ -121,6 +122,8 @@ extern "C" {
 
 - (IBAction) okSheet:(id)sender;
 - (IBAction) cancelSheet:(id)sender;
+
+- (IBAction) testKeyFromFingerprintLeaks:(id)sender;
 
 @end
 
