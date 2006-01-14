@@ -187,6 +187,7 @@
 				0BD178D901298E177F000001,
 				0BD178DA01298E177F000001,
 				0BD178DB01298E177F000001,
+				55B5B32209797203004D4D15,
 				5543FA91071493C4009979E9,
 				5543FA92071493C4009979E9,
 				55627BD203BB4FD000000001,
@@ -195,8 +196,14 @@
 				0BD178DD01298E177F000001,
 				F549FD5602BFA3AB0128824A,
 				F549FD5702BFA3AB0128824A,
+				55B5B32309797203004D4D15,
+				55B5B32409797203004D4D15,
+				55B5B32509797203004D4D15,
+				55B5B32609797203004D4D15,
 				F5F6E05602E18E8B01000002,
 				F5F6E05702E18E8B01000002,
+				55B5B32709797203004D4D15,
+				55B5B32809797203004D4D15,
 				551033F104C1912B00000001,
 				551033F204C1912B00000001,
 				0BD178E001298E177F000001,
@@ -207,8 +214,6 @@
 				F55CD03C02D65F9C01C07EFC,
 				554F654A062ADCB000BF2446,
 				554F654B062ADCB000BF2446,
-				55994E86084A203700F12EEF,
-				55994E87084A203700F12EEF,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -538,7 +543,8 @@
 				DYLIB_COMPATIBILITY_VERSION = 12;
 				DYLIB_CURRENT_VERSION = 13;
 				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.0.2;
+				FRAMEWORK_VERSION = 1.1.0;
+				GCC_MODEL_TUNING = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
@@ -588,7 +594,10 @@
 				554B55A2069F0111005E1C92,
 				5543FA93071493C4009979E9,
 				55B5189607AC37A6005C1DB3,
-				55994E88084A203700F12EEF,
+				55B5B32D09797203004D4D15,
+				55B5B32E09797203004D4D15,
+				55B5B33009797203004D4D15,
+				55B5B33209797203004D4D15,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -750,6 +759,9 @@
 			fileRef = 554F654A062ADCB000BF2446;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Private,
+				);
 			};
 		};
 		554B55A3069F0111005E1C92 = {
@@ -793,7 +805,9 @@
 				554B55B7069F0111005E1C92,
 				554B55B8069F0111005E1C92,
 				5543FA94071493C4009979E9,
-				55994E89084A203700F12EEF,
+				55B5B32F09797203004D4D15,
+				55B5B33109797203004D4D15,
+				55B5B33309797203004D4D15,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1187,37 +1201,6 @@
 			settings = {
 			};
 		};
-		55994E86084A203700F12EEF = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			path = GPGMailAdditions.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		55994E87084A203700F12EEF = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.objc;
-			path = GPGMailAdditions.m;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		55994E88084A203700F12EEF = {
-			fileRef = 55994E86084A203700F12EEF;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		55994E89084A203700F12EEF = {
-			fileRef = 55994E87084A203700F12EEF;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		55B5189507AC37A6005C1DB3 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -1231,6 +1214,132 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		55B5B32209797203004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = GPGKeyDefines.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B32309797203004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = GPGRemoteKey.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B32409797203004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = GPGRemoteKey.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B32509797203004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = GPGRemoteUserID.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B32609797203004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = GPGRemoteUserID.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B32709797203004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = GPGSignatureNotation.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B32809797203004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = GPGSignatureNotation.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B32D09797203004D4D15 = {
+			fileRef = 55B5B32209797203004D4D15;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		55B5B32E09797203004D4D15 = {
+			fileRef = 55B5B32309797203004D4D15;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		55B5B32F09797203004D4D15 = {
+			fileRef = 55B5B32409797203004D4D15;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55B5B33009797203004D4D15 = {
+			fileRef = 55B5B32509797203004D4D15;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		55B5B33109797203004D4D15 = {
+			fileRef = 55B5B32609797203004D4D15;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55B5B33209797203004D4D15 = {
+			fileRef = 55B5B32709797203004D4D15;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		55B5B33309797203004D4D15 = {
+			fileRef = 55B5B32809797203004D4D15;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		55B5B471097989D2004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html;
+			path = IntroMacGPGME.html;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		55B5B472097989D2004D4D15 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.sh;
+			path = "make-documentation.sh";
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		55B964A607A3BA9A0060059A = {
 			fileRef = 55C6D0E20795C2CD007186C6;
@@ -1308,14 +1417,6 @@
 //F52
 //F53
 //F54
-		F53E87DC0202125E01A80016 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			path = IntroMacGPGME.html;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		F549FD5602BFA3AB0128824A = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -1507,14 +1608,6 @@
 			passBuildSettingsInEnvironment = 1;
 			productName = "MacGPGME Documentation";
 		};
-		F550BC6B0201F8D201A80016 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.sh;
-			path = "make-documentation.sh";
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		F55CD03802D65F6201C07EFC = {
 			children = (
 				F55CD03902D65F6201C07EFC,
@@ -1559,11 +1652,11 @@
 		F56F791B012E3F8001000001 = {
 			children = (
 				55C6D0E20795C2CD007186C6,
-				F550BC6B0201F8D201A80016,
 				F56F791C012E3F8001000001,
-				F53E87DC0202125E01A80016,
-				551033F004C1911000000001,
 				551033F504C1915A00000001,
+				55B5B472097989D2004D4D15,
+				55B5B471097989D2004D4D15,
+				551033F004C1911000000001,
 			);
 			isa = PBXGroup;
 			name = Documentation;
