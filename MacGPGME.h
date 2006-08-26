@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -41,7 +41,6 @@
 #include <MacGPGME/GPGKeySignature.h>
 #include <MacGPGME/GPGObject.h>
 #include <MacGPGME/GPGOptions.h>
-//#include <MacGPGME/GPGOptions/GPGOptions.h>
 #include <MacGPGME/GPGPrettyInfo.h>
 #include <MacGPGME/GPGRemoteKey.h>
 #include <MacGPGME/GPGRemoteUserID.h>
