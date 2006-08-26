@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -125,40 +125,6 @@ enum {
 
 
 @implementation GPGContext
-/*"
- * All cryptographic operations in GPGME are performed within a context, which
- * contains the internal state of the operation as well as configuration
- * parameters. By using several contexts you can run several cryptographic
- * operations in parallel, with different configuration.
- *
- * #{UserID search patterns (for OpenPGP protocol):}
- * 
- * For search pattern, you can give:
- * 
- * - a key ID, in short or long form, prefixed or not by !{0x}
- * 
- * - a key fingerprint
- * 
- * - using "=aString", where aString must be an exact match like
- *   "=Heinrich Heine <heinrichh@uni-duesseldorf.de>"
- * 
- * - using the email address part, matching exactly:
- *   "<heinrichh@uni-duesseldorf.de>"
- * 
- * - using a format like this: "+Heinrich Heine duesseldorf". All words must
- *   match exactly (not case sensitive) but can appear in any order in the user
- *   ID. Words are any sequences of letters, digits, the underscore and all
- *   characters with bit 7 set.
- * 
- * - or a substring matching format like that: "Heine" or "*Heine". By case
- *   insensitive substring matching. This is the default mode but applications may
- *   want to explicitely indicate this by putting the asterisk in front.
- *
- * You can attach arbitrary notation data to a signature. This information is
- * then available to the user when the signature is verified. Use method
- * #{-addSignatureNotationWithName:value:flags:} to set notation data to a 
- * signature the context will create.
-"*/
 
 static void progressCallback(void *object, const char *description, int type, int current, int total);
 
@@ -172,12 +138,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (id) init
-/*"
- * Designated initializer. Creates a new context used to hold the
- * configuration, status and result of cryptographic operations.
- * 
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     gpgme_ctx_t		aContext;
     gpgme_error_t	anError = gpgme_new(&aContext);
@@ -222,10 +182,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (id) copyWithZone:(NSZone *)zone
-/*"
- * Copies engine configurations, as well as all context attributes except
- * passphraseDelegate, userInfo and signatureNotations.
-"*/
 {
     GPGContext      *contextCopy = [[[self class] alloc] init];
     NSEnumerator    *engineEnum = [[self engines] objectEnumerator];
@@ -254,63 +210,26 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) setUsesArmor:(BOOL)armor
-/*"
- * Enables or disables the use of an %{ASCII armor} for all output.
- *
- * Default value is NO.
-"*/
 {
     gpgme_set_armor(_context, armor);
 }
 
 - (BOOL) usesArmor
-/*"
- * Returns whether context uses %{ASCII armor} or not. Default value is NO.
-"*/
 {
     return gpgme_get_armor(_context) != 0;
 }
 
 - (void) setUsesTextMode:(BOOL)mode
-/*"
- * Enables or disables the use of the special %{text mode}. %{Text mode} is 
- * for example used for MIME (RFC2015) signatures; note that the updated
- * RFC 3156 mandates that the mail user agent does some preparations so that
- * %{text mode} is not needed anymore.
- *
- * This option is only relevant to the OpenPGP crypto engine, and ignored by
- * all other engines.
- * 
- * Default value is NO.
-"*/
 {
     gpgme_set_textmode(_context, mode);
 }
 
 - (BOOL) usesTextMode
-/*"
- * Returns whether context uses %{text mode} or not. Default value is NO.
-"*/
 {
     return gpgme_get_textmode(_context) != 0;
 }
 
 - (void) setKeyListMode:(GPGKeyListMode)mask
-/*"
- * Changes the default behaviour of the key listing methods. The value in mask
- * is a bitwise-or combination of one or multiple bit values like
- * #GPGKeyListModeLocal and #GPGKeyListModeExtern.
- *
- * At least #GPGKeyListModeLocal or #GPGKeyListModeExtern must be specified.
- * For future binary compatibility, you should get the current mode with
- * #{-keyListMode} and modify it by setting or clearing the appropriate bits, 
- * and then using that calculated value in #{-setKeyListMode:}. This will 
- * leave all other bits in the mode value intact (in particular those that are 
- * not used in the current version of the library).
- *
- * Raises a #GPGException with name #GPGErrorInvalidValue in case mask is not
- * a valid mode.
-"*/
 {
     gpgme_error_t	anError = gpgme_set_keylist_mode(_context, mask);
 
@@ -319,13 +238,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGKeyListMode) keyListMode
-/*"
- * Returns the current key listing mode of the context. This value can then be
- * modified and used in a subsequent #setKeyListMode: invocation to only
- * affect the desired bits (and leave all others intact).
- *
- * #GPGKeyListModeLocal is the default mode.
-"*/
 {
     gpgme_keylist_mode_t	mask = gpgme_get_keylist_mode(_context);
 
@@ -335,19 +247,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) setProtocol:(GPGProtocol)protocol
-/*"
- * Sets the protocol and thus the crypto engine to be used by the context. All
- * crypto operations will be performed by the crypto engine configured for
- * that protocol.
- *
- * Currently, the OpenPGP and the CMS protocols are supported. A new context
- * uses the OpenPGP engine by default.
- *
- * Setting the protocol with #{-setProtocol:} does not check if the crypto
- * engine for that protocol is available and installed correctly.
- *
- * Can raise a #GPGException.
-"*/
 {
     gpgme_error_t	anError = gpgme_set_protocol(_context, protocol);
     
@@ -356,9 +255,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGProtocol) protocol
-/*"
- * Returns the protocol currently used by the context.
-"*/
 {
     gpgme_protocol_t	protocol = gpgme_get_protocol(_context);
 
@@ -449,25 +345,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) setPassphraseDelegate:(id)delegate
-/*"
- * This methods allows a delegate to be used to pass a passphrase to the
- * engine. For OpenPGP, the preferred way to handle this is by using the
- * gpg-agent, but because that beast is not ready for real use, you can use 
- * this passphrase thing.
- *
- * Not all crypto engines require this callback to retrieve the passphrase.
- * It is better if the engine retrieves the passphrase from a trusted agent
- * (a daemon process), rather than having each user to implement their own
- * passphrase query. Some engines do not even support an external passphrase
- * callback at all, in this case a GPGException with error code 
- * GPGErrorNotSupported is returned.
- *
- * Delegate must respond to #{context:passphraseForKey:again:}. Delegate is
- * not retained.
- *
- * The user can disable the use of a passphrase callback by calling
- * #{-setPassphraseDelegate:} with nil as argument.
-"*/
 {
     NSParameterAssert(delegate == nil || [delegate respondsToSelector:@selector(context:passphraseForKey:again:)]);
     _passphraseDelegate = delegate; // We don't retain delegate
@@ -478,19 +355,11 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (id) passphraseDelegate
-/*"
- * Returns the delegate providing the passphrase. Initially nil.
-"*/
 {
     return _passphraseDelegate;
 }
 
 - (void) clearSignerKeys
-/*"
- * Remove the list of signers from the context.
- *
- * Every context starts with an empty list.
-"*/
 {
     gpgme_signers_clear(_context);
     // Note that it also releases references to keys.
@@ -498,11 +367,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) addSignerKey:(GPGKey *)key
-/*"
- * Adds key to the list of signers in the context. key is retained.
- *
- * Can raise a #GPGException.
-"*/
 {
     gpgme_error_t	anError;
 
@@ -519,149 +383,26 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSEnumerator *) signerKeyEnumerator
-/*"
- * Returns an enumerator of #GPGKey instances, from the list of signers.
-"*/
 {
     return [[[GPGSignerKeyEnumerator alloc] initForContext:self] autorelease];
 }
 
 - (NSArray *) signerKeys
-/*"
- * Convenience method. Returns [[self signerKeyEnumerator] allObjects].
-"*/
 {
     return [[self signerKeyEnumerator] allObjects];
 }
 
 - (void) setCertificatesInclusion:(int)includedCertificatesNumber
-/*"
- * Specifies how many certificates should be included in an S/MIME signed
- * message. By default, only the sender's certificate is included. The
- * possible values of includedCertificatesNumber are:
- * _{GPGAllExceptRootCertificatesInclusion  Include all certificates except
- *                                          the root certificate.}
- * _{GPGAllCertificatesInclusion            Include all certificates.}
- * _{GPGNoCertificatesInclusion             Include no certificates.}
- * _{GPGOnlySenderCertificateInclusion      Include the sender's certificate
- *                                          only.}
- * _{n                                      Include the first n certificates
- *                                          of the certificates path, starting
- *                                          from the sender's certificate. The
- *                                          number n must be positive.}
- *
- * Values of includedCertificatesNumber smaller than -2 are undefined.
- *
- * This option is only relevant to the CMS crypto engine, and ignored by all
- * other engines.
-"*/
 {
     gpgme_set_include_certs(_context, includedCertificatesNumber);
 }
 
 - (int) certificatesInclusion
-/*"
- * Returns the number of certificates to include in an S/MIME message.
-"*/
 {
     return gpgme_get_include_certs(_context);
 }
 
 - (NSDictionary *) operationResults
-/*"
- * Returns a dictionary containing results of last operation on context.
- * Contents of the dictionary depends on last operation type (signing,
- * decrypting, etc.), and method can be called even if last operation failed
- * and raised an exception: -operationResults could return partial valid data.
- * Dictionary always contains the result error of the last operation under key
- * #GPGErrorKey.
- *
- * If last operation was an encryption operation, dictionary can contain:
- * _{@"keyErrors"  Dictionary containing GPGKey instances as keys, and 
- *                 GPGError NSNumber instances as values.}
- * _{@"cipher"     GPGData instance with encrypted data; only valid keys were
- *                 used.}
- *
- * If last operation was a signing operation, dictionary can contain:
- * _{@"signedData"     GPGData instance with signed data; only valid secret 
- *                     keys were used.}
- * _{@"newSignatures"  An NSArray of GPGSignature instances.}
- * _{@"keyErrors"      Dictionary containing GPGKey instances as keys, and
- *                     GPGError NSNumber instances as values.}
- *
- * If last operation was a verification operation, dictionary can contain:
- * _{@"signatures"  An NSArray of GPGSignature instance. Same result is
- *                  returned by #{-signatures}.}
- * _{@"filename"    The original filename of the plaintext message, if 
- *                  available.}
- *
- * If last operation was a decryption operation, dictionary can contain:
- * _{@"unsupportedAlgorithm"  An NSString instance describing the algorithm
- *                            used for encryption, which is not known by the
- *                            engine for decryption.}
- * _{@"wrongKeyUsage"         A boolean result as a NSNumber instance indicating
- *                            that the key should not have been used for
- *                            encryption.}
- * _{@"filename"              The original filename of the plaintext message, if 
- *                            available.}
- * _{@"keyErrors"             Dictionary containing GPGKey or GPGRemoteKey 
- *                            instances as keys, and GPGError NSNumber
- *                            instances as values. Contains all keys used for
- *                            encryption.}
- *
- * If last operation was an import operation, dictionary can contain:
- * _{#GPGChangesKey              See #GPGKeyringChangedNotification notification
- *                               for more information about #GPGChangesKey.}
- * _{@"consideredKeyCount"       Total number of considered keys}
- * _{@"keysWithoutUserIDCount"   Number of keys without user ID}
- * _{@"importedKeyCount"         Total number of imported keys}
- * _{@"importedRSAKeyCount"      Number of imported RSA keys}
- * _{@"unchangedKeyCount"        Number of unchanged keys}
- * _{@"newUserIDCount"           Number of new user IDs}
- * _{@"newSubkeyCount"           Number of new subkeys}
- * _{@"newSignatureCount"        Number of new signatures}
- * _{@"newRevocationCount"       Number of new revocations}
- * _{@"readSecretKeyCount"       Total number of secret keys read}
- * _{@"importedSecretKeyCount"   Number of imported secret keys}
- * _{@"unchangedSecretKeyCount"  Number of unchanged secret keys}
- * _{@"skippedNewKeyCount"       Number of new keys skipped}
- * _{@"notImportedKeyCount"      Number of keys not imported}
- *
- * If last operation was a key generation operation, dictionary can contain:
- * _{#GPGChangesKey  See #GPGKeyringChangedNotification notification for more
- *                   information about #GPGChangesKey.}
- *
- * If last operation was a key deletion operation, dictionary can contain:
- * _{@"deletedKeyFingerprints"  An NSArray of NSString instances representing
- *                              the fingerprints of deleted keys.}
- *
- * If last operation was a key enumeration operation, dictionary can contain:
- * _{@"truncated"  A boolean result as a NSNumber instance indicating whether
- *                 all matching keys were listed or not.}
- *
- * If last operation was a remote key search operation, dictionary can
- * contain:
- * _{@"keys"             An array of #GPGRemoteKey instances: these are not
- *                       usable keys, they contain no other information than
- *                       keyID, algorithm, algorithmDescription, length, creationDate,
- *                       expirationDate, userIDs, isKeyRevoked; userIDs are
- *                       also #GPGRemoteUserID instances that contain no other
- *                       information than userID. Returned information depends
- *                       on servers.}
- * _{@"hostName"         Contacted server's host name}
- * _{@"port"             Port used to contact server, if not default one}
- * _{@"protocol"         Protocol used to contact server (ldap, x-hkp, hkp, 
- *                       http, finger)}
- * _{@"options"          Options used to contact server}
- *
- * If last operation was a key download operation, dictionary can contain:
- * _{@"hostName"         Contacted server's host name}
- * _{@"port"             Port used to contact server, if not default one}
- * _{@"protocol"         Protocol used to contact server (ldap, x-hkp, hkp, 
- *                       http, finger)}
- * _{@"options"          Options used to contact server}
- * and additional results from the import operation.
-"*/
 {
     NSMutableDictionary	*operationResults = [NSMutableDictionary dictionary];
     NSObject			*anObject;
@@ -764,7 +505,7 @@ static void progressCallback(void *object, const char *description, int type, in
                 
                 if(recipients->status == GPGErrorNoError){
                     aKey = [aContext keyFromFingerprint:aKeyID secretKey:YES];
-                    NSAssert1(aKey != nil, @"### Unable to find decryption secret key %s?!", recipients->keyid);
+                    NSAssert1(aKey != nil, @"### Unable to find decryption secret key %s?!", recipients->keyid); // FIXME It may happen that assertion fails! See with Martin B. - due to agent and NFS?
                 }
                 else{
                     aKey = [aContext keyFromFingerprint:aKeyID secretKey:NO];
@@ -891,11 +632,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) setUserInfo:(id)newUserInfo
-/*"
- * Sets the userInfo object, containing additional data the target may use
- * in a callback, for example when delegate is asked for passphrase.
- * newUserInfo is simply retained.
-"*/
 {
     id	oldUserInfo = _userInfo;
     
@@ -908,10 +644,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (id) userInfo
-/*"
- * Returns the userInfo object, containing additional data the target may use
- * in a callback, for example when delegate is asked for passphrase.
-"*/
 {
     return _userInfo;
 }
@@ -932,42 +664,11 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) clearSignatureNotations
-/*"
- * Clear all notation data from the context. Subsequent signing operations from
- * this context will not include any notation data.
- *
- * Every context starts with an empty notation data list.
-"*/
 {
     gpgme_sig_notation_clear(_context);
 }
 
 - (void) addSignatureNotationWithName:(NSString *)name value:(id)value flags:(GPGSignatureNotationFlags)flags
-/*"
- * Add the human-readable notation data with name and value to the context, 
- * using the flags. 
- *
- * If name is nil, then value should be a policy URL, as a NSString; the 
- * notation data is forced not to be a human-readable notation data.
- *
- * If name is not nil, then value may be a NSString (the notation data is forced
- * to be a human-readable notation data). Else value has to be a NSData, and
- * notation data is forced not to be a human-readable notation data. Note that
- * a user notation name must contain the '@' character and must have only 
- * printable characters or spaces.
- *
- * Subsequent signing operations will include this notation data, as well as any
- * other notation data that was added since the creation of the context or the
- * last -clearSignatureNotations invocation.
- *
- * Can raise a #GPGException for any error that is reported by the crypto engine
- * support routines.
- *
- * #WARNING: Non-human-readable notation data is currently not supported.
- *
- * #WARNING: Notations are silently ignored if user configured gpg with
- * #force-v3-sigs option on.
-"*/
 {
     static NSCharacterSet   *notPrintableNorSpaceCharset = nil;
     const char              *aCStringName;
@@ -1031,9 +732,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSArray *) signatureNotations
-/*"
- * Returns the signature notations for this context.
-"*/
 {
     NSMutableArray          *signatureNotations = [NSMutableArray array];
     gpgme_sig_notation_t    eachNotation = gpgme_sig_notation_get(_context);
@@ -1050,9 +748,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSArray *) engines
-/*"
- * Returns the engines as used by the current context.
-"*/
 {
     if(_engines == nil){
         gpgme_engine_info_t engineInfo = gpgme_ctx_get_engine_info(_context);
@@ -1064,9 +759,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGEngine *) engine
-/*"
- * Convenience method. Returns the engine for the protocol currently used.
-"*/
 {
     NSEnumerator    *engineEnum = [[self engines] objectEnumerator];
     GPGEngine       *anEngine;
@@ -1086,19 +778,6 @@ static void progressCallback(void *object, const char *description, int type, in
 #warning Only one thread at a time can call gpgme_wait => protect usage with mutex!
 
 + (GPGContext *) waitOnAnyRequest:(BOOL)hang
-/*"
- * Waits for any finished request. When hang is YES the method will wait,
- * otherwise it will return immediately when there is no pending finished
- * request.
- *
- * Returns the context of the finished request or nil if hang is NO and no
- * request has finished.
- *
- * Can raise a #GPGException which reflects the termination status of the 
- * operation (in case of error). The exception userInfo dictionary contains
- * the context (under #GPGContextKey key) which terminated with the error.
- * An exception without any context could also be raised.
-"*/
 {
     gpgme_error_t	anError = GPG_ERR_NO_ERROR;
     gpgme_ctx_t		returnedCtx = gpgme_wait(NULL, &anError, hang);
@@ -1125,22 +804,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (BOOL) wait:(BOOL)hang
-/*"
- * Continues the pending operation within the context.
- * In particular, it ensures the data exchange between
- * GPGME and the crypto backend and watches over the run time
- * status of the backend process.
- *
- * If hang is YES the method does not return until the operation
- * is completed or cancelled. Otherwise the method will not block
- * for a long time.
- *
- * Returns YES if there is a finished request for context or NO if hang is NO
- * and no request (for context) has finished.
- *
- * Can raise a #GPGException which reflects the termination status
- * of the operation, in case of error.
-"*/
 {
     /*
      @code{gpgme_wait} can be used only in conjunction with any context
@@ -1170,13 +833,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) cancel
-/*"
- * Attempts to cancel a pending operation in the context. This only works if
- * you use the global event loop or your own event loop.
- *
- * Can raise a #GPGException if the cancellation failed (in this case the
- * state of context is not modified).
-"*/
 {
 
     /*
@@ -1218,20 +874,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) decryptedData:(GPGData *)inputData
-/*"
- * Decrypts the ciphertext in the inputData and returns the plain data. Returned
- * data's filename is set automatically, when available.
- * 
- * Can raise a #GPGException:
- * _{GPGErrorNoData            inputData does not contain any data to
- *                             decrypt.}
- * _{GPGErrorDecryptionFailed  inputData is not a valid cipher text.}
- * _{GPGErrorBadPassphrase     The passphrase for the secret key could not be
- *                             retrieved.}
- * _{GPGErrorCancelled         User cancelled operation, e.g. when asked for
- *                             passphrase}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_data_t    outputData;
     gpgme_error_t   anError;
@@ -1254,15 +896,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSArray *) verifySignatureData:(GPGData *)signatureData againstData:(GPGData *)inputData
-/*"
- * Performs a signature check on the %detached signature given in
- * signatureData (plaintext). Returns an array of #GPGSignature instances, by
- * invoking #{-signatures}.
- * 
- * Can raise a #GPGException:
- * _{GPGErrorNoData  inputData does not contain any data to verify.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_error_t	anError = gpgme_op_verify(_context, [signatureData gpgmeData], [inputData gpgmeData], NULL);
 
@@ -1278,28 +911,11 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSArray *) verifySignedData:(GPGData *)signedData
-/*"
- * Performs a signature check on signedData. This methods invokes
- * #{-verifySignedData:originalData:} with originalData set to NULL.
- * 
- * Can raise a #GPGException:
- * _{GPGErrorNoData  inputData does not contain any data to verify.}
- * Others exceptions could be raised too.
-"*/
 {
     return [self verifySignedData:signedData originalData:NULL];
 }
 
 - (NSArray *) verifySignedData:(GPGData *)signedData originalData:(GPGData **)originalDataPtr
-/*"
- * Returns an array of #GPGSignature instances. originalDataPtr will contain
- * (on success) the data that has been signed, with eventually the original
- * file name. It can be NULL.
- *
- * Can raise a #GPGException:
- * _{GPGErrorNoData            inputData does not contain any data to verify.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_data_t	uninitializedData;
     gpgme_error_t	anError;
@@ -1333,17 +949,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSArray *) signatures
-/*"
- * Returns an array of #GPGSignatures after
- * #{-verifySignedData:}, #{-verifySignedData:originalData:},
- * #{-verifySignatureData:againstData:} or
- * #{-decryptedData:signatureStatus:} has been called. A single detached
- * signature can contain signatures by more than one key. Returns nil if
- * operation was not a verification.
- *
- * After #{-decryptedData:signatureStatus:}, a GPGException with error code
- * GPGErrorNoData counts as successful in this context.
-"*/
 {
     gpgme_verify_result_t	aResult;
     NSMutableArray			*signatures;
@@ -1367,27 +972,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) decryptedData:(GPGData *)inputData signatures:(NSArray **)signaturesPtr
-/*"
- * Decrypts the ciphertext in inputData and returns it as plain. If cipher
- * contains signatures, they will be verified and returned in *signaturesPtr,
- * if signaturesPtr is not NULL, by invoking #{-signatures}. Returned data's
- * filename is set automatically, when available.
- *
- * With OpenPGP engine, user has 3 attempts for passphrase in case of public
- * key encryption, else only 1 attempt.
- *
- * Can raise a #GPGException:
- * _{GPGErrorNoData            inputData does not contain any data to
- *                             decrypt. However, it might still be signed. The
- *                             information about detected signatures is
- *                             available with #{-signatures} in this case.}
- * _{GPGErrorDecryptionFailed  inputData is not a valid cipher text.}
- * _{GPGErrorBadPassphrase     The passphrase for the secret key could not be
- *                             retrieved.}
- * _{GPGErrorCancelled         User cancelled operation, e.g. when asked for
- *                             passphrase}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_data_t    outputData;
     gpgme_error_t   anError;
@@ -1424,7 +1008,8 @@ static void progressCallback(void *object, const char *description, int type, in
         if([[aKey fingerprint] isEqualToString:aFingerprint] || [[aKey keyID] isEqualToString:aFingerprint])
             return aKey;
 
-    [NSException raise:NSInternalInconsistencyException format:@"### Unable to find key matching %s among %@", fpr, keys];
+#warning FIXME Workaround for bug in gpgme
+//    [NSException raise:NSInternalInconsistencyException format:@"### Unable to find key matching %s among %@", fpr, keys];
 
     return nil;
 }
@@ -1439,10 +1024,13 @@ static void progressCallback(void *object, const char *description, int type, in
         while(invalidKeys != NULL){
             GPGKey	*aKey = [self _keyWithFpr:invalidKeys->fpr fromKeys:keys]; // fpr or keyID!
 
-            if([keyErrors objectForKey:aKey] != nil)
-                NSLog(@"### Does not support having more than one error per key. Ignoring error %u (%@) for key %@", invalidKeys->reason, GPGErrorDescription(invalidKeys->reason), aKey);
-            else
-                [keyErrors setObject:[NSNumber numberWithUnsignedInt:invalidKeys->reason] forKey:aKey];
+#warning FIXME Workaround for bug in <= gpgme 1.1.3 - invalidKeys might contains recipient keys, not signer keys => invalidKeys not in keys
+            if(aKey != nil){
+                if([keyErrors objectForKey:aKey] != nil)
+                    NSLog(@"### Does not support having more than one error per key. Ignoring error %u (%@) for key %@", invalidKeys->reason, GPGErrorDescription(invalidKeys->reason), aKey);
+                else
+                    [keyErrors setObject:[NSNumber numberWithUnsignedInt:invalidKeys->reason] forKey:aKey];
+            }
             invalidKeys = invalidKeys->next;
         }
         if([keyErrors count] > 0)
@@ -1452,34 +1040,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) signedData:(GPGData *)inputData signatureMode:(GPGSignatureMode)mode
-/*"
- * Creates a signature for the text in inputData and returns either the signed
- * data or a detached signature, depending on the mode. Data will be signed
- * using either the default key (defined in engine configuration file) or the
- * ones defined in context. The type of the signature created is determined by
- * the ASCII armor and text mode attributes set for the context and the
- * requested signature mode mode.
- *
- * A signature can contain signatures by one or more keys. The set of keys
- * used to create a signatures is contained in the context, and is applied to
- * all following signing operations in the context (until the set is changed).
- *
- * If an S/MIME signed message is created using the CMS crypto engine, the
- * number of certificates to include in the message can be specified with
- * #{-setIncludedCertificates:}.
- * 
- * Note that settings done by #{-setUsesArmor:} and #{-setUsesTextMode:} are
- * ignored for mode #GPGSignatureModeClear.
- *
- * With OpenPGP engine, user has 3 attempts for passphrase.
- *
- * Can raise a #GPGException:
- * _{GPGErrorNoData             The signature could not be created.}
- * _{GPGErrorBadPassphrase      The passphrase for the secret key could not be
- *                              retrieved.}
- * _{GPGErrorUnusableSecretKey  There are invalid signers.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_data_t	outputData;
     gpgme_error_t	anError;
@@ -1523,37 +1083,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) encryptedData:(GPGData *)inputData withKeys:(NSArray *)keys trustAllKeys:(BOOL)trustAllKeys
-/*"
- * Encrypts the plaintext in inputData with the keys and returns the 
- * ciphertext. The type of the ciphertext created is determined by the
- * %{ASCII armor} and %{text mode} attributes set for the context.
- *
- * The keys parameters may not be nil, nor be an empty array. It can contain
- * GPGKey instances and GPGKeyGroup instances; you can mix them.
- *
- * If the trustAllKeys parameter is set to YES, then all passed keys will be
- * trusted, even if the keys do not have a high enough validity in the
- * key-ring. This flag should be used with care; in general it is not a good
- * idea to use any untrusted keys.
- *
- * Can raise a #GPGException:
- * _{GPGErrorUnusablePublicKey  Some recipients in keys are invalid, but not
- *                              all. In this case the plaintext might be
- *                              encrypted for all valid recipients and
- *                              returned in #{-operationResults}, for key
- *                              #{@"cipher"} (if this happens depends on the
- *                              crypto engine). More information about the
- *                              invalid recipients is available in
- *                              #{-operationResults}, under key
- *                              #{@"keyErrors"} which has a dictionary as
- *                              value; that dictionary uses GPGKey instances
- *                              as keys, and GPGError NSNumber instances as
- *                              values.}
- * _{GPGErrorGeneralError       For example, some keys were not trusted. See
- *                              #{-operationResults}, under key
- *                              #{@"keyErrors"}.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_data_t	outputData;
     gpgme_error_t	anError;
@@ -1595,24 +1124,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) encryptedData:(GPGData *)inputData
-/*"
- * Encrypts the plaintext in inputData using symmetric encryption (rather than
- * public key encryption) and returns the ciphertext. The type of the
- * ciphertext created is determined by the %{ASCII armor} and %{text mode}
- * attributes set for the context.
- *
- * Symmetrically encrypted cipher text can be deciphered with
- * #{-decryptedData:}. Note that in this case the crypto backend needs to
- * retrieve a passphrase from the user. Symmetric encryption is currently only
- * supported for the OpenPGP crypto backend.
- *
- * With OpenPGP engine, only one attempt for passphrase is allowed.
- *
- * Can raise a #GPGException:
- * _{GPGErrorBadPassphrase  The passphrase for the symmetric key could not be
- *                          retrieved.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_data_t	outputData;
     gpgme_error_t	anError;
@@ -1637,39 +1148,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) encryptedSignedData:(GPGData *)inputData withKeys:(NSArray *)keys trustAllKeys:(BOOL)trustAllKeys
-/*"
- * Signs then encrypts, in one operation, the plaintext in inputData for the
- * recipients and returns the ciphertext. The type of the ciphertext created
- * is determined by the %{ASCII armor} and %{text mode} attributes set for the
- * context. The signers are set using #{-addSignerKey:}.
- *
- * This combined encrypt and sign operation is currently only available
- * for the OpenPGP crypto engine.
- *
- * The keys can contain GPGKey instances and GPGKeyGroup instances; you can mix
- * them.
- *
- * Can raise a #GPGException:
- * _{GPGErrorBadPassphrase      The passphrase for the secret key could not be
- *                              retrieved.}
- * _{GPGErrorUnusablePublicKey  Some recipients in keys are invalid, but not
- *                              all. In this case the plaintext might be
- *                              encrypted for all valid recipients and
- *                              returned in #{-operationResults}, under
- *                              key #{@"cipher"} (if this happens depends on
- *                              the crypto engine). More information about the
- *                              invalid recipients is available in
- *                              #{-operationResults}, under key
- *                              #{@"keyErrors"} which has a dictionary as
- *                              value; that dictionary uses GPGKey instances
- *                              as keys, and GPGError NSNumber instances as
- *                              values.}
- * _{GPGErrorUnusableSecretKey  There are invalid signers.}
- * _{GPGErrorGeneralError       For example, some keys were not trusted. See
- *                              #{-operationResults}, under key
- *                              #{@"keyErrors"}.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_data_t	outputData;
     gpgme_error_t	anError;
@@ -1713,17 +1191,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGData *) exportedKeys:(NSArray *)keys
-/*"
- * Extracts the public key data from keys and returns them. The type of the
- * public keys returned is determined by the %{ASCII armor} attribute set for
- * the context, by invoking #{-setUsesArmor:}.
- *
- * If keys is nil, then all available keys are exported.
- * 
- * Keys are exported from standard key-ring.
- *
- * Can raise a #GPGException.
-"*/
 {
     gpgme_data_t	outputData;
     gpgme_error_t	anError;
@@ -1794,20 +1261,6 @@ static void progressCallback(void *object, const char *description, int type, in
 
 
 - (NSDictionary *) importKeyData:(GPGData *)keyData
-/*"
- * Adds the keys in keyData to the key-ring of the crypto engine used by the
- * context. The format of keyData content can be %{ASCII armored}, for
- * example, but the details are specific to the crypto engine.
- *
- * See #{-operationResults} for information about returned dictionary.
- *
- * If key-ring changed, a #GPGKeyringChangedNotification notification is
- * posted.
- *
- * Can raise a #GPGException:
- * _{GPGErrorNoData  keydata is an empty buffer.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_error_t			anError = gpgme_op_import(_context, [keyData gpgmeData]);
     gpgme_import_result_t	result;
@@ -1839,7 +1292,7 @@ static void progressCallback(void *object, const char *description, int type, in
         importStatus = importStatus->next;
     }
 
-    // Posts notif only if key-ring changed
+    // Posts notif only if key ring changed
     if([changedKeys count] > 0){
         [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, GPGContextKey, changedKeys, GPGChangesKey, nil]];
         [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[self convertedChangesDictionaryForDistributedNotification:changedKeys], GPGChangesKey, nil]];
@@ -1874,57 +1327,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSDictionary *) generateKeyFromDictionary:(NSDictionary *)params secretKey:(GPGData *)secretKeyData publicKey:(GPGData *)publicKeyData
-/*"
- * Generates a new key pair and puts it into the standard key-ring if both
- * publicKeyData and secretKeyData are nil. In this case method returns
- * immediately after starting the operation, and does not wait for it to
- * complete. If publicKeyData is not nil, the newly created data object, upon
- * successful completion, will contain the public key. If secretKeyData is not
- * nil, the newly created data object, upon successful completion, will
- * contain the secret key.
- *
- * Note that not all crypto engines support this interface equally.
- *
- * GnuPG does not support publicKeyData and secretKeyData, they should be both
- * nil. GnuPG will generate a key pair and add it to the standard key-ring.
- *
- * GpgSM requires publicKeyData to be a writable data object. GpgSM will
- * generate a secret key (which will be stored by gpg-agent), and return a
- * certificate request in public, which then needs to be signed by the
- * certification authority and imported before it can be used.
- *
- * The params dictionary specifies parameters for the key. The details about
- * the format of params are specific to the crypto engine used by the context.
- * Here's an example for #GnuPG as the crypto engine:
- * _{@"type"            algorithm number or name}
- * _{@"length"  Key     NSlength in bits as a NSNumber}
- * _{@"subkeyType"      NSString (ELG-E, etc.) or NSNumber. Optional.}
- * _{@"subkeyLength"    Subkey length in bits as a NSNumber. Optional.}
- * _{@"name"            NSString. Optional.}
- * _{@"comment"         NSString. Optional.}
- * _{@"email"           NSString. Optional.}
- * _{@"expirationDate"  NSCalendarDate. Optional.}
- * _{@"passphrase"      NSString. Optional.}
- * Here's an example for #GpgSM as the crypto engine:
- * _{@"type"    NSString (RSA, etc.) or NSNumber}
- * _{@"length"  Key length in bits as a NSNumber}
- * _{@"name"    NSString (C=de,O=g10 code,OU=Testlab,CN=Joe 2 Tester)}
- * _{@"email"   NSString (joe@foo.bar)}
- * Key is generated in standard secring/pubring files if both secretKeyData
- * and publicKeyData are nil, else newly created key is returned but not 
- * stored.
- *
- * See #{-operationResults} for more information about returned dictionary.
- *
- * A #GPGKeyringChangedNotification notification is posted, containg the new
- * GPGKey instances (secret and public, for OpenPGP only).
- *
- * Can raise a #GPGException:
- * _{GPGErrorInvalidValue  params is not a valid XML string.}
- * _{GPGErrorNotSupported  publicKeyData or secretKeyData is not nil.}
- * _{GPGErrorGeneralError  No key was created by the engine.}
- * Others exceptions could be raised too.
-"*/
 {
     NSMutableString	*xmlString = [[NSMutableString alloc] init];
     id				aValue;
@@ -1980,17 +1382,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (void) deleteKey:(GPGKey *)key evenIfSecretKey:(BOOL)allowSecret
-/*"
- * Deletes the given key from the standard key-ring of the crypto engine used
- * by the context. To delete a secret key along with the public key,
- * allowSecret must be YES, else only the public key is deleted, if that is
- * supported.
- *
- * Can raise a #GPGException:
- * _{GPGErrorInvalidKey  key could not be found in the key-ring.}
- * _{GPGErrorConflict    Secret key for key is available, but allowSecret is
- *                       NO.}
-"*/
 {
     gpgme_error_t	anError;
     NSString        *aFingerprint;
@@ -2012,19 +1403,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGKey *) keyFromFingerprint:(NSString *)fingerprint secretKey:(BOOL)secretKey
-/*"
- * Fetches a single key, given its fingerprint (or key ID). If secretKey is
- * YES, returns a secret key, else returns a public key. You can set the key
- * list mode if you want to retrieve key signatures too. Returns nil if no
- * matching key is found.
- *
- * Can raise a #GPGException:
- * _{GPGErrorInvalidKey     fingerprint is not a valid fingerprint, nor key
- *                          ID.}
- * _{GPGErrorAmbiguousName  the key ID was not a unique specifier for a key.}
- * _{GPGErrorBusy           Context (self) is already performing an operation.}
- * Others exceptions could be raised too.
-"*/
 {
     gpgme_error_t	anError;
     gpgme_key_t		aKey = NULL;
@@ -2052,18 +1430,6 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (GPGKey *) refreshKey:(GPGKey *)key
-/*"
- * Asks the engine for the key again, forcing a refresh of the key attributes.
- * This method can be used to fetch key signatures, by setting corresponding
- * mode in the context. A new #GPGKey instance is returned; you shall no
- * longer use the original key.
- *
- * Invokes #{-keyFromFingerprint:secretKey:}
- *
- * Can raise a #GPGException:
- * _{GPGErrorBusy  Context (self) is already performing an operation.}
- * Others exceptions could be raised too.
-"*/
 {
     NSString	*aString;
     
@@ -2082,56 +1448,16 @@ static void progressCallback(void *object, const char *description, int type, in
 @implementation GPGContext(GPGKeyManagement)
 
 - (NSEnumerator *) keyEnumeratorForSearchPattern:(NSString *)searchPattern secretKeysOnly:(BOOL)secretKeysOnly
-/*"
- * Convenience method. Passing nil will return all keys. See
- * #{-keyEnumeratorForSearchPatterns:secretKeysOnly:}.
-"*/
 {
     return [[[GPGKeyEnumerator alloc] initForContext:self searchPattern:searchPattern secretKeysOnly:secretKeysOnly] autorelease];
 }
 
 - (NSEnumerator *) keyEnumeratorForSearchPatterns:(NSArray *)searchPatterns secretKeysOnly:(BOOL)secretKeysOnly
-/*"
- * Returns an enumerator of #GPGKey instances. It starts a key listing
- * operation inside the context; the context will be busy until either all
- * keys are received, or #{-stopKeyEnumeration} is invoked, or the enumerator
- * has been deallocated.
- *
- * searchPatterns is an array containing engine specific expressions that are
- * used to limit the list to all keys matching at least one pattern.
- * searchPatterns can be empty; in this case all keys are returned. Note that
- * the total length of the pattern string (i.e. the length of all patterns, 
- * sometimes quoted, separated by a space character) is restricted to an 
- * engine-specific maximum (a couple of hundred characters are usually 
- * accepted). The patterns should be used to restrict the search to a certain 
- * common name or user, not to list many specific keys at once by listing their
- * fingerprints or key IDs.
- *
- * If secretKeysOnly is YES, searches only for secret keys.
- *
- * This call also resets any pending key listing operation.
- *
- * Can raise a #GPGException, even during enumeration. Raises an exception
- * with code #GPGErrorTruncatedKeyListing during enumeration (i.e. when
- * when invoking -nextObject on the enumerator) if the crypto backend had to
- * truncate the result, and less than the desired keys could be listed.
- *
- * #WARNING: there is a bug in gpg: secret keys fetched in batch (i.e. with this
- * method) have no capabilities and you need to invoke -refreshKey: on each to  
- * get full information for them.
-"*/
 {
     return [[[GPGKeyEnumerator alloc] initForContext:self searchPatterns:searchPatterns secretKeysOnly:secretKeysOnly] autorelease];
 }
 
 - (void) stopKeyEnumeration
-/*"
- * Ends the key listing operation and allows to use the context for some
- * other operation next. This is not an error to invoke that method if there
- * is no pending key listing operation.
- *
- * Can raise a #GPGException.
-"*/
 {
     gpgme_error_t	anError = gpgme_op_keylist_end(_context);
 
@@ -2140,34 +1466,11 @@ static void progressCallback(void *object, const char *description, int type, in
 }
 
 - (NSEnumerator *) trustItemEnumeratorForSearchPattern:(NSString *)searchPattern maximumLevel:(int)maxLevel
-/*"
- * Returns an enumerator of #GPGTrustItem instances, and initiates a trust
- * item listing operation inside the context.
- * 
- * searchPattern contains an engine specific expression that is used to limit
- * the list to all trust items matching the pattern. It can not be the empty
- * string or nil.
- *
- * maxLevel is currently ignored.
- *
- * Context will be busy until either all trust items are enumerated, or
- * #{-stopTrustItemEnumeration} is invoked, or the enumerator has been
- * deallocated.
- * 
- * Can raise a #GPGException, even during enumeration.
-"*/
 {
     return [[[GPGTrustItemEnumerator alloc] initForContext:self searchPattern:searchPattern maximumLevel:maxLevel] autorelease];
 }
 
 - (void) stopTrustItemEnumeration
-/*"
- * Ends the trust item listing operation and allows to use the context for 
- * some other operation next. This is not an error to invoke that method if
- * there is no pending trust list operation.
- *
- * Can raise a #GPGException.
-"*/
 {
     gpgme_error_t	anError = gpgme_op_trustlist_end(_context);
 
@@ -2329,7 +1632,7 @@ enum {
             
             if(tryEmbeddedOnes){
                 // Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
-#warning FIXME Emdeb gpgkeys_* 1.2 binaries (backwards compatible)
+#warning FIXME Embed gpgkeys_* 1.2 binaries (backwards compatible)
                 launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
                 if(!launchPath || ![[NSFileManager defaultManager] fileExistsAtPath:launchPath]){
                     [gpgOptions release];
@@ -2351,7 +1654,7 @@ enum {
 		// We do it only once per executable and cache result,
 		// to spare use of system resources (when launching task).
 		NS_DURING
-			NSData	*outputData;
+			NSData	*data;
 			
 			aTask = [[NSTask alloc] init];
 			[aTask setLaunchPath:launchPath];
@@ -2363,9 +1666,9 @@ enum {
 			// second contains executable version; we are interested only in format version,
 			// and reading first 2 bytes should be enough. If we use -readDataToEndOfFile
 			// we need to write more complex code, to avoid being blocked.
-			outputData = [[anOutputPipe fileHandleForReading] readDataOfLength:2];
+			data = [[anOutputPipe fileHandleForReading] readDataOfLength:2];
 			[aTask waitUntilExit];
-			aString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
+			aString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 			formatVersionNumber = [NSNumber numberWithInt:[aString intValue]];
 			[executableVersions setObject:formatVersionNumber forKey:launchPath];
 			[aString release];
@@ -2876,47 +2179,6 @@ enum {
 @implementation GPGContext(GPGExtendedKeyManagement)
 
 - (void) asyncSearchForKeysMatchingPatterns:(NSArray *)searchPatterns serverOptions:(NSDictionary *)options
-/*"
- * Contacts asynchronously a key server and asks it for keys matching 
- * searchPatterns.
- *
- * The options dictionary can contain the following key-value pairs:
- * _{@"keyserver"          A keyserver URL, e.g. ldap://keyserver.pgp.com or
- *                         x-hkp://keyserver.pgp.com:8000; if keyserver is not
- *                         set, the default keyserver, from gpg configuration,
- *                         is used.}
- * _{@"keyserver-options"  An array which can contain the following string
- *                         values: @"include-revoked", @"include-disabled",
- *                         @"check-cert", @"try-dns-srv", 
- *                         @"include-subkeys" options but prefixed by @"no-".
- *                         You can also pass the following strings followed by 
- *                         an equal sign and a value: @"broken-http-proxy" and a
- *                         host name, @"http-proxy" and a host name, @"timeout"
- *                         and an integer value (seconds), @"ca-cert-file" and a
- *                         full path to a SSL certificate file, @"tls" and 
- *                         @"try"/@"require"/@"warn" or @"no-tls", @"basedn" and
- *                         a base DN, @"follow-redirects" and an integer value.
- *                         Passed options are merged with gpg configuration 
- *                         options, but are prioritary. Not all types of servers
- *                         support all these options, but unsupported ones are 
- *                         silently ignored.}
- *
- * A #GPGAsynchronousOperationDidTerminateNotification notification will be 
- * sent on completion of the operation, be it successful or not. The object is
- * the context, and the results can be retrieved from #{-operationResults}.
- *
- * Once you got results, you can invoke #{asyncDownloadKeys:serverOptions:} 
- * passing for example a subset of the keys returned from the search.
- *
- * Method cannot be used yet to search CMS keys.
- *
- * Can raise a #GPGException:
- * _{GPGErrorKeyServerError  gpg is not configured correctly. More information
- *                           in #GPGAdditionalReasonKey userInfo key}
- * _{GPGErrorGeneralError    An unknown error occurred during search. More
- *                           information in #GPGAdditionalReasonKey userInfo
- *                           key}
-"*/
 {
     // TODO Add support for multiple keyservers: combine results, and stop when all tasks stopped
     NSParameterAssert(searchPatterns != nil && [searchPatterns count] > 0);
@@ -2928,55 +2190,6 @@ enum {
 }
 
 - (void) asyncDownloadKeys:(NSArray *)keys serverOptions:(NSDictionary *)options
-/*"
- * Contacts asynchronously a key server and download keys from it. This method
- * is usually invoked after having searched for keys on the server, and is
- * passed a subset of the #GPGRemoteKey instances returned by the search.
- * Received keys are then automatically imported in default key-ring. Note that
- * you can also pass keys from user's key-ring (#GPGKey instances) to refresh them.
- *
- * The options dictionary can contain the following key-value pairs:
- * _{@"keyserver"          A keyserver URL, e.g. ldap://keyserver.pgp.com or
- *                         x-hkp://keyserver.pgp.com:8000; if keyserver is not
- *                         set, the default keyserver, from gpg configuration,
- *                         is used.}
- * _{@"keyserver-options"  An array which can contain the following string
- *                         values: @"include-revoked", @"include-disabled",
- *                         @"check-cert", @"try-dns-srv", 
- *                         @"include-subkeys" options but prefixed by @"no-".
- *                         You can also pass the following strings followed by 
- *                         an equal sign and a value: @"broken-http-proxy" and a
- *                         host name, @"http-proxy" and a host name, @"timeout"
- *                         and an integer value (seconds), @"ca-cert-file" and a
- *                         full path to a SSL certificate file, @"tls" and 
- *                         @"try"/@"require"/@"warn" or @"no-tls", @"basedn" and
- *                         a base DN, @"follow-redirects" and an integer value.
- *                         Passed options are merged with gpg configuration 
- *                         options, but are prioritary. Not all types of servers
- *                         support all these options, but unsupported ones are 
- *                         silently ignored.}
- *
- * A #GPGAsynchronousOperationDidTerminateNotification notification will be
- * sent on completion of the operation, be it successful or not. The object is
- * the context. See #{-operationResults} to get imported keys.
- *
- * Downloaded keys will be automatically imported in your default key-ring,
- * and a #GPGKeyringChangedNotification notification will be posted, like for
- * an import operation. See #{importKeyData:} for more information about this
- * notification and how to get downloaded keys.
- *
- * Method cannot be used yet to download CMS keys.
- *
- * Can raise a #GPGException:
- * _{GPGErrorKeyServerError  gpg is not configured correctly. More information
- *                           in #GPGAdditionalReasonKey userInfo key}
- * _{GPGErrorInvalidValue    gpg is not configured correctly.
- *                           More information in #GPGAdditionalReasonKey
- *                           userInfo key}
- * _{GPGErrorGeneralError    An unknown error occurred during search.
- *                           More information in #GPGAdditionalReasonKey
- *                           userInfo key}
-"*/
 {
     NSParameterAssert(keys != nil && [keys count] > 0);
 
@@ -3013,45 +2226,6 @@ enum {
 }
 
 - (void) asyncUploadKeys:(NSArray *)keys serverOptions:(NSDictionary *)options
-/*"
- * Contacts asynchronously a key server to uploads keys. Only public keys are
- * uploaded: if you pass, by mistake, a secret key, method will upload the
- * public key, not the secret one.
- *
- * The options dictionary can contain the following key-value pairs:
- * _{@"keyserver"          A keyserver URL, e.g. ldap://keyserver.pgp.com or
- *                         x-hkp://keyserver.pgp.com:8000; if keyserver is not
- *                         set, the default keyserver, from gpg configuration,
- *                         is used.}
- * _{@"keyserver-options"  An array which can contain the following string
- *                         values: @"include-revoked", @"include-disabled",
- *                         @"check-cert", @"try-dns-srv", 
- *                         @"include-subkeys" options but prefixed by @"no-".
- *                         You can also pass the following strings followed by 
- *                         an equal sign and a value: @"broken-http-proxy" and a
- *                         host name, @"http-proxy" and a host name, @"timeout"
- *                         and an integer value (seconds), @"ca-cert-file" and a
- *                         full path to a SSL certificate file, @"tls" and 
- *                         @"try"/@"require"/@"warn" or @"no-tls", @"basedn" and
- *                         a base DN, @"follow-redirects" and an integer value.
- *                         Passed options are merged with gpg configuration 
- *                         options, but are prioritary. Not all types of servers
- *                         support all these options, but unsupported ones are 
- *                         silently ignored.}
- *
- * A #GPGAsynchronousOperationDidTerminateNotification notification will be
- * sent on completion of the operation, be it successful or not. The object is
- * the context, and the results can be retrieved from #{-operationResults}.
- *
- * Method cannot be used yet to search CMS keys.
- *
- * Can raise a #GPGException:
- * _{GPGErrorKeyServerError  gpg is not configured correctly. More information
- *                           in #GPGAdditionalReasonKey userInfo key}
- * _{GPGErrorGeneralError    An unknown error occurred during search. More
- *                           information in #GPGAdditionalReasonKey userInfo
- *                           key}
-"*/
 {
 #warning TEST!
     NSParameterAssert(keys != nil && [keys count] > 0);
@@ -3062,15 +2236,6 @@ enum {
 }
 
 - (void) interruptAsyncOperation
-/*"
- * Interrupts asynchronous operation. The
- * #GPGAsynchronousOperationDidTerminateNotification notification will be sent
- * with the error code #GPGErrorCancelled. This method can be used to interrupt
- * only the -async* methods. After interrupt, you can still ask the context for
- * the operation results; you might get valid partial results. No error is
- * returned when context is not running an async operation, or operation has
- * already finished.
-"*/
 {
     _GPGContextHelper	*helper;
     
@@ -3088,10 +2253,6 @@ enum {
 
 
 - (BOOL) isPerformingAsyncOperation
-/*"
- * If the context is processing an async operation, this method will return YES.
- * Otherwise, it will return NO.
-"*/
 {
     return (NSMapGet(_helperPerContext, self) != nil);
 }
@@ -3102,9 +2263,6 @@ enum {
 @implementation GPGContext(GPGKeyGroups)
 
 - (NSArray *) keyGroups
-/*"
- * Returns all groups defined in gpg.conf.
-"*/
 {
     GPGOptions          *options = [[GPGOptions alloc] init];
     NSArray             *groupOptionValues = [options activeOptionValuesForName:@"group"];
@@ -3409,24 +2567,3 @@ enum {
 }
 
 @end
-
-
-// We need to write this fake implementation (not compiled!)
-// just to force autodoc to take our comments in account!
-#ifdef FAKE_IMPLEMENTATION_FOR_AUTODOC
-
-@implementation NSObject(GPGContextDelegate)
-- (NSString *) context:(GPGContext *)context passphraseForKey:(GPGKey *)key again:(BOOL)again
-/*"
- * key is the secret key for which the user is asked a passphrase. key is nil
- * only in case of symmetric encryption/decryption. again is set to YES if
- * user typed a wrong passphrase the previous time(s).
- *
- * If you return nil, it means that user cancelled passphrase request.
-"*/
-{
-}
-@end
-
-#endif
-
