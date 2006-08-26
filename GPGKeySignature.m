@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Thu Dec 26 2002.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,27 +32,6 @@
 
 
 @implementation GPGKeySignature
-/*"
- * %{Key signatures} are one component of a #GPGKey object, and validate user
- * IDs on the key.
- *
- * The signatures on a key are only available if the key was retrieved via a
- * listing operation with the #GPGKeyListModeSignatures mode enabled, because
- * it is expensive to retrieve all signatures of a key.
- *
- * #GPGKeySignature instances are returned by #{-[GPGUserID signatures]};
- * you should never need to instantiate yourself objects of that class. It is
- * guaranteed that the owning GPGUserID instance will never be deallocated
- * before the GPGKeySignature has been deallocated, without creating
- * non-breakable retain-cycles.
- *
- * An instance represents a signature on a %{user ID} of a %key.
- *
- * Key signatures raise a NSInternalInconsistencyException when methods
- * -fingerprint, -summary, -notations, -policyURLs, -validity, -validityError, 
- * -wrongKeyUsage, -validityDescription, -hashAlgorithm,
- * -hashAlgorithmDescription are invoked.
-"*/
 
 - (id) retain
 {
@@ -102,20 +81,6 @@
     return 0;
 }
 
-- (NSDictionary *) notations
-{
-    [NSException raise:NSInternalInconsistencyException format:@"GPGKeySignature instances don't have notations."];
-    
-    return nil;
-}
-
-- (NSArray *) policyURLs
-{
-    [NSException raise:NSInternalInconsistencyException format:@"GPGKeySignature instances don't have policy URLs."];
-
-    return nil;
-}
-
 - (GPGValidity) validity
 {
 #warning Ask Werner whether it is not _yet_ available
@@ -160,126 +125,66 @@
 }
 
 - (NSString *) signerKeyID
-/*"
- * Returns the %{key ID} of the signer's %key.
-"*/
 {
     return _signerKeyID;
 }
 
 - (NSString *) userID
-/*"
- * Returns the main %{user ID} of the signer's %key.
-"*/
 {
     return _userID;
 }
 
 - (NSString *) name
-/*"
- * Returns the name on the signer's %key, if available. Taken from the main
- * %{user ID} of the signer's %key.
-"*/
 {
     return _name;
 }
 
 - (NSString *) email
-/*"
- * Returns the email address on the signer's %key, if available. Taken from
- * the main %{user ID} of the signer's %key.
-"*/
 {
     return _email;
 }
 
 - (NSString *) comment
-/*"
- * Returns the comment on the signer's %key, if available. Taken from the main
- * %{user ID} of the signer's %key.
-"*/
 {
     return _comment;
 }
 
 - (NSCalendarDate *) creationDate
-/*"
- * Returns %{signature} creation date. Returns nil when not available or
- * invalid.
-"*/
 {
     return _creationDate;
 }
 
 - (NSCalendarDate *) expirationDate
-/*"
- * Returns %{signature} expiration date. Returns nil when not available or
- * invalid.
-"*/
 {
     return _expirationDate;
 }
 
 - (BOOL) isRevocationSignature
-/*"
- * Returns whether the signature is a revocation signature or not.
-"*/
 {
     return _isRevocationSignature;
 }
 
 - (BOOL) hasSignatureExpired
-/*"
- * Returns whether %{signature} has expired or not.
-"*/
 {
     return _hasSignatureExpired;
 }
 
 - (BOOL) isSignatureInvalid
-/*"
- * Returns whether %{signature} is invalid or not.
-"*/
 {
     return _isSignatureInvalid;
 }
 
 - (BOOL) isExportable
-/*"
- * Returns whether %{signature} is exportable or not (locally signed).
-"*/
 {
     return _isExportable;
 }
 
 - (GPGError) status
-/*"
- * Returns %signature status.
- *
- * In particular, the following status codes are of interest:
- * _{GPGErrorNoError           This status indicates that the signature is
- *                             valid.}
- * _{GPGErrorSignatureExpired  This status indicates that the signature is
- *                             valid but expired.}
- * _{GPGErrorKeyExpired        This status indicates that the signature is
- *                             valid but the key used to verify the
- *                             signature has expired.}
- * _{GPGErrorBadSignature      This status indicates that the signature is
- *                             invalid.}
- * _{GPGErrorNoPublicKey       This status indicates that the signature could
- *                             not be verified due to a missing key.}
- * _{GPGErrorGeneralError      This status indicates that there was some other
- *                             error which prevented the signature
- *                             verification.}
-"*/
 {
     return _status;
 }
 
 - (GPGUserID *) signedUserID
-/*"
- * Returns the #GPGUserID signed by this signature.
-"*/
 {
     return _signedUserID;
 }
@@ -291,7 +196,8 @@
 - (id) initWithKeySignature:(gpgme_key_sig_t)keySignature userID:(GPGUserID *)userID
 {
     if(self = [self init]){
-        long	aValue;
+        gpgme_sig_notation_t	aNotation;
+        long                    aValue;
 
         _signerKeyID = [GPGStringFromChars(keySignature->keyid) retain];
         _algorithm = keySignature->pubkey_algo;
@@ -313,6 +219,34 @@
         _status = keySignature->status;
         _signedUserID = userID; // Not retained; backpointer
         _hashAlgorithm = 0; // Unsignificant value (GPG_NoHashAlgorithm)
+        aNotation = keySignature->notations;
+        _notations = [[NSMutableDictionary alloc] init];
+        _policyURLs = [[NSMutableArray alloc] init];
+        _signatureNotations = [[NSMutableArray alloc] init];
+        while(aNotation != NULL){
+            char                    *name = aNotation->name;
+            GPGSignatureNotation    *anObject;
+            
+            if(name != NULL){
+                // WARNING: theoretically there could be more than one notation
+                // data for the same name.
+                NSString	*aName = GPGStringFromChars(name);
+                NSString	*aValue = GPGStringFromChars(aNotation->value);
+                
+                if([_notations objectForKey:aName] != nil)
+                    NSLog(@"### We don't support more than one notation per name!! Ignoring notation '%@' with value '%@'", aName, aValue);
+                else
+                    [(NSMutableDictionary *)_notations setObject:aValue forKey:aName];
+            }
+            else
+                [(NSMutableArray *)_policyURLs addObject:GPGStringFromChars(aNotation->value)];
+            
+            anObject = [[GPGSignatureNotation alloc] initWithInternalRepresentation:aNotation];
+            [(NSMutableArray *)_signatureNotations addObject:anObject];
+            [anObject release];
+            
+            aNotation = aNotation->next;
+        }
     }
     
     return self;
