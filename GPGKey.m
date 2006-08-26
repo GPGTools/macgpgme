@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -83,30 +83,11 @@ NSString *GPGStringFromChars(const char * chars)
 
 
 @implementation GPGKey
-#warning BUG: with gpg <= 1.2.x, secret keys have wrong attributes
+// BUG: with gpg <= 1.2.x, secret keys have wrong attributes
 // The following attributes are in fact always 0 for secret keys, because gpg
 // doesn't return the information!
 // -isKeyDisabled, ...
 // Problem has been fixed in gpg 1.4
-
-/*"
- * Some of the cryptographic operations require that %recipients or %signers
- * are specified. This is always done by specifying the respective %keys that
- * should be used for the operation.
- *
- * A GPGKey instance represents a %public or %secret %key, but NOT both!
- *
- * A %key can contain several %{user IDs} and %{subkeys}.
- *
- * #GPGKey instances are returned by
- * #{-[GPGContext keyEnumeratorForSearchPattern:secretKeysOnly:]},
- * #{-[GPGContext keyOfSignatureAtIndex:]}; you should never need to
- * instantiate objects of that class.
- *
- * Two #GPGKey instances are considered equal (in MacGPGME) if they have the
- * same %fingerprint, and are both secret or public. #GPGKey instances are
- * (currently) immutable objects.
-"*/
 
 + (BOOL) needsPointerUniquing
 {
@@ -132,9 +113,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (unsigned) hash
-/*"
- * Returns hash value based on %fingerprint.
-"*/
 {
     NSString	*fingerprint = [self fingerprint];
     
@@ -145,10 +123,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (BOOL) isEqual:(id)anObject
-/*"
- * Returns YES if both the receiver and anObject have the same %fingerprint, are both subclasses of GPGKey,
- * and are both public or secret keys.
-"*/
 {
   if(anObject != nil && [anObject isKindOfClass:[GPGKey class]] && [self isSecret] == [anObject isSecret])
 	return [[self fingerprint] isEqualToString:[anObject fingerprint]];
@@ -156,12 +130,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (id) copyWithZone:(NSZone *)zone
-/*"
- * Returns the same instance, retained. #GPGKey instances are (currently)
- * immutable.
- *
- * #WARNING: zone is not taken in account.
-"*/
 {
     // Implementation is useful to allow use of GPGKey instances as keys in NSMutableDictionary instances.
     return [self retain];
@@ -173,10 +141,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (GPGKey *) publicKey
-/*"
- * If key is the public key, returns self, else returns the corresponding secret key
- * if there is one, else nil.
-"*/
 {
     if(![self isSecret])
         return self;
@@ -201,10 +165,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (GPGKey *) secretKey
-/*"
- * If key is the secret key, returns self, else returns the corresponding public key
- * if there is one, else nil.
-"*/
 {
     if([self isSecret])
         return self;
@@ -228,72 +188,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (NSDictionary *) dictionaryRepresentation
-/*"
- * Returns a dictionary that looks something like this:
- *
- * !{{
- * algo = 17; 
- * created = 2000-07-13 08:35:05 -0400; 
- * expire = 2010-07-13 08:35:05 -0400; 
- * disabled = 0; 
- * expired = 0; 
- * fpr = C462FA84B8113501901020D26EF377F7BBD3B003; 
- * invalid = 0; 
- * keyid = 6EF377F7BBD3B003; 
- * shortkeyid = BBD3B003; 
- * len = 1024; 
- * revoked = 0; 
- * secret = 1;
- * issuerSerial = XX;
- * issuerName = XX;
- * chainID = XX;
- * ownertrust = 1;
- * subkeys = (
- * 		{
- *         algo = 16; 
- *         created = 2000-07-13 08:35:06 -0400; 
- *         expire = 2010-07-13 08:35:06 -0400; 
- *         disabled = 0; 
- *         expired = 0; 
- *         fpr = ""; 
- *         invalid = 0; 
- *         keyid = 5745314F70E767A9;
- *         shortkeyid = 70E767A9; 
- *         len = 2048; 
- *         revoked = 0; 
- *     }
- * ); 
- * userids = (
- *     {
- *         comment = "Gordon Worley <redbird@mac.com>"; 
- *         email = "Gordon Worley <redbird@mac.com>"; 
- *         invalid = 0; 
- *         name = "Gordon Worley <redbird@mac.com>"; 
- *         raw = "Gordon Worley <redbird@mac.com>"; 
- *         revoked = 0;
- *         validity = 0; 
- *     }, 
- *     {
- *         comment = ""; 
- *         email = ""; 
- *         invalid = 0; 
- *         name = "[image of size 2493]"; 
- *         raw = "[image of size 2493]"; 
- *         revoked = 0;
- *         validity = 0; 
- *     }, 
- *     {
- *         comment = ""; 
- *         email = "redbird@rbisland.cx"; 
- *         invalid = 0; 
- *         name = "Gordon Worley"; 
- *         raw = "Gordon Worley <redbird@rbisland.cx>"; 
- *         revoked = 0;
- *         validity = 0; 
- *     }
- * );
- * }}
-"*/
 {
     NSMutableDictionary	*key_dict = [NSMutableDictionary dictionary];
     NSArray 			*objects;
@@ -353,9 +247,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (NSString *) shortKeyID
-/*"
- * Convenience method. Returns %{main key short (32 bit) key ID}.
-"*/
 {
     NSString *keyIDString = [self keyID];
     
@@ -363,18 +254,11 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (NSString *) keyID
-/*"
- * Convenience method. Returns %{main key key ID}.
-"*/
 {
     return [[[self subkeys] objectAtIndex:0] keyID];
 }
 
 - (NSArray *) subkeys
-/*"
- * Returns the %{main key}, followed by other %{subkeys}, as #GPGSubkey
- * instances.
-"*/
 {
     if(_subkeys == nil){
         gpgme_subkey_t	aSubkey = _key->subkeys;
@@ -395,24 +279,11 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (NSString *) fingerprint
-/*"
- * Convenience method. Returns %{main key fingerprint} in hex digit form.
-"*/
 {
     return [[[self subkeys] objectAtIndex:0] fingerprint];
 }
 
 + (NSString *) formattedFingerprint:(NSString *)fingerprint
-/*"
- * Convenience method. Returns fingerprint in hex digit form, formatted like
- * this:
- *
- * XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX
- *
- * or
- *
- * XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
-"*/
 {
     if(fingerprint != nil && [fingerprint length] == 40){
         return [NSString stringWithFormat:@"%@ %@ %@ %@ %@  %@ %@ %@ %@ %@", [fingerprint substringWithRange:NSMakeRange(0, 4)], [fingerprint substringWithRange:NSMakeRange(4, 4)], [fingerprint substringWithRange:NSMakeRange(8, 4)], [fingerprint substringWithRange:NSMakeRange(12, 4)], [fingerprint substringWithRange:NSMakeRange(16, 4)], [fingerprint substringWithRange:NSMakeRange(20, 4)], [fingerprint substringWithRange:NSMakeRange(24, 4)], [fingerprint substringWithRange:NSMakeRange(28, 4)], [fingerprint substringWithRange:NSMakeRange(32, 4)], [fingerprint substringWithRange:NSMakeRange(36, 4)]];
@@ -425,77 +296,41 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (NSString *) formattedFingerprint
-/*"
- * Convenience method. Returns %{main key fingerprint} in hex digit form,
- * formatted like this:
- *
- * XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX
- *
- * or
- *
- * XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
-"*/
 {
     return [[self class] formattedFingerprint:[self fingerprint]];
 }
 
 - (GPGPublicKeyAlgorithm) algorithm
-/*"
- * Convenience method. Returns %{main key algorithm}. The algorithm is the
- * crypto algorithm for which the key can be used. The value corresponds to
- * the #GPGPublicKeyAlgorithm enum values.
-"*/
 {
     return [[[self subkeys] objectAtIndex:0] algorithm];
 }
 
 - (NSString *) algorithmDescription
-/*"
- * Convenience method. Returns a non-localized description of the %{main key}
- * algorithm.
-"*/
 {
     return GPGPublicKeyAlgorithmDescription([self algorithm]);
 }
 
 - (unsigned int) length
-/*"
- * Convenience method. Returns %{main key} length, in bits.
-"*/
 {
     return [(GPGSubkey *)[[self subkeys] objectAtIndex:0] length];
 }
 
 - (NSCalendarDate *) creationDate
-/*"
- * Convenience method. Returns %{main key} creation date. Returns nil when not
- * available or invalid.
-"*/
 {
     return [[[self subkeys] objectAtIndex:0] creationDate];
 }
 
 - (NSCalendarDate *) expirationDate
-/*"
- * Convenience method. Returns %{main key} expiration date. Returns nil when
- * there is none or is not available or is invalid.
-"*/
 {
     return [[[self subkeys] objectAtIndex:0] expirationDate];
 }
 
 - (GPGValidity) ownerTrust
-/*"
- * Returns %{owner trust} (only for OpenPGP).
-"*/
 {
     return _key->owner_trust;
 }
 
 - (NSString *) ownerTrustDescription
-/*"
- * Returns a localized description of the %{owner trust}.
-"*/
 {
     return GPGValidityDescription([self ownerTrust]);
 }
@@ -512,18 +347,11 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (NSString *) userID
-/*"
- * Convenience method. Returns the %{primary user ID}.
-"*/
 {
     return [[self primaryUserID] userID];
 }
 
 - (NSArray *) userIDs
-/*"
- * Returns the %{primary user ID}, followed by other %{user IDs}, as
- * #GPGUserID instances.
-"*/
 {
     if(_userIDs == nil){
         gpgme_user_id_t	aUserID = _key->uids;
@@ -544,69 +372,51 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (NSString *) name
-/*"
- * Convenience method. Returns the %{primary user ID} name.
-"*/
 {
     return [[self primaryUserID] name];
 }
 
 - (NSString *) email
-/*"
- * Convenience method. Returns the %{primary user ID} email address.
-"*/
 {
     return [[self primaryUserID] email];
 }
 
 - (NSString *) comment
-/*"
- * Convenience method. Returns the %{primary user ID} comment.
-"*/
 {
     return [[self primaryUserID] comment];
 }
 
 - (GPGValidity) validity
-/*"
- * Convenience method. Returns the %{primary user ID} validity.
-"*/
 {
-    return [[self primaryUserID] validity];
+    GPGUserID   *primaryUserID = [self primaryUserID];
+    
+    if(primaryUserID != nil)
+        return [primaryUserID validity];
+    else
+        return GPGValidityUnknown;
 }
 
 - (NSString *) validityDescription
-/*"
- * Convenience method. Returns a localized description of the %{primary user
- * ID} validity.
-"*/
 {
-    return GPGValidityDescription([self validity]);
+    GPGUserID   *primaryUserID = [self primaryUserID];
+    
+    if(primaryUserID != nil)
+        return GPGValidityDescription([self validity]);
+    else
+        return nil;
 }
 
 - (BOOL) isKeyRevoked
-/*"
- * Returns whether key is revoked.
-"*/
 {
     return !!_key->revoked;
 }
 
 - (BOOL) isKeyInvalid
-/*"
- * Returns whether key is invalid (e.g. due to a missing self-signature).
- * This might have several reasons, for a example for the S/MIME backend, it
- * will be set in during key listing if the key could not be validated due to
- * a missing certificates or unmatched policies.
-"*/
 {
     return !!_key->invalid;
 }
 
 - (BOOL) hasKeyExpired
-/*"
- * Returns whether key is expired.
-"*/
 {
     // There is a bug in gpg/gpgme: the hasKeyExpired status is wrong!
     // We need to check the expiration date.
@@ -623,120 +433,72 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (BOOL) isKeyDisabled
-/*"
- * Returns whether key is disabled.
-"*/
 {
     return !!_key->disabled;
 }
 
 - (BOOL) isSecret
-/*"
- * If a key is secret, than all %{subkeys} are password-protected (i.e. are 
- * secret too), but password can be different for each %{subkey}. A %{subkey}
- * cannot be secret if the key is not.
-"*/
 {
     return !!_key->secret;
 }
 
 - (BOOL) isQualified
-/*"
- * Returns whether key can be used for qualified signatures according to local
- * government regulations.
-"*/
 {
     return !!_key->is_qualified;
 }
 
 - (BOOL) canEncrypt
-/*"
- * Returns whether the %key (i.e. one of its subkeys) can be used for
- * encryption.
-"*/
 {
     return !!_key->can_encrypt;
 }
 
 - (BOOL) canSign
-/*"
- * Returns whether the key (i.e. one of its subkeys) can be used to create
- * data signatures.
-"*/
 {
     return !!_key->can_sign;
 }
 
 - (BOOL) canCertify
-/*"
- * Returns whether the key (i.e. one of its subkeys) can be used to create key
- * certificates.
-"*/
 {
     return !!_key->can_certify;
 }
 
 - (BOOL) canAuthenticate
-/*"
- * Returns whether the key (i.e. one of its subkeys) can be used for
- * authentication.
-"*/
 {
     return !!_key->can_authenticate;
 }
 
 - (NSString *) issuerSerial
-/*"
- * Returns the X.509 %{issuer serial} attribute of the key (only for S/MIME).
-"*/
 {
     return GPGStringFromChars(_key->issuer_serial);
 }
 
 - (NSString *) issuerName
-/*"
- * Returns the X.509 %{issuer name} attribute of the key (only for S/MIME).
-"*/
 {
     return GPGStringFromChars(_key->issuer_name);
 }
 
 - (NSString *) chainID
-/*"
- * Returns the X.509 %{chain ID} that can be used to build the certificate
- * chain (only for S/MIME).
-"*/
 {
     return GPGStringFromChars(_key->chain_id);
 }
 
 - (GPGProtocol) supportedProtocol
-/*"
- * Returns information about the protocol supported by the key.
-"*/
 {
     return _key->protocol;
 }
 
 - (NSString *) supportedProtocolDescription
-/*"
- * Returns a localized description of the %{supported protocol}.
-"*/
 {
     return GPGLocalizedProtocolDescription([self supportedProtocol]);
 }
 
 - (NSData *) photoData
-/*"
- * Returns data for the photo %{user ID}, if there is one.
- * You can create an #NSImage using #{-[NSImage initWithData:]}
- * method.
- *
- * Returns nil when there is no photo user ID.
-"*/
 {
     // This is a temporary implementation; libgpgme will return
     // corresponding data within an API, later.
+    if([self supportedProtocol] != GPGOpenPGPProtocol)
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+        
     if(!_checkedPhotoData){
         NSTask	*aTask = [[NSTask alloc] init];
 
@@ -744,11 +506,11 @@ NSString *GPGStringFromChars(const char * chars)
             NSString	*temporaryFilename = [[NSProcessInfo processInfo] globallyUniqueString];
             NSString	*aPath = [NSTemporaryDirectory() stringByAppendingPathComponent:temporaryFilename];
 
-            [aTask setLaunchPath:@"/usr/local/bin/gpg"];
+            [aTask setLaunchPath:[[GPGEngine engineForProtocol:GPGOpenPGPProtocol] executablePath]];
             // Seems it is not possible to read only image data:
             // with some keys (e.g. 18AC60DD67191493), image data 
             // is mixed with userID data. gpg is though able to do
-            // it correctly.. We'll wait till gpgme does it too,
+            // it correctly. We'll wait till gpgme does it too,
             // in the meantime we use a temporary file
             [aTask setArguments:[NSArray arrayWithObjects:@"--photo-viewer", [NSString stringWithFormat:@"tee %@", aPath], @"--show-photos", @"--list-keys", [self keyID], nil]];
             [aTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
@@ -769,9 +531,6 @@ NSString *GPGStringFromChars(const char * chars)
 }
 
 - (GPGKeyListMode) keyListMode
-/*"
- * Returns the keylist mode that was active when the key was retrieved.    
-"*/
 {
     return _key->keylist_mode;
 }
