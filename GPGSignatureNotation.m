@@ -2,8 +2,27 @@
 //  GPGSignatureNotation.m
 //  MacGPGME
 //
-//  Created by Dave Lopper on 10/9/05.
-//  Copyright 2005 __MyCompanyName__. All rights reserved.
+//  Created by davelopper at users.sourceforge.net on Oct 09 2005.
+//
+//
+//  Copyright (C) 2001-2006 Mac GPG Project.
+//  
+//  This code is free software; you can redistribute it and/or modify it under
+//  the terms of the GNU Lesser General Public License as published by the Free
+//  Software Foundation; either version 2.1 of the License, or (at your option)
+//  any later version.
+//  
+//  This code is distributed in the hope that it will be useful, but WITHOUT ANY
+//  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+//  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+//  details.
+//  
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program; if not, visit <http://www.gnu.org/> or write to the
+//  Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, 
+//  MA 02111-1307, USA.
+//
+//  More info at <http://macgpg.sourceforge.net/>
 //
 
 #include <MacGPGME/GPGSignatureNotation.h>
@@ -12,10 +31,6 @@
 
 
 @implementation GPGSignatureNotation
-/*"
- * You can attach arbitrary notation data to a signature. This information is
- * then available to the user when the signature is verified.
-"*/
 
 #define _notation		((gpgme_sig_notation_t)aPtr)
 - (id) initWithInternalRepresentation:(void *)aPtr
@@ -55,55 +70,26 @@
 }
 
 - (NSString *) name
-/*"
- * The name of the notation field. If this is nil, then the value will contain a
- * policy URL (string).
-"*/
 {
     return _name;
 }
 
 - (id) value
-/*"
- * The value of the notation field. If -name returns nil, then value is a policy
- * URL (string). Else, if value is human-readable, a NSString is returned, else
- * a NSData is returned.
-"*/
 {
     return _value;
 }
 
 - (GPGSignatureNotationFlags) flags
-/*"
- * The accumulated flags field. This field contains the flags associated with
- * the notation data in an accumulated form which can be used as an argument
- * to the method #{-[GPGContext addSignatureNotationWithName:value:flags:]}. The
- * value flags is a bitwise-or combination of one or multiple of the following 
- * bit values: #GPGSignatureNotationHumanReadableMask and 
- * #GPGSignatureNotationCriticalMask. 
-"*/
 {
     return _flags;
 }
 
 - (BOOL) isHumanReadable
-/*"
- * Convenience method. Returns whether flags indicates that notation data is 
- * human-readable or not; policy URL notation data always returns NO. When 
- * returns YES, value is a NSString, else value is a NSData (except for policy 
- * URLs which are always strings).
-"*/
 {
     return _isHumanReadable;
 }
 
 - (BOOL) isCritical
-/*"
- * Convenience method. Returns whether flags indicates that notation data is 
- * critical or not.
- *
- * #WARNING: with gpg <= 1.4.x, always returns NO
-"*/
 {
     return _isCritical;
 }

@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -36,13 +36,6 @@
 
 
 @implementation GPGTrustItem
-/*"
- * #GPGTrustItem instances are returned by
- * #{-[GPGContext trustListEnumeratorForSearchPattern:maximumLevel:]}; you
- * should never need to instantiate objects of that class.
- *
- * #CAUTION: the trust items interface is experimental.
-"*/
 
 + (BOOL) needsPointerUniquing
 {
@@ -59,52 +52,31 @@
 }
 
 - (NSString *) keyID
-/*"
- * Returns the %{key ID} of the %key refered by the trust item.
-"*/
 {
     return GPGStringFromChars(_trustItem->keyid);
 }
 
 - (NSString *) ownerTrustDescription
-/*"
- * #CAUTION: not yet working. Only if type = 1.
-"*/
 {
     return GPGStringFromChars(_trustItem->owner_trust);
 }
 
 - (NSString *) name
-/*"
- * Returns the %{name} associated with the trust item. Only if type = 2.
-"*/
 {
     return GPGStringFromChars(_trustItem->name);
 }
 
 - (NSString *) validityDescription
-/*"
- * Returns the computed validity associated with the trust item.
-"*/
 {
     return GPGStringFromChars(_trustItem->validity);
 }
 
 - (int) level
-/*"
- * Returns the trust level of the trust item.
-"*/
 {
     return _trustItem->level;
 }
 
 - (int) type
-/*"
- * Returns the type of the trust item. A value of 1 refers to a key, a value
- * of 2 refers to a user ID.
- *
- * #CHECK: not yet working.
-"*/
 {
     return _trustItem->type;
 }

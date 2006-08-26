@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Jun 08 2003.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -34,22 +34,6 @@
 
 
 @implementation GPGSubkey
-/*"
- * Subkeys are one component of a key. In fact, subkeys are those parts that
- * contains the real information about the individual cryptographic keys that
- * belong to the same key object. One #GPGKey can contain several subkeys. The
- * first subkey in the -subkeys list is also called the primary key. It is
- * guaranteed that the owning GPGKey instance will never be deallocated before
- * the GPGKeySignature has been deallocated, without creating non-breakable
- * retain-cycles.
- *
- * #GPGSubkey instances do not support all methods from #GPGKey; use only the
- * listed ones, else a #NSInternalInconsistencyException exception will be
- * raised.
- *
- * The following convenience methods, though not listed, are supported:
- * -algorithmDescription, -shortKeyID, -formattedFingerprint
-"*/
 
 - (id) retain
 {
@@ -75,33 +59,21 @@
 }
 
 - (GPGKey *) key
-/*"
- * Returns parent key.
-"*/
 {
     return _key;
 }
 
 - (BOOL) isKeyRevoked
-/*"
- * Returns whether %{subkey} is revoked.
-"*/
 {
     return !!_subkey->revoked;
 }
 
 - (BOOL) isKeyInvalid
-/*"
- * Returns whether %{subkey} is invalid.
-"*/
 {
     return !!_subkey->invalid;
 }
 
 - (BOOL) hasKeyExpired
-/*"
- * Returns whether %{subkey} is expired.
-"*/
 {
     // There is a bug in gpg/gpgme: the hasKeyExpired status is wrong!
     // We need to check the expiration date.
@@ -118,92 +90,56 @@
 }
 
 - (BOOL) isKeyDisabled
-/*"
- * Returns whether %{subkey} is disabled.
-"*/
 {
     return !!_subkey->disabled;
 }
 
 - (BOOL) canEncrypt
-/*"
- * Returns whether the %subkey can be used for encryption.
-"*/
 {
     return !!_subkey->can_encrypt;
 }
 
 - (BOOL) canSign
-/*"
- * Returns whether the %subkey can be used to create data signatures.
-"*/
 {
     return !!_subkey->can_sign;
 }
 
 - (BOOL) canCertify
-/*"
- * Returns whether the %subkey can be used to create key certificates.
-"*/
 {
     return !!_subkey->can_certify;
 }
 
 - (BOOL) canAuthenticate
-/*"
- * Returns whether the %subkey can be used for authentication.
-"*/
 {
     return !!_subkey->can_authenticate;
 }
 
 - (BOOL) isSecret
-/*"
- * Returns whether the %subkey is secret.
-"*/
 {
     return !!_subkey->secret;
 }
 
 - (GPGPublicKeyAlgorithm) algorithm
-/*"
- * Returns %{subkey algorithm}. The algorithm is the crypto algorithm for 
- * which the %subkey can be used. The value corresponds to the
- * #GPGPublicKeyAlgorithm enum values.
-"*/
 {
     return _subkey->pubkey_algo;
 }
 
 - (unsigned int) length
-/*"
- * Returns %{subkey} length, in bits.
-"*/
 {
     return _subkey->length;
 }
 
 - (NSString *) keyID
-/*"
- * Returns %{subkey key ID} in hexadecimal digits.
-"*/
 {
     return GPGStringFromChars(_subkey->keyid);
 }
 
 - (NSString *) fingerprint
-/*"
- * Returns %{subkey fingerprint} in hexadecimal digits, if available. This is
- * usually only available for the primary key.
-"*/
 {
     return GPGStringFromChars(_subkey->fpr);
 }
 
 - (NSCalendarDate *) creationDate
-/*"
- * Returns %{subkey} creation date. Returns nil when not available or invalid.
-"*/
 {
     /* The creation timestamp, -1 if invalid, 0 if not available.  */
     long	timestamp = _subkey->timestamp;
@@ -215,10 +151,6 @@
 }
 
 - (NSCalendarDate *) expirationDate
-/*"
- * Returns %{subkey} expiration date. Returns nil when there is none
- * or is not available or is invalid.
-"*/
 {
     long	timestamp = _subkey->expires;
 

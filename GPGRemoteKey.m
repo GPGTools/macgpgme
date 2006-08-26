@@ -5,7 +5,7 @@
 //  Created by Robert Goldsmith (r.s.goldsmith@far-blue.co.uk) on Sat July 9 2005.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,51 +35,13 @@
 
 @implementation GPGRemoteKey
 
-/*"
- * Rather than returning actual keys from a remote key match, a key server will
- * reply with token representations of the keys, in the form of #GPGRemoteKey
- * instances. #GPGRemoteKey instances are NOT real keys, and cannot be treated
- * as such. However, they can be compared against actual keys by checking the 
- * %shortKeyID of two keys.
- * 
- * #GPGRemoteKey instances are returned by
- * #{-[GPGContext asyncSearchForKeysMatchingPatterns:serverOptions:]}, or
- * #{-[GPGContext operationResults]}.
- *
- * #GPGRemoteKey instances can be passed (in any combination with normal keys)
- * to #{[GPGContext asyncDownloadKeys:serverOptions]}
- *
- * #GPGRemoteKey instances are immutable and should never be created manually.   
- "*/
-
 - (id) copyWithZone:(NSZone *)zone
-/*"
- * Returns the same instance, retained. #GPGRemoteKey instances are immutable.
- *
- * #WARNING: zone is not taken in account.
-"*/
 {
     // Implementation is useful to allow use of GPGRemoteKey instances as keys in NSMutableDictionary instances.
     return [self retain];
 }
 
 - (NSDictionary *) dictionaryRepresentation
-/*"
- * Returns a dictionary that looks something like this:
- *
- * !{{
- *	 algo = 17; 
- *	 created = 2003-05-29 00:33:31 +0100; 
- *	 expired = 0; 
- *	 keyid = 2E92F423; 
- *	 len = 1024; 
- *	 revoked = 0; 
- *	 userids = (
- *		  "Robert Scott Goldsmith <R.S.Goldsmith@cs.bham.ac.uk>", 
- *		  "Robert Scott Goldsmith <R.S.Goldsmith@Far-Blue.co.uk>"
- *	  ); 
- * }}
-"*/
 {
     NSMutableDictionary *key_dict = [NSMutableDictionary dictionary];
     
@@ -105,9 +67,6 @@
 }
 
 - (NSString *) keyID
-/*"
- * Returns the key id in hexadecimal digits.
-"*/
 {
     switch(_version){
         case 0:
@@ -121,11 +80,6 @@
 }
 
 - (GPGPublicKeyAlgorithm) algorithm
-/*"
- * Returns %{key algorithm}. The algorithm is the crypto algorithm for 
- * which the %key (once downloaded) can be used. The value corresponds to the
- * #GPGPublicKeyAlgorithm enum values.
-"*/
 {
     NSString	*aString;
     
@@ -148,10 +102,6 @@
 }
 
 - (NSString *) algorithmDescription
-/*"
- * Convenience method. Returns a non-localized description of the algorithm.
- * Not always available.
-"*/
 {
     switch(_version){
         case 0:
@@ -166,9 +116,6 @@
 }
 
 - (unsigned int) length
-/*"
- * Returns %{key} length, in bits.
-"*/
 {
     switch(_version){
         case 0:
@@ -183,9 +130,6 @@
 }
 
 - (NSCalendarDate *) creationDate
-/*"
- * Returns %{key} creation date. Returns nil when not available or invalid.
-"*/
 {
     NSString	*aString;
     
@@ -207,9 +151,6 @@
 
 
 - (NSCalendarDate *) expirationDate
-/*"
- * Returns %{key} expiration date. Returns nil when there is none or is not available or is invalid.
-"*/
 {
     NSString	*aString;
     
@@ -236,9 +177,6 @@
 
 
 - (NSArray *) userIDs
-/*"
- * Returns the %{user IDs}, as #GPGRemoteUserID instances.
-"*/
 {
     if(_userIDs == nil){
         int		i = 0;
@@ -268,9 +206,6 @@
 
 
 - (BOOL) isKeyRevoked
-/*"
- * Returns whether key is revoked.
-"*/
 {
     switch(_version){
         case 0:
@@ -284,9 +219,6 @@
 }
 
 - (BOOL) hasKeyExpired
-/*"
- * Returns whether key is expired.
-"*/
 {
     NSCalendarDate	*expirationDate = [self expirationDate];
     
@@ -297,9 +229,6 @@
 }
 
 - (unsigned) hash
-/*"
- * Returns hash value based on %keyId.
-"*/
 {
     if([self keyID] != nil)
         return [[self keyID] hash];
@@ -307,10 +236,6 @@
 }
 
 - (BOOL) isEqual:(id)anObject
-/*"
- * Returns YES if both the receiver and anObject have the same %keyID and of the same
- * class.
-"*/
 {
     if(anObject != nil && [anObject isMemberOfClass:[self class]])
         return [[self keyID] isEqualToString:[anObject keyID]];
@@ -318,31 +243,12 @@
     return NO;
 }
 
-
-- (GPGRemoteUserID *) primaryUserID
-{
-    // It MIGHT happen that a key has NO userID!
-    NSArray	*userIDs = [self userIDs];
-    
-    if([userIDs lastObject] != nil)
-        return [userIDs objectAtIndex:0];
-    else
-        return nil;
-}
-
 - (NSString *) shortKeyID
-/*"
- * Convenience method. Returns %{short (32 bit) key ID}.
-"*/
 {  
     return [[self keyID] substringFromIndex:[[self keyID] length] - 8];
 }
 
-
 - (NSString *) userID
-/*"
- * Convenience method. Returns the %{primary user ID}.
-"*/
 {
     // It MIGHT happen that a key has NO userID!
     NSArray	*userIDs = [self userIDs];
