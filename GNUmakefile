@@ -14,20 +14,22 @@ ifeq ($(GNUSTEP_SYSTEM_ROOT),)
 else
 
 FRAMEWORK_NAME = MacGPGME
-MacGPGME_CURRENT_VERSION_NAME = 1.1.0
+MacGPGME_CURRENT_VERSION_NAME = 1.1.3
 
 MacGPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m \
            GPGKey.m GPGKeySignature.m GPGObject.m GPGPrettyInfo.m \
            GPGSignature.m GPGSubkey.m GPGTrustItem.m GPGUserID.m \
            LocalizableStrings.m GPGAsyncHelper.m GPGKeyGroup.m \
-           GPGOptions/GPGOptions.m GPGSignatureNotation.m
+           GPGOptions/GPGOptions.m GPGSignatureNotation.m GPGRemoteKey.m \
+           GPGRemoteUserID.m
 
 MacGPGME_HEADER_FILES = GPGContext.h GPGData.h GPGDefines.h GPGEngine.h \
           GPGExceptions.h GPGInternals.h GPGKey.h GPGKeySignature.h \
           MacGPGME.h GPGObject.h GPGPrettyInfo.h GPGSignature.h \
           GPGSubkey.h GPGTrustItem.h GPGUserID.h LocalizableStrings.h \
           GPGAsyncHelper.h GPGKeyGroup.h GPGOptions/GPGOptions.h \
-          GPGSignatureNotation.h
+          GPGSignatureNotation.h GPGKeyDefines.h GPGRemoteKey.h \
+          GPGRemoteUserID.h
 
 ADDITIONAL_OBJCFLAGS += -I../
 
