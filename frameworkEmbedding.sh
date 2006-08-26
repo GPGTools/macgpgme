@@ -7,7 +7,7 @@
 # note we do not bother to change the debug or profile variants since those are never directly linked against at static link time.
 
 FRAMEWORK_NAME=MacGPGME
-FRAMEWORK_VERSION=1.0.2
+FRAMEWORK_VERSION=1.1.3
 
 cd "${TARGET_BUILD_DIR}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Contents/Frameworks/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/"
 chmod u+w "${FRAMEWORK_NAME}"
