@@ -5,7 +5,7 @@
 //  Created by Robert Goldsmith (r.s.goldsmith@far-blue.co.uk) on Sat July 9 2005.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -34,23 +34,8 @@
 
 
 @implementation GPGRemoteUserID
-/*"
- * A remote user ID is a component of a #GPGRemoteKey object.
- * One key can have many user IDs. 
- *
- * A %{remote user ID} represents an identity associated with a remote key. This 
- * identity is generally composed of a name and an email adress, and can have a 
- * comment associated.
- *
- * #GPGRemoteUserID instances are immutable and should never be created
- * manually.
-"*/
-
 
 - (NSString *) userID
-/*"
- * Returns the %{user ID} as "Name (Comment) <Email>".
-"*/
 {
     switch([(GPGRemoteKey *)_key colonFormatStringsVersion]){
         case 0:
@@ -64,11 +49,13 @@
 }
 
 - (GPGRemoteKey *) key
-/*"
- * Returns the key owning that userID.
-"*/
 {
     return _key;
+}
+
+- (NSString *) description
+{
+    return [self userID];
 }
 
 @end

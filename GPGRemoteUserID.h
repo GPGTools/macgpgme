@@ -5,7 +5,7 @@
 //  Created by Robert Goldsmith (r.s.goldsmith@far-blue.co.uk) on Sat July 9 2005.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,13 +35,44 @@ extern "C" {
 #endif
 #endif
 
+/*!
+ *  @class      GPGRemoteUserID
+ *  @abstract   A <i>remote user ID</i> is a component of a <code>@link //macgpg/occ/cl/GPGRemoteKey GPGRemoteKey@/link</code>
+ *              object.
+ *  @discussion A <i>remote user ID</i> is a component of a <code>@link //macgpg/occ/cl/GPGRemoteKey GPGRemoteKey@/link</code>
+ *              object. One key can have many user IDs. 
+ *
+ *              A <i>remote user ID</i> represents an identity associated with a
+ *              remote key. This identity is generally composed of a name and an
+ *              email adress, and can have a comment associated.
+ *
+ *              GPGRemoteUserID objects are immutable and should never be
+ *              created manually.
+ */
 @interface GPGRemoteUserID : GPGObject
 {
-  GPGRemoteKey	*_key; /*"Key owning the user ID; not retained"*/  
-  int           _index;
+    GPGRemoteKey    *_key; // Key owning the user ID; not retained
+    int             _index;
 }
 
+/*!
+ *  @method     description
+ *  @abstract   Returns <code>@link //macgpg/occ/instm/GPGRemoteUserID/userID userID@/link</code>.
+ *  @seealso    //macgpg/occ/instm/GPGRemoteUserID/userID userID
+ */
+- (NSString *) description;
+
+    /*!
+ *  @method     userID
+ *  @abstract   Returns a user-presentable description using format
+ *              "Name (Comment) &lt;Email&gt;".
+ */
 - (NSString *) userID;
+
+/*!
+ *  @method     key
+ *  @abstract   Returns the key owning that user ID.
+ */
 - (GPGRemoteKey *) key;
 
 @end
