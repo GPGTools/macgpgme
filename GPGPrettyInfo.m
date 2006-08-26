@@ -5,7 +5,7 @@
 //  Created by Gordon Worley on Tue Jun 18 2002.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -95,7 +95,7 @@ NSString * GPGSymmetricKeyAlgorithmDescription(GPGSymmetricKeyAlgorithm value)
             return_value = GPGLocalizedString(GPGDummyAlgorithmString);
             break;
         default:
-            return_value = GPGLocalizedString(GPGUnknownString);
+            return_value = nil;
             break;
     }
 
@@ -136,8 +136,11 @@ NSString * GPGValidityDescription(GPGValidity value)
         case GPGValidityUltimate:
             return_value = GPGLocalizedString(GPGValidityUltimateString);
             break;
-        default:  //GPGValidityUnknown = 0; if it's something else I guess it's also unknown
+        case GPGValidityUnknown:
             return_value = GPGLocalizedString(GPGUnknownString);
+            break;
+        default:
+            return_value = nil;
             break;
     }
     
