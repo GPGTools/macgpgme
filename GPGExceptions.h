@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -42,120 +42,144 @@ extern "C" {
 @class NSString;
 
 
-/*"
- * The #GPGErrorCode type indicates the type of an error, or the reason why an
- * operation failed. Here are the most important ones:
- * _{GPGErrorEOF                          This value indicates the end of a
- *                                        list, buffer or file.}
- * _{GPGErrorNoError                      This value indicates success. The
- *                                        value of this error code is 0. Also,
- *                                        it is guaranteed that an error value
- *                                        made from the error code 0 will be 0
- *                                        itself (as a whole). This means that
- *                                        the error source information is lost
- *                                        for this error code, however, as
- *                                        this error code indicates that no
- *                                        error occured, this is generally not
- *                                        a problem. No #GPGException is raised
- *                                        with this value.}
- * _{GPGErrorGeneralError                 This value means that something went
- *                                        wrong, but either there is not enough
- *                                        information about the problem to
- *                                        return a more useful error value, or
- *                                        there is no separate error value for
- *                                        this type of problem.}
- * _{GPGError_ENOMEM                      This value means that an
- *                                        out-of-memory condition occurred.}
- * _{GPGError_E...                        System errors are mapped to
- *                                        GPGError_FOO where FOO is the symbol
- *                                        for the system error.}
- * _{GPGErrorInvalidValue                 This value means that some user
- *                                        provided data was out of range.
- *                                        This can also refer to objects. For
- *                                        example, if an empty #GPGData
- *                                        instance was expected, but one
- *                                        containing data was provided, this
- *                                        error value is returned.}
- * _{GPGErrorUnusablePublicKey            This value means that some
- *                                        recipients for a message were
- *                                        invalid.}
- * _{GPGErrorUnusableSecretKey            This value means that some signers
- *                                        were invalid.}
- * _{GPGErrorNoData                       This value means that a #GPGData
- *                                        instance which was expected to have
- *                                        content was found empty.}
- * _{GPGErrorConflict                     This value means that a conflict of
- *                                        some sort occurred.}
- * _{GPGErrorNotImplemented               This value indicates that the
- *                                        specific function (or operation) is
- *                                        not implemented. This error should
- *                                        never happen. It can only occur if
- *                                        you use certain values or
- *                                        configuration options which do not
- *                                        work, but for which we think that
- *                                        they should work at some later
- *                                        time.}
- * _{GPGErrorDecryptionFailed             This value indicates that a
- *                                        decryption operation was
- *                                        unsuccessful.}
- * _{GPGErrorBadPassphrase                This value means that the user did
- *                                        not provide a correct passphrase
- *                                        when requested.}
- * _{GPGErrorCancelled                    This value means that the operation
- *                                        was cancelled by user.}
- * _{GPGErrorInvalidEngine                This value means that the engine
- *                                        that implements the desired protocol
- *                                        is currently not available. This can
- *                                        either be because the sources were
- *                                        configured to exclude support for
- *                                        this engine, or because the engine
- *                                        is not installed properly.}
- * _{GPGErrorAmbiguousName                This value indicates that a user ID
- *                                        or other specifier did not specify a
- *                                        unique key.}
- * _{GPGErrorWrongKeyUsage                This value indicates that a key is
- *                                        not used appropriately.}
- * _{GPGErrorCertificateRevoked           This value indicates that a key
- *                                        signature was revoked.}
- * _{GPGErrorCertificateExpired           This value indicates that a key
- *                                        signature expired.}
- * _{GPGErrorNoCRLKnown                   This value indicates that no
- *                                        certificate revocation list is known
- *                                        for the certificate.}
- * _{GPGErrorNoPolicyMatch                This value indicates that a policy
- *                                        issue occured.}
- * _{GPGErrorNoSecretKey                  This value indicates that no secret
- *                                        key for the user ID is available.}
- * _{GPGErrorInvalidPassphrase            The passphrase is invalid, for
- *                                        example if it is in ISOLatin1
- *                                        although UTF-8 is expected}
- * _{GPGErrorMissingCertificate           This value indicates that a key
- *                                        could not be imported because the
- *                                        issuer certificate is missing.}
- * _{GPGErrorBadCertificateChain          This value indicates that a key
- *                                        could not be imported because its
- *                                        certificate chain is not good, for
- *                                        example it could be too long.}
- * _{GPGErrorUnsupportedAlgorithm         This value means a verification
- *                                        failed because the cryptographic
- *                                        algorithm is not supported by the
- *                                        crypto backend.}
- * _{GPGErrorBadSignature                 This value means a verification
- *                                        failed because the signature is
- *                                        bad.}
- * _{GPGErrorNoPublicKey                  This value means a verification
- *                                        failed because the public key is not
- *                                        available.}
- * _{GPGErrorUser1-GPGErrorUser16         These error codes are not used by
- *                                        any GnuPG component and can be
- *                                        freely used by other software.
- *                                        Applications using MacGPGME might use
- *                                        them to mark specific errors
- *                                        returned by callback handlers if no
- *                                        suitable error codes (including the
- *                                        system errors) for these errors
- *                                        exist already.}
-"*/
+/*!
+ *  @typedef    GPGErrorCode
+ *  @abstract   Indicates the code of a <code>@link GPGError GPGError@/link</code>.
+ *  @discussion The GPGErrorCode type indicates the type of an error, or the
+ *              reason why an operation failed. The most important ones are
+ *              described here.
+ *  @constant   GPGErrorEOF                  This value indicates the end of a
+ *                                           list, buffer or file.
+ *  @constant   GPGErrorNoError              This value indicates success. The
+ *                                           value of this error code is 0.
+ *                                           Also, it is guaranteed that an
+ *                                           error value made from the error
+ *                                           code 0 will be 0 itself (as a
+ *                                           whole). This means that the error
+ *                                           source information is lost for this
+ *                                           error code, however, as this error
+ *                                           code indicates that no error
+ *                                           occured, this is generally not a
+ *                                           problem. No <code>@link GPGException GPGException@/link</code>
+ *                                           exception is raised with this
+ *                                           value.
+ *  @constant   GPGErrorGeneralError         This value means that something
+ *                                           went wrong, but either there is not
+ *                                           enough information about the
+ *                                           problem to return a more useful
+ *                                           error value, or there is no 
+ *                                           separate error value for this type
+ *                                           of problem.
+ *  @constant   GPGError_ENOMEM              This value means that an
+ *                                           out-of-memory condition occurred.
+ *  @constant   GPGError_EBUSY               This value means that the
+ *                                           underlying process is already busy
+ *                                           performing another operation.
+ *  @constant   GPGError_E*                  System errors are mapped to
+ *                                           <code>GPGError_<i>EFOO</i></code> 
+ *                                           where <i>EFOO</i> is the symbol
+ *                                           for the system error, e.g. 
+ *                                           <code>@link GPGError_ENOMEM GPGError_ENOMEM@/link</code>
+ *                                           corresponds to system error
+ *                                           <code>ENOMEM</code>.
+ *  @constant   GPGErrorInvalidValue         This value means that some user
+ *                                           provided data was out of range.
+ *                                           This can also refer to objects. For
+ *                                           example, if an empty <code>@link //macgpg/occ/cl/GPGData GPGData@/link</code>
+ *                                           object was expected, but one
+ *                                           containing data was provided, this
+ *                                           error value is returned.
+ *  @constant   GPGErrorUnusablePublicKey    This value means that some
+ *                                           recipients for a message were
+ *                                           invalid.
+ *  @constant   GPGErrorUnusableSecretKey    This value means that some signers
+ *                                           were invalid.
+ *  @constant   GPGErrorNoData               This value means that a <code>@link //macgpg/occ/cl/GPGData GPGData@/link</code>
+ *                                           object which was expected to have
+ *                                           content was found empty.
+ *  @constant   GPGErrorConflict             This value means that a conflict of
+ *                                           some sort occurred.
+ *  @constant   GPGErrorNotImplemented       This value indicates that the
+ *                                           specific function (or operation) is
+ *                                           not implemented. This error should
+ *                                           never happen. It can only occur if
+ *                                           you use certain values or
+ *                                           configuration options which do not
+ *                                           work, but for which we think that
+ *                                           they should work at some later
+ *                                           time.
+ *  @constant   GPGErrorDecryptionFailed     This value indicates that a
+ *                                           decryption operation was
+ *                                           unsuccessful.
+ *  @constant   GPGErrorBadPassphrase        This value means that the user did
+ *                                           not provide a correct passphrase
+ *                                           when requested.
+ *  @constant   GPGErrorCancelled            This value means that the operation
+ *                                           was cancelled by user.
+ *  @constant   GPGErrorInvalidEngine        This value means that the engine
+ *                                           that implements the desired
+ *                                           protocol is currently not
+ *                                           available. This can either be 
+ *                                           because the sources were configured 
+ *                                           to exclude support for this engine,
+ *                                           or because the engine is not
+ *                                           installed properly.
+ *  @constant   GPGErrorAmbiguousName        This value indicates that a user ID
+ *                                           or other specifier did not specify
+ *                                           a unique key.
+ *  @constant   GPGErrorWrongKeyUsage        This value indicates that a key is
+ *                                           not used appropriately.
+ *  @constant   GPGErrorCertificateRevoked   This value indicates that a key
+ *                                           signature was revoked.
+ *  @constant   GPGErrorCertificateExpired   This value indicates that a key
+ *                                           signature expired.
+ *  @constant   GPGErrorNoCRLKnown           This value indicates that no
+ *                                           certificate revocation list is
+ *                                           known for the certificate.
+ *  @constant   GPGErrorNoPolicyMatch        This value indicates that a policy
+ *                                           issue occured.
+ *  @constant   GPGErrorNoSecretKey          This value indicates that no secret
+ *                                           key for the user ID is available.
+ *  @constant   GPGErrorInvalidPassphrase    The passphrase is invalid, for
+ *                                           example if it is in ISOLatin1
+ *                                           although UTF-8 is expected.
+ *  @constant   GPGErrorMissingCertificate   This value indicates that a key
+ *                                           could not be imported because the
+ *                                           issuer certificate is missing.
+ *  @constant   GPGErrorBadCertificateChain  This value indicates that a key
+ *                                           could not be imported because its
+ *                                           certificate chain is not good, for
+ *                                           example it could be too long.
+ *  @constant   GPGErrorUnsupportedAlgorithm This value means a verification
+ *                                           failed because the cryptographic
+ *                                           algorithm is not supported by the
+ *                                           crypto back-end.
+ *  @constant   GPGErrorBadSignature         This value means a verification
+ *                                           failed because the signature is
+ *                                           bad.
+ *  @constant   GPGErrorNoPublicKey          This value means a verification
+ *                                           failed because the public key is
+ *                                           not available.
+ *  @constant   GPGErrorKeyServerError       This value means a problem occured
+ *                                           when trying to discuss or
+ *                                           discussing with a key server.
+ *  @constant   GPGErrorTruncatedKeyListing  This value means the crypto 
+ *                                           back-end had to truncate the result
+ *                                           of a key listing operation. Result 
+ *                                           is incomplete.
+ *  @constant   GPGErrorNotSupported         This value means that the operation
+ *                                           is not supported.
+ *  @constant   GPGErrorUser2&nbsp;-&nbsp;GPGErrorUser16
+ *                                           These error codes are not used by
+ *                                           any GnuPG component and can be
+ *                                           freely used by other software.
+ *                                           Applications using MacGPGME might
+ *                                           use them to mark specific errors
+ *                                           returned by callback handlers if no
+ *                                           suitable error codes (including the
+ *                                           system errors) for these errors
+ *                                           exist already.
+ */
 typedef enum {
     GPGErrorNoError                      =     0,
     GPGErrorGeneralError                 =     1,
@@ -512,45 +536,62 @@ typedef enum {
 } GPGErrorCode;
 
 
-/*"
- * The #GPGErrorSource type defines the different sources of errors/exceptions
- * used in MacGPGME. The error source has not a precisely defined meaning.
- * Sometimes it is the place where the error happened, sometimes it is the
- * place where an error was encoded into an error value. Usually the error
- * source will give an indication to where to look for the problem. This is
- * not always true, but it is attempted to achieve this goal.
- * _{GPG_UnknownErrorSource            Unknown error source}
- * _{GPG_GCryptErrorSource             Error comes from C library %gcrypt, which
- *                                     is used by crypto engines to perform
- *                                     cryptographic operations}
- * _{GPG_GPGErrorSource                Error comes from %GnuPG, which is the
- *                                     crypto engine used for the OpenPGP
- *                                     protocol}
- * _{GPG_GPGSMErrorSource              Error comes from %GPGSM, which is the
- *                                     crypto engine used for the CMS protocol}
- * _{GPG_GPGAgentErrorSource           Error comes from %gpg-agent, which is
- *                                     used by crypto engines to perform
- *                                     operations with the secret key}
- * _{GPG_PINEntryErrorSource           Error comes from %pinentry, which is used
- *                                     by %gpg-agent to query the passphrase to
- *                                     unlock a secret key}
- * _{GPG_SCDErrorSource                Error comes from the %{SmartCard Daemon},
- *                                     which is used by %gpg-agent to delegate
- *                                     operations with the secret key to a
- *                                     %SmartCard}
- * _{GPG_GPGMELibErrorSource           Error comes from C library %gpgme}
- * _{GPG_KeyBoxErrorSource             Error comes from %libkbx, a library used
- *                                     by the crypto engines to manage local
- *                                     key-rings}
- * _{GPG_KSBAErrorSource               Error comes from C library %libksba}
- * _{GPG_DirMngrErrorSource            Error comes from %DirMngr}
- * _{GPG_GSTIErrorSource               Error comes from %GSTI}
- * _{GPG_MacGPGMEFrameworkErrorSource  Error comes from MacGPGME framework}
- * _{GPG_User2ErrorSource              (reserved)}
- * _{GPG_User3ErrorSource              (reserved)}
- * _{GPG_User4ErrorSource              (reserved)}
- * Any other value smaller than 256 can be used for your own purpose.
-"*/
+/*!
+ *  @typedef    GPGErrorSource
+ *  @abstract   Defines the source of an error/exception.
+ *  @discussion The GPGErrorSource type defines the different sources of 
+ *              errors/exceptions used in MacGPGME. The error source has not a
+ *              precisely defined meaning. Sometimes it is the place where the
+ *              error happened, sometimes it is the place where an error was
+ *              encoded into an error value. Usually the error source will give
+ *              an indication to where to look for the problem. This is not
+ *              always true, but it is attempted to achieve this goal.
+ *
+ *              Any other value smaller than 256 can be used for your own 
+ *              purpose.
+ *  @constant   GPG_UnknownErrorSource           Unknown error source.
+ *  @constant   GPG_GCryptErrorSource            Error comes from C library 
+ *                                               <i>gcrypt</i>, which is used by
+ *                                               crypto engines to perform
+ *                                               cryptographic operations.
+ *  @constant   GPG_GPGErrorSource               Error comes from <i>GnuPG</i>,
+ *                                               which is the crypto engine used
+ *                                               for the OpenPGP protocol.
+ *  @constant   GPG_GPGSMErrorSource             Error comes from <i>GPGSM</i>,
+ *                                               which is the crypto engine used
+ *                                               for the CMS protocol.
+ *  @constant   GPG_GPGAgentErrorSource          Error comes from
+ *                                               <i>gpg-agent</i>, which is used
+ *                                               by crypto engines to perform 
+ *                                               operations with the secret key.
+ *  @constant   GPG_PINEntryErrorSource          Error comes from
+ *                                               <i>pinentry</i>, which is used
+ *                                               by <i>gpg-agent</i> to query
+ *                                               the passphrase to unlock a
+ *                                               secret key.
+ *  @constant   GPG_SCDErrorSource               Error comes from the 
+ *                                               <i>SmartCard Daemon</i>, which
+ *                                               is used by <i>gpg-agent</i> to
+ *                                               delegate operations with the
+ *                                               secret key to a
+ *                                               <i>SmartCard</i>.
+ *  @constant   GPG_GPGMELibErrorSource          Error comes from C library
+ *                                               <i>gpgme</i>.
+ *  @constant   GPG_KeyBoxErrorSource            Error comes from <i>libkbx</i>,
+ *                                               a library used by the crypto
+ *                                               engines to manage local
+ *                                               <i>key rings</i>.
+ *  @constant   GPG_KSBAErrorSource              Error comes from C library
+ *                                               <i>libksba</i>.
+ *  @constant   GPG_DirMngrErrorSource           Error comes from
+ *                                               <i>DirMngr</i>.
+ *  @constant   GPG_GSTIErrorSource              Error comes from <i>GSTI</i>.
+ *  @constant   GPG_MacGPGMEFrameworkErrorSource Error comes from 
+ *                                               <i>MacGPGME</i> framework.
+ *  @constant   GPG_User2ErrorSource             (reserved)
+ *  @constant   GPG_User3ErrorSource             (reserved)
+ *  @constant   GPG_User4ErrorSource             (reserved)
+ */
 typedef enum {
     GPG_UnknownErrorSource            =  0,
     GPG_GCryptErrorSource             =  1,
@@ -571,85 +612,155 @@ typedef enum {
 }GPGErrorSource;
 
 
-/*"
- * An error value like this has always two components, an error code and an
- * error source. Both together form the error value.
+/*!
+ *  @typedef    GPGError
+ *  @abstract   Indicates the type of an error or of a
+ *              <code>@link GPGException GPGException@/link</code> exception. 
+ *              Composed of an error code and an error source.
+ *  @discussion An error value like this has always two components, an error 
+ *              code and an error source. Both together form the error value.
  *
- * Thus, the error value can not be directly compared against an error code,
- * but the accessor functions #{GPGErrorSourceFromError()} and
- * #{GPGErrorCodeFromError()} must be used. However, it is guaranteed that
- * only 0 is used to indicate success (GPGErrorNoError), and that in this case
- * all other parts of the error value are set to 0, too.
+ *              Thus, the error value can not be directly compared against an 
+ *              error code, but the accessor functions <code>@link GPGErrorSourceFromError GPGErrorSourceFromError@/link</code>
+ *              and <code>@link GPGErrorCodeFromError GPGErrorCodeFromError@/link</code>
+ *              must be used. However, it is guaranteed that only 0 is used to
+ *              indicate success (<code>@link GPGErrorNoError GPGErrorNoError@/link</code>),
+ *              and that in this case all other parts of the error value are set
+ *              to 0, too.
  *
- * Note that in MacGPGME, the error source is used purely for diagnostical
- * purposes. Only the error code should be checked to test for a certain
- * outcome of a function. The manual only documents the error code part of an
- * error value. The error source is left unspecified and might be anything.
-"*/
+ *              Note that in MacGPGME, the error source is used purely for
+ *              diagnostical purposes. Only the error code should be checked to
+ *              test for a certain outcome of a function. The manual only
+ *              documents the error code part of an error value. The error
+ *              source is left unspecified and might be anything.
+ */
 typedef unsigned int	GPGError;
 
-/*"
- * Returns the (yet unlocalized) description of the error value (code).
- * This string can be used to output a diagnostic message to the user.
-"*/
+/*!
+ *  @function   GPGErrorDescription
+ *  @abstract   Returns the (yet unlocalized) description of an error.
+ *  @discussion This string can be used to output a diagnostic message to the 
+ *              user.
+ *  @param      error The error
+ */
 GPG_EXPORT NSString	*GPGErrorDescription(GPGError error);
 
 
-/*"
- * Returns the (yet unlocalized) name of the source of the error.
- * This string can be used to output a diagnostic message to the user.
-"*/
+/*!
+ *  @function   GPGErrorSourceDescription
+ *  @abstract   Returns the (yet unlocalized) name of an error source.
+ *  @discussion This string can be used to output a diagnostic message to the 
+ *              user.
+ *  @param      errorSource The error source
+ */
 GPG_EXPORT NSString *GPGErrorSourceDescription(GPGErrorSource errorSource);
 
-/*"
- * Returns the GPGErrorCode component of the error value err. This function
- * must be used to extract the error code from an error value in order to
- * compare it with the GPGError* error code values.
-"*/
+/*!
+ *  @function   GPGErrorCodeFromError
+ *  @abstract   Returns the code component of an error.
+ *  @discussion This function must be used to extract the error code of
+ *              <i>err</i> in order to compare it with the
+ *              <code>GPGError*</code> error code values.
+ *  @param      err The error
+ */
 GPG_EXPORT GPGErrorCode GPGErrorCodeFromError(GPGError err);
 
-/*"
- * Returns the GPGErrorSource component of the error value err. This function
- * must be used to extract the error source from an error value in order to
- * compare it with the GPG_*Source error source values.
-"*/
+/*!
+ *  @function   GPGErrorSourceFromError
+ *  @abstract   Returns the source component of an error.
+ *  @discussion This function must be used to extract the error source of
+ *              <i>err</i> in order to compare it with the
+ *              <code>GPG_*Source</code> error source values.
+ *  @param      err The error
+ */
 GPG_EXPORT GPGErrorSource GPGErrorSourceFromError(GPGError err);
 
-/*"
- * Returns the error value consisting of the error source src and the error
- * code cde.
- *
- * This function can be used in callback methods to construct an error value
- * to return it to the framework.
-"*/
+/*!
+ *  @function   GPGMakeError
+ *  @abstract   Returns the error value consisting of an error source and an 
+ *              error code.
+ *  @discussion This function can be used in callback methods to construct an 
+ *              error value to return it to the framework.
+ *  @param      src The error source
+ *  @param      cde The error code
+ */
 GPG_EXPORT GPGError GPGMakeError(GPGErrorSource src, GPGErrorCode cde);
 
-/*"
- * The function #{GPGMakeErrorFromErrno()} is like #{GPGMakeError()}, but it
- * takes a system error like errno instead of a #GPGErrorCode error code.
-"*/
+/*!
+ *  @function   GPGMakeErrorFromErrno
+ *  @abstract   Returns the error value consisting of an error source and a 
+ *              system error.
+ *  @discussion The function GPGMakeErrorFromErrno is like
+ *              <code>@link GPGMakeError GPGMakeError@/link</code>, 
+ *              but it takes a system error like <code>errno</code> instead of a
+*               <code>@link //macgpg/c/tdef/GPGErrorCode GPGErrorCode@/link</code>
+ *              error code.
+ *  @param      src The error source
+ *  @param      cde The system error code
+ */
 GPG_EXPORT GPGError GPGMakeErrorFromErrno(GPGErrorSource src, int cde);
 
-/*"
- * A #GPGException can be raised by nearly any MacGPGME call...
+/*!
+ *  @constant   GPGException
+ *  @abstract   Name of exceptions specific to MacGPGME framework.
+ *  @discussion A GPGException exception can be raised by nearly any MacGPGME
+ *              call.
  *
- * Reason: description of #GPGError.
+ *              Its <i>reason</i> contains the (unlocalized) description of
+ *              <code>@link GPGError GPGError@/link</code>.
  *
- * UserInfo:
- * _{GPGErrorKey  		     A #NSNumber containing a #GPGError value}
- * _{GPGContextKey    		 The #GPGContext which terminated with an error;
- *                           used by #{+[GPGContext waitOnAnyRequest:]} and
- *                           for errors on asynchronous operations}
- * _{GPGAdditionalReasonKey  An additional unlocalized error message;
- *                           optional}
-"*/
+ *              Its <i>userInfo</i> dictionary can contain the following keys:
+ *              <dl>
+ *              <dt><code>@link GPGErrorKey GPGErrorKey@/link</code></dt>
+ *              <dd>A NSNumber containing a <code>@link GPGError GPGError@/link</code>
+ *               value.</dd>
+ *              <dt><code>@link //macgpg/c/data/GPGContextKey GPGContextKey@/link</code></dt>
+ *              <dd>The <code>@link //macgpg/occ/cl/GPGContext GPGContext@/link</code>
+ *               object which terminated with an error; used by 
+ *               <code>@link //macgpg/occ/clm/GPGContext(GPGAsynchronousOperations)/waitOnAnyRequest: waitOnAnyRequest:@/link</code>
+ *               (GPGContext) and for errors on asynchronous operations.</dd>
+ *              <dt><code>@link GPGAdditionalReasonKey GPGAdditionalReasonKey@/link</code></dt>
+ *              <dd>An additional unlocalized error message; optional.</dd></dl>
+ */
 GPG_EXPORT NSString	* const GPGException;
+
+/*!
+ *  @constant   GPGErrorKey
+ *  @abstract   Key of a <i>userInfo</i> entry in a <code>@link GPGException GPGException@/link</code>
+ *              exception; value is a <code>@link //apple_ref/occ/cl/NSNumber NSNumber@/link</code>
+ *              wrapping a <code>@link GPGError GPGError@/link</code>.
+ */
 GPG_EXPORT NSString	* const GPGErrorKey;
+
+/*!
+ *  @constant   GPGAdditionalReasonKey
+ *  @abstract   Key of a <i>userInfo</i> entry in a <code>@link GPGException GPGException@/link</code>
+ *              exception; value is a <code>@link //apple_ref/occ/cl/NSString NSString@/link</code>
+ *              containing an additional unlocalized error message.
+ */
 GPG_EXPORT NSString * const	GPGAdditionalReasonKey;
 
 
+/*!
+ *  @category   NSException(GPGExceptions)
+ *  @abstract   Additions by MacGPGME framework to <code>@link //apple_ref/occ/cl/NSException NSException@/link</code>.
+ */
 @interface NSException(GPGExceptions)
-+ (NSException *) exceptionWithGPGError:(GPGError)error userInfo:(NSDictionary *)userInfo;
+/*!
+ *  @method     exceptionWithGPGError:userInfo:
+ *  @abstract   Returns a new <code>@link GPGException GPGException@/link</code> exception.
+ *  @discussion Returns a new <code>@link //apple_ref/occ/cl/NSException NSException@/link</code>
+ *              object with <i>name</i> <code>@link GPGException GPGException@/link</code>,
+ *              <i>reason</i> defined as <code>@link GPGErrorDescription GPGErrorDescription(error)@/link</code>,
+ *              and <i>userInfo</i> dictionary filled with <code>@link GPGErrorKey GPGErrorKey@/link</code>
+ *              = error and additional <i>userInfo</i>.
+ *
+ *              Used internally by the MacGPGME framework, and can be used by
+ *              delegates.
+ *  @param      error A <code>@link GPGError GPGError@/link</code> error
+ *  @param      additionalUserInfo Additional <i>userInfo</i> entries, or nil
+ */
++ (NSException *) exceptionWithGPGError:(GPGError)error userInfo:(NSDictionary *)additionalUserInfo;
 @end
 
 #ifdef __cplusplus

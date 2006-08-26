@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -34,20 +34,10 @@
 
 @implementation GPGObject
 
-/*"
- * This abstract class takes care of uniquing instances
- * against %gpgme internal structures. It is the base class for
- * all classes wrapping %gpgme structures.
-"*/
-
 static NSMapTable       *mapTable = NULL;
 static NSRecursiveLock	*mapTableLock = nil;
 
 + (void) initialize
-/*"
- * Initializes %gpgme library sub-systems and insures that Cocoa is ready for multithreading.
- * Can be invoked multiple times, initialization is done only once.
-"*/
 {
     [super initialize];
     if(mapTable == NULL){
@@ -57,7 +47,7 @@ static NSRecursiveLock	*mapTableLock = nil;
         mapTableLock = [[NSRecursiveLock alloc] init];
     
         // gpgme library uses pthreads; to avoid any problems with
-        // Foundation's NSThreads, we must ensure that that at least
+        // Foundation's NSThreads, we must ensure that at least
         // one NSThread has been created, that's why we create a dummy
         // thread before doing anything with gpgme.
         if(![NSThread isMultiThreaded]){
@@ -99,13 +89,6 @@ static NSRecursiveLock	*mapTableLock = nil;
 }
 
 - (id) initWithInternalRepresentation:(void *)aPtr
-/*"
- * Default initializer.
- *
- * All subclasses must call this method.
- * Can return another object than the one which received the message!
- * In this case the original object is released.
-"*/
 {
     BOOL	needsPointerUniquing = [[self class] needsPointerUniquing];
 
@@ -151,10 +134,6 @@ static NSRecursiveLock	*mapTableLock = nil;
 }
 
 - (void) dealloc
-/*"
- * #WARNING: %_internalRepresentation pointer MUST still be valid when
- * #{-[GPGObject dealloc]} method is called!!! It can be NULL though.
-"*/
 {
     if([[self class] needsPointerUniquing]){
         if(_internalRepresentation != NULL){

@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -36,56 +36,8 @@
 
 
 @implementation GPGData
-/*"
- * A lot of data has to be exchanged between the user and the crypto engine,
- * like plaintext messages, ciphertext, signatures and information about the
- * keys. The technical details about exchanging the data information are
- * completely abstracted by GPGME. The user provides and receives the data via
- * #GPGData instances, regardless of the communication protocol between GPGME
- * and the crypto engine in use. GPGData contains both data and meta-data, e.g.
- * file name.
- *
- * Data objects can be based on memory, files, or callback methods provided by
- * the user (data source). Not all operations are supported by all objects.
- *
- * #{Memory Based Data Buffers}
- *
- * Memory based data objects store all data in allocated memory.  This is
- * convenient, but only practical for an amount of data that is a fraction of
- * the available physical memory. The data has to be copied from its source
- * and to its destination, which can often be avoided by using one of the
- * other data object.
- * Here are the methods to initialize memory based data buffers:
- * _{-init }
- * _{-initWithData:}
- * _{-initWithDataNoCopy:}
- * _{-initWithContentsOfFile:}
- * _{-initWithContentsOfFile:atOffset:length:}
- *
- * #{File Based Data Buffers}
- *
- * File based data objects operate directly on file descriptors or streams.
- * Only a small amount of data is stored in core at any time, so the size of
- * the data objects is not limited by GPGME.
- * Here are the methods to initialize file based data buffers:
- * _{-initWithFileHandle:}
- *
- * #{Callback Based Data Buffers}
- *
- * If neither memory nor file based data objects are a good fit for your
- * application, you can provide a data source implementing
- * #{NSObject(GPGDataSource)} methods and create a data object with this data
- * source.
- * Here are the methods to initialize callback based data buffers:
- * _{-initWithDataSource: }
-"*/
 
 - (id) init
-/*"
- * Data is created without content and is memory based.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     gpgme_data_t	aData;
     gpgme_error_t	anError = gpgme_data_new(&aData);
@@ -100,11 +52,6 @@
 }
 
 - (id) initWithData:(NSData *)someData
-/*"
- * Copies someData's bytes.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     gpgme_data_t	aData;
     gpgme_error_t	anError = gpgme_data_new_from_mem(&aData, [someData bytes], [someData length], 1);
@@ -119,11 +66,6 @@
 }
 
 - (id) initWithDataNoCopy:(NSData *)someData
-/*"
- * Doesn't copy someData, but retains it.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     gpgme_data_t	aData;
     gpgme_error_t	anError = gpgme_data_new_from_mem(&aData, ([someData respondsToSelector:@selector(mutableBytes)] ? [(NSMutableData *)someData mutableBytes]:[someData bytes]), [someData length], 0);
@@ -238,15 +180,6 @@ static void releaseCallback(void *object)
 }
 
 - (id) initWithDataSource:(id)dataSource
-/*"
- * dataSource must implement some of the methods declared in
- * #{NSObject(GPGDataSource)} informal protocol. dataSource is not retained.
- * dataSource is invoked to read/write data on-demand, and it can
- * supply the data in any way it wants; this is the most flexible data type
- * GPGME provides.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     gpgme_data_t		aData;
     gpgme_error_t		anError;
@@ -281,12 +214,6 @@ static void releaseCallback(void *object)
 }
 
 - (id) initWithContentsOfFile:(NSString *)filename
-/*"
- * Immediately opens file named filename (which must be an absolute path) and
- * copies content into memory; then it closes file. File name is saved in data.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     gpgme_data_t	aData;
     gpgme_error_t	anError = gpgme_data_new_from_file(&aData, [filename fileSystemRepresentation], 1);
@@ -319,12 +246,6 @@ static void releaseCallback(void *object)
 }
 
 - (id) initWithContentsOfFile:(NSString *)filename atOffset:(unsigned long long)offset length:(unsigned long long)length
-/*"
- * Immediately opens file and copies partial content into memory; then it
- * closes file. File name is saved in data.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     // We don't provide a method to match the case where filename is NULL
     // and filePtr (FILE *) is not NULL (both arguments are exclusive),
@@ -347,16 +268,6 @@ static void releaseCallback(void *object)
 // Maybe in Panther with NSStream?
 
 - (id) initWithFileHandle:(NSFileHandle *)fileHandle
-/*"
- * Uses fileHandle to read from (if used as an input data object) and write to
- * (if used as an output data object). fileHandle is retained.
- *
- * When using the data object as an input buffer, the method might read a bit
- * more from the file handle than is actually needed by the crypto engine in
- * the desired operation because of internal buffering.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     gpgme_data_t	aData;
     gpgme_error_t	anError = gpgme_data_new_from_fd(&aData, [fileHandle fileDescriptor]);
@@ -429,9 +340,6 @@ static void releaseCallback(void *object)
 #endif
 
 - (GPGDataEncoding) encoding
-/*"
- * Returns the encoding of the data object.
-"*/
 {
     GPGDataEncoding	encoding = gpgme_data_get_encoding(_data);
 
@@ -439,11 +347,6 @@ static void releaseCallback(void *object)
 }
 
 - (void) setEncoding:(GPGDataEncoding)encoding
-/*"
- * Sets the encoding of the data object.
- *
- * Can raise a #GPGException.
-"*/
 {
     gpgme_error_t	anError = gpgme_data_set_encoding(_data, encoding);
 
@@ -452,15 +355,6 @@ static void releaseCallback(void *object)
 }
 
 - (unsigned long long) seekToFileOffset:(unsigned long long)offset offsetType:(GPGDataOffsetType)offsetType
-/*"
- * Sets the current position from where the next read or write starts in the
- * data object to offset, relativ to offsetType. Returns the resulting file
- * position, measured in bytes from the beginning of the data object. You can
- * use this feature together with #GPGDataCurrentPosition to read the current
- * read/write position.
- *
- * Can raise a #GPGException of type #{GPGError_E*}.
-"*/
 {
     off_t	newPosition = gpgme_data_seek(_data, offset, offsetType);
 
@@ -471,14 +365,6 @@ static void releaseCallback(void *object)
 }
 
 - (NSData *) readDataOfLength:(unsigned long long)length
-/*"
- * Reads up to length bytes and returns them wrapped in a #NSData. Reading
- * starts from the current position. Returned data has the appropriate size,
- * smaller or equal to length. Returns nil when there isn't anything more to
- * read (EOF).
- *
- * Can raise a #GPGException of type #{GPGError_E*}.
-"*/
 {
     NSMutableData	*readData = [NSMutableData dataWithLength:length];
     ssize_t			aReadLength = gpgme_data_read(_data, [readData mutableBytes], length);
@@ -493,12 +379,6 @@ static void releaseCallback(void *object)
 }
 
 - (unsigned long long) writeData:(NSData *)data
-/*"
- * Writes data bytes by copying them. Writing starts from the current
- * position. Returns the number of bytes written.
- *
- * Can raise a #GPGException of type #{GPGError_E*}.
-"*/
 {
     ssize_t writtenByteCount = gpgme_data_write(_data, [data bytes], [data length]);
     
@@ -509,10 +389,6 @@ static void releaseCallback(void *object)
 }
 
 - (NSString *) filename
-/*"
- * Return the filename associated with the data object, or nil if there is none
- * or if there is an error.
-"*/
 {
     const char	*aCString = gpgme_data_get_file_name(_data); // Returns original string -> make a copy
     
@@ -520,14 +396,6 @@ static void releaseCallback(void *object)
 }
 
 - (void) setFilename:(NSString *)filename
-/*"
- * Set the filename associated with the data object. The filename will be stored
- * in the output when encrypting or signing the data and will be returned to the
- * user when decrypting or verifying the output data.
- *
- * Can raise a #GPGException of type #GPGError_ENOMEM if not enough memory is 
- * available.
-"*/
 {
     const char      *aCString = (filename != nil ? [filename fileSystemRepresentation] : NULL);    
     gpgme_error_t	anError = gpgme_data_set_file_name(_data, aCString); // Will duplicate string
@@ -542,12 +410,6 @@ static void releaseCallback(void *object)
 @implementation GPGData(GPGExtensions)
 
 - (id) initWithString:(NSString *)string
-/*"
- * Convenience method. Gets data from string using UTF8 encoding, and invokes
- * #{-initWithData:}.
- *
- * Can raise a #GPGException; in this case, a #release is sent to self.
-"*/
 {
     NSData	*data = [string dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -555,17 +417,6 @@ static void releaseCallback(void *object)
 }
 
 - (NSString *) string
-/*"
- * Convenience method. Returns a copy of all data as string, using UTF8 string
- * encoding (or ISOLatin1 if it cannot be decoded as UTF8). It rewinds
- * receiver, then reads data until EOF, and returns a string initialized with
- * it.
- *
- * Invoking this method has sense only when you know that data corresponds to
- * a string!
- *
- * Can raise a #GPGException.
-"*/
 {
     NSData	*data = [self data];
 
@@ -573,19 +424,6 @@ static void releaseCallback(void *object)
 }
 
 - (unsigned long long) availableDataLength
-/*"
- * Returns the amount of bytes available without changing the read pointer.
- * This is not supported by all types of data objects.
- *
- * If this method is not supported, a #GPGException is raised, with error
- * #GPGErrorInvalidType.
- *
- * If end of data object is reached or no data is currently available, it
- * returns 0. To know if there are more bytes to read, you must invoke
- * #{-isAtEnd}.
- *
- * Can raise a #GPGException of type #{GPGError_E*}.
-"*/
 {
     ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
 
@@ -596,15 +434,6 @@ static void releaseCallback(void *object)
 }
 
 - (unsigned long long) length
-/*"
- * Convenience method. Returns length of all data. It rewinds receiver, then
- * reads available data length and returns it. Read pointer is reset.
- *
- * If this method is not supported, a #GPGException is raised, with error
- * #GPGErrorInvalidType.
- *
- * Can raise a #GPGException.
-"*/
 {
     [self rewind];
 
@@ -612,15 +441,6 @@ static void releaseCallback(void *object)
 }
 
 - (BOOL) isAtEnd
-/*"
- * Returns YES if there are no more bytes to read (EOF). Read pointer is not
- * moved.
- *
- * If this method is not supported, a #GPGException is raised, with error
- * #GPGErrorInvalidType.
- *
- * Can raise a #GPGException of type #{GPGError_E*}.
-"*/
 {
     ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
 
@@ -633,11 +453,6 @@ static void releaseCallback(void *object)
 }
 
 - (NSData *) availableData
-/*"
- * Returns a copy of data, read from current position, up to end of data.
- *
- * Can raise a #GPGException of type #{GPGError_E*}.
-"*/
 {
     size_t			bufferSize = NSPageSize();
     NSZone			*aZone = NSDefaultMallocZone();
@@ -660,15 +475,6 @@ static void releaseCallback(void *object)
 }
 
 - (NSData *) data
-/*"
- * Convenience method. Returns a copy of all data. It rewinds receiver, then
- * reads data until EOF, and returns it.
- *
- * If this method is not supported, a #GPGException is raised, with error
- * #GPGErrorInvalidType.
- *
- * Can raise a #GPGException.
-"*/
 {
     [self rewind];
 
@@ -676,12 +482,6 @@ static void releaseCallback(void *object)
 }
 
 - (void) rewind
-/*"
- * Prepares data in a way that the next call to #{-readDataOfLength:} or
- * #{-writeData:} starts at the beginning of the data.
- *
- * Can raise a #GPGException of type #{GPGError_E*}.
-"*/
 {
     off_t	newPosition = gpgme_data_seek(_data, 0, GPGDataStartPosition);
 
@@ -700,52 +500,3 @@ static void releaseCallback(void *object)
 }
 
 @end
-
-
-// We need to write this fake implementation (not compiled!)
-// just to force autodoc to take our comments in account!
-#ifdef FAKE_IMPLEMENTATION_FOR_AUTODOC
-@implementation NSObject(GPGDataSource)
-/*"
- * This category declares methods that need to be implemented by
- * #GPGData data sources. Data sources can be readable or writable.
-"*/
-- (NSData *) data:(GPGData *)data readDataOfLength:(unsigned long long)maxLength
-/*"
- * Reads up to maxLength bytes of data and returns it. Returning an empty data
- * or nil means that there is nothing more to read (EOF). Only required for
- * input data objects.
- *
- * Reading must be performed from the current position.
- *
- * In case of error, raise a #GPGException of type #{GPGError_E*}.
- *
- * Returned data will be copied.
-"*/
-{}
-
-- (unsigned long long) data:(GPGData *)data writeData:(NSData *)writeData
-/*"
- * Writes writeData from the current position. Returns the number of
- * bytes written. Only required for output data objects.
- *
- * In case of error, raise a #GPGException of type #{GPGError_E*}.
-"*/
-{}
-
-- (unsigned long long) data:(GPGData *)data seekToFileOffset:(unsigned long long)fileOffset offsetType:(GPGDataOffsetType)offsetType
-/*"
- * Changes the read/write position according to fileOffset and offsetType. Returns the new
- * absolute position. Optional method.
- *
- * In case of error, raise a #GPGException of type #{GPGError_E*}.
-"*/
-{}
-
-- (void) dataRelease:(GPGData *)data
-/*"
- * Releases internal resources owned by the data source. Optional method.
-"*/
-{}
-@end
-#endif

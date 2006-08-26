@@ -5,7 +5,7 @@
 //  Created by davelopper at users.sourceforge.net on Wed Oct 6 2004.
 //
 //
-//  Copyright (C) 2001-2005 Mac GPG Project.
+//  Copyright (C) 2001-2006 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,18 +32,6 @@
 
 
 @implementation GPGKeyGroup
-/*"
- * Key groups can be defined in gpg configuration file (gpg.conf). Those groups,
- * identified by names (name could be an email address for example, or anything
- * else), contain only keys, and cannot contain other groups.
- *
- * Groups can be used in place of keys only in encryption operations; they will
- * be expanded to their contained keys.
- *
- * Key groups are only for PGP keys. To obtain key groups, invoke 
- * -[GPGContext keyGroups]. If you want to create a new key group, invoke
- * +[GPGKeyGroup createKeyGroupNamed:withKeys:].
-"*/
 
 - (void) dealloc
 {
@@ -54,17 +42,11 @@
 }
 
 - (NSString *) name
-/*"
- * Returns the group name.
-"*/
 {
     return _name;
 }
 
 - (NSArray *) keys
-/*"
- * Returns the keys contained in the group.
-"*/
 {
     return _keys;
 }
@@ -75,13 +57,6 @@
 }
 
 + (id) createKeyGroupNamed:(NSString *)name withKeys:(NSArray *)keys
-/*"
- * Creates a new key group in gpg configuration file, overwriting any existing 
- * group with the same name. Group names can't be empty nor contain the equal
- * sign (=) or an end-of-line character (\n), and the starting and ending space 
- * characters are trimmed out; groups may have no key. Returns the newly created
- * key group.
-"*/
 {
     GPGOptions      *options;
     NSArray         *optionNames;
