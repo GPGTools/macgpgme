@@ -92,19 +92,26 @@ Documentation generation
 ========================
 HTML documentation can be generated automatically from code with HeaderDoc. For this you need to have a patched version of HeaderDoc 8.5.10. Why a patched version? Because the original version, which comes installed with Xcode 2.4, is broken in many aspects - read the headerdoc-dev mailing list archives for more info at http://lists.apple.com/archives/headerdoc-dev (for more information on the patch: http://lists.apple.com/archives/headerdoc-dev/2005/Dec/msg00001.html).
 
-curl -O http://www.sente.ch/pub/beta/HeaderDoc/HeaderDocPatches.zip
-curl -O http://www.sente.ch/pub/beta/HeaderDoc/HeaderDocPatches.zip.asc
-gpg --verify HeaderDocPatches.zip.asc
-unzip HeaderDocPatches.zip
+1) Make a folder somewhere sensble to keep everything and cd to that folder.
 
-curl -O http://www.opensource.apple.com/darwinsource/tarballs/apsl/headerdoc-8.5.10.tar.gz
-gnutar xzf headerdoc-8.5.10.tar.gz
-cd headerdoc-8.5.10
-patch -p1 < ../HeaderDoc.patch
-patch -p1 < ../Makefile.patch
-make
-sudo make realinstall
+2) Download and verify the patch archive:
+  curl -O http://www.sente.ch/pub/beta/HeaderDoc/HeaderDocPatches.zip
+  curl -O http://www.sente.ch/pub/beta/HeaderDoc/HeaderDocPatches.zip.asc
+  gpg --verify HeaderDocPatches.zip.asc
+  unzip HeaderDocPatches.zip
 
-The patched version will install files in /Library/Perl/5.8.6/Extras/HeaderDoc and /usr/local, whereas original HeaderDoc distribution remains intact in /System/Library/Perl/5.8.6/Extras/HeaderDoc and /usr/. To use it on the command line, ensure you have /usr/local/bin in your $PATH. Verify also that you don't have a (very) old version of HeaderDoc in /System/Library/Perl/5.8.6/darwin-thread-multi-2level/HeaderDoc (or something like that) - you should delete it.
+3) Use safari or your favourite browser to download the original headerDoc utility (you can't use curl as you first need to login with your ADC username and pasword) into the folder you created: http://www.opensource.apple.com/darwinsource/tarballs/apsl/headerdoc-8.5.10.tar.gz
+
+4) unarchive headerDoc and patch it:
+  gnutar xzf headerdoc-8.5.10.tar.gz
+  cd headerdoc-8.5.10
+  patch -p1 < ../HeaderDoc.patch
+  patch -p1 < ../Makefile.patch
+
+5) Install the patched HeaderDoc:
+  make
+  sudo make realinstall
+
+The patched version will install files in /Library/Perl/5.8.6/Extras/HeaderDoc and /usr/local, whereas original HeaderDoc distribution remains intact in /System/Library/Perl/5.8.6/Extras/HeaderDoc and /usr/. To use it on the command line, ensure you have /usr/local/bin in your $PATH (you can check this by typing: "echo $PATH" in Terminal and checking that "/usr/local/bin" is one of the listed paths). Verify also that you don't have a (very) old version of HeaderDoc in /System/Library/Perl/5.8.6/darwin-thread-multi-2level/HeaderDoc (or something like that) - you should delete it.
 
 Documentation is generated automatically each time yo compile MacGPGME; to avoid that, select the Run Script build phase of the MacGPGME target and display the Info panel: check the 'only on install' checkbox. Documentation is put into framework's Resources/English.lproj/Documentation folder.
