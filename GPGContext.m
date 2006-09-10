@@ -2111,7 +2111,8 @@ enum {
     // Executed in main thread
     NSMutableDictionary *aDict = [NSMutableDictionary dictionaryWithDictionary:passedOptions];
     
-    [aDict setObject:fetchedKeys forKey:@"_keys"];
+	if(fetchedKeys!=Nil) //only set the remaining patterns if the array is not nil
+		[aDict setObject:fetchedKeys forKey:@"_keys"];
     NSMapRemove(_helperPerContext, context);
     [[self class] performCommand:command forContext:context argument:[argument subarrayWithRange:NSMakeRange(1, [argument count] - 1)] serverOptions:aDict needsLocking:NO];
 }
