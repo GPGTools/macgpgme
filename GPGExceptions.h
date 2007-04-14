@@ -712,8 +712,8 @@ GPG_EXPORT GPGError GPGMakeErrorFromErrno(GPGErrorSource src, int cde);
  *              Its <i>userInfo</i> dictionary can contain the following keys:
  *              <dl>
  *              <dt><code>@link GPGErrorKey GPGErrorKey@/link</code></dt>
- *              <dd>A NSNumber containing a <code>@link GPGError GPGError@/link</code>
- *               value.</dd>
+ *              <dd>A <code>@link //apple_ref/occ/cl/NSNumber NSNumber@/link</code>
+ *              containing a <code>@link GPGError GPGError@/link</code> value.</dd>
  *              <dt><code>@link //macgpg/c/data/GPGContextKey GPGContextKey@/link</code></dt>
  *              <dd>The <code>@link //macgpg/occ/cl/GPGContext GPGContext@/link</code>
  *               object which terminated with an error; used by 
