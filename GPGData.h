@@ -217,7 +217,7 @@ typedef enum {
  *              exception; in this case, a <code>@link //apple_ref/occ/intfm/NSObject/release release@/link</code>
  *              is sent to self.
  */
-- (id) initWithContentsOfFile:(NSString *)filename atOffset:(unsigned long long)offset length:(unsigned long long)length;
+- (id) initWithContentsOfFile:(NSString *)filename atOffset:(off_t)offset length:(size_t)length;
 
 
 /*!
@@ -306,7 +306,7 @@ typedef enum {
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>) exception.
  */
-- (unsigned long long) seekToFileOffset:(unsigned long long)offset offsetType:(GPGDataOffsetType)offsetType;
+- (off_t) seekToFileOffset:(off_t)offset offsetType:(GPGDataOffsetType)offsetType;
 
 /*!
  *  @method     readDataOfLength:
@@ -321,7 +321,7 @@ typedef enum {
  *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>)
  *              exception.
  */
-- (NSData *) readDataOfLength:(unsigned long long)length;
+- (NSData *) readDataOfLength:(size_t)length;
 
 /*!
  *  @method     writeData:
@@ -333,7 +333,7 @@ typedef enum {
  *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>)
  *              exception.
  */
-- (unsigned long long) writeData:(NSData *)data;
+- (ssize_t) writeData:(NSData *)data;
 
 
 /*!
@@ -393,13 +393,13 @@ typedef enum {
 /*!
  *  @method     length
  *  @abstract   Returns length of all data.
- *  @discussion Convenience method. Returns length of all data. It rewinds
- *              receiver, then reads available data length and returns it. Read
- *              pointer is reset.
+ *  @discussion Convenience method. Returns length of all data. Though read
+ *              pointer is changed during computing, it is left unchanged on 
+ *              return.
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              exception.
  */
-- (unsigned long long) length;
+- (off_t) length;
 
 /*!
  *  @method     data
@@ -420,7 +420,7 @@ typedef enum {
  *              UTF8). It rewinds receiver, then reads data until EOF, and 
  *              returns a string initialized with it.
  *
- *              Invoking this method has sense only when you know that data 
+ *              Invoking this method makes sense only when you know that data 
  *              corresponds to a string!
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              exception.
@@ -438,24 +438,10 @@ typedef enum {
 - (NSData *) availableData;
 
 /*!
- *  @method     availableDataLength
- *  @abstract   Returns the amount of bytes available without changing the read 
- *              pointer.
- *  @discussion This is not supported by all types of data objects.
- *
- *              If end of data object is reached or no data is currently
- *              available, it returns 0. To know if there are more bytes to
- *              read, you must invoke <code>@link isAtEnd isAtEnd@/link</code>.
- *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
- *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>)
- *              exception.
- */
-- (unsigned long long) availableDataLength;
-
-/*!
  *  @method     isAtEnd
  *  @abstract   Returns YES if there are no more bytes to read (EOF).
- *  @discussion Read pointer is not moved.
+ *  @discussion Convenience method. Though read pointer is changed during 
+ *              computing, it is left unchanged on return.
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>)
  *              exception.
@@ -503,7 +489,7 @@ typedef enum {
  *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>)
  *              exception in case of error.
  */
-- (NSData *) data:(GPGData *)data readDataOfLength:(unsigned int)maxLength;
+- (NSData *) data:(GPGData *)data readDataOfLength:(unsigned long)maxLength;
 
 /*!
  *  @method     data:writeData:
@@ -516,7 +502,7 @@ typedef enum {
  *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>)
  *              exception in case of error.
  */
-- (unsigned long long) data:(GPGData *)data writeData:(NSData *)writeData;
+- (unsigned long) data:(GPGData *)data writeData:(NSData *)writeData;
 
 /*!
  *  @method     data:seekToFileOffset:offsetType:
@@ -530,7 +516,7 @@ typedef enum {
  *              (<code>@link //macgpg/c/econst/GPGError_E* GPGError_E*@/link</code>)
  *              exception in case of error.
  */
-- (unsigned long long) data:(GPGData *)data seekToFileOffset:(unsigned long long)fileOffset offsetType:(GPGDataOffsetType)offsetType;
+- (long long) data:(GPGData *)data seekToFileOffset:(long long)fileOffset offsetType:(GPGDataOffsetType)offsetType;
 
 /*!
  *  @method     dataRelease:

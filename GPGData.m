@@ -122,8 +122,8 @@ static ssize_t readCallback(void *object, void *destinationBuffer, size_t destin
 static ssize_t writeCallback(void *object, const void *buffer, size_t size)
 {
     // Returns the number of bytes written, or -1 on error. Sets errno in case of error.
-    unsigned long long	writeLength = 0;
-    NSData				*data = [NSData dataWithBytesNoCopy:(void *)buffer length:size freeWhenDone:NO];
+    ssize_t writeLength = 0;
+    NSData	*data = [NSData dataWithBytesNoCopy:(void *)buffer length:size freeWhenDone:NO];
 
     NS_DURING
         writeLength = [((GPGData *)object)->_objectReference data:((GPGData *)object) writeData:data];
@@ -187,7 +187,7 @@ static void releaseCallback(void *object)
 
     NSParameterAssert(dataSource != nil);
 
-    callbacks = (gpgme_data_cbs_t)NSZoneMalloc([self zone], sizeof(struct gpgme_data_cbs));
+    callbacks = (gpgme_data_cbs_t)NSZoneCalloc([self zone], 1, sizeof(struct gpgme_data_cbs));
     if([dataSource respondsToSelector:@selector(data:readDataOfLength:)])
         callbacks->read = readCallback;
     if([dataSource respondsToSelector:@selector(data:writeData:)])
@@ -245,7 +245,7 @@ static void releaseCallback(void *object)
     return self;
 }
 
-- (id) initWithContentsOfFile:(NSString *)filename atOffset:(unsigned long long)offset length:(unsigned long long)length
+- (id) initWithContentsOfFile:(NSString *)filename atOffset:(off_t)offset length:(size_t)length
 {
     // We don't provide a method to match the case where filename is NULL
     // and filePtr (FILE *) is not NULL (both arguments are exclusive),
@@ -354,7 +354,7 @@ static void releaseCallback(void *object)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
 }
 
-- (unsigned long long) seekToFileOffset:(unsigned long long)offset offsetType:(GPGDataOffsetType)offsetType
+- (off_t) seekToFileOffset:(off_t)offset offsetType:(GPGDataOffsetType)offsetType
 {
     off_t	newPosition = gpgme_data_seek(_data, offset, offsetType);
 
@@ -364,7 +364,7 @@ static void releaseCallback(void *object)
     return newPosition;
 }
 
-- (NSData *) readDataOfLength:(unsigned long long)length
+- (NSData *) readDataOfLength:(size_t)length
 {
     NSMutableData	*readData = [NSMutableData dataWithLength:length];
     ssize_t			aReadLength = gpgme_data_read(_data, [readData mutableBytes], length);
@@ -378,7 +378,7 @@ static void releaseCallback(void *object)
     return readData;
 }
 
-- (unsigned long long) writeData:(NSData *)data
+- (ssize_t) writeData:(NSData *)data
 {
     ssize_t writtenByteCount = gpgme_data_write(_data, [data bytes], [data length]);
     
@@ -418,38 +418,64 @@ static void releaseCallback(void *object)
 
 - (NSString *) string
 {
-    NSData	*data = [self data];
-
-    return GPGStringFromChars([data bytes]);
+    NSData      *data = [self data];
+    unsigned    dataLength = [data length];
+    
+    if(dataLength > 0){
+        // Ensure byte buffer is 0-terminated
+        const char  *dataBytes = [data bytes];
+        
+        if(dataBytes[dataLength - 1] != 0){
+            NSMutableData   *newData = [data mutableCopy];
+            NSString        *aString;
+            
+            [newData setLength:dataLength + 1];
+            ((char *)[newData mutableBytes])[dataLength] = 0;
+            
+            aString = GPGStringFromChars([newData bytes]);
+            [newData release];
+            
+            return aString;
+        }
+        else
+            return GPGStringFromChars(dataBytes);
+    }
+    else
+        return @"";
 }
 
-- (unsigned long long) availableDataLength
+- (off_t) length
 {
-    ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
-
-    if(availableDataLength < 0)
+    off_t   currentPos;
+    off_t   length;
+    
+    currentPos = gpgme_data_seek(_data, 0, GPGDataCurrentPosition);    
+    if(currentPos < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+    length = gpgme_data_seek(_data, 0, GPGDataEndPosition);
+    if(length < 0)
         [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
 
-    return availableDataLength;
-}
-
-- (unsigned long long) length
-{
-    [self rewind];
-
-    return [self availableDataLength];
+    NSAssert(gpgme_data_seek(_data, currentPos, GPGDataStartPosition) == currentPos, @"Unable to go back to original position!");
+    
+    return length;
 }
 
 - (BOOL) isAtEnd
 {
-    ssize_t	availableDataLength = gpgme_data_read(_data, NULL, 0);
-
-    if(availableDataLength < 0)
-        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
-    else if(availableDataLength == 0)
-        return YES;
+    off_t   currentPos;
+    off_t   length;
     
-    return NO;
+    currentPos = gpgme_data_seek(_data, 0, GPGDataCurrentPosition);    
+    if(currentPos < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+    length = gpgme_data_seek(_data, 0, GPGDataEndPosition);
+    if(length < 0)
+        [[NSException exceptionWithGPGError:gpgme_err_make_from_errno(GPG_MacGPGMEFrameworkErrorSource, errno) userInfo:nil] raise];
+
+    NSAssert(gpgme_data_seek(_data, currentPos, GPGDataStartPosition) == currentPos, @"Unable to go back to original position!");
+    
+    return currentPos == length;
 }
 
 - (NSData *) availableData
