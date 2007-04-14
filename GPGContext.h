@@ -656,7 +656,7 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              If last operation was a <b>decryption</b> operation, dictionary 
  *              can contain:<dl>
  *              <dt><code>\@"unsupportedAlgorithm"</code></dt>
- *              <dd>An string describing the algorithm used for encryption, 
+ *              <dd>A string describing the algorithm used for encryption, 
  *               which is not known by the engine for decryption.</dd>
  *              <dt><code>\@"wrongKeyUsage"</code></dt>
  *              <dd>A boolean result as a <code>@link //apple_ref/occ/cl/NSNumber NSNumber@/link</code>
@@ -1324,7 +1324,7 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              the crypto engine used by the context. Here's an example for
  *              GnuPG as the crypto engine:<dl>
  *              <dt><code>\@"type"</code></dt>
- *              <dd>algorithm number or name</dd>
+ *              <dd>Algorithm number or name. See <code>@link //macgpg/c/tdef/GPGPublicKeyAlgorithm GPGPublicKeyAlgorithm@/link</code></dd>
  *              <dt><code>\@"length"</code></dt>
  *              <dd>Key length in bits as a <code>@link //apple_ref/occ/cl/NSNumber NSNumber@/link</code></dd>
  *              <dt><code>\@"subkeyType"</code></dt>
