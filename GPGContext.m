@@ -130,7 +130,7 @@ static void progressCallback(void *object, const char *description, int type, in
 
 + (void) initialize
 {
-    [super initialize];
+    // Do not call super - see +initialize documentation
     if(_helperPerContextLock == nil){
         _helperPerContextLock = [[NSLock alloc] init];
         _helperPerContext = NSCreateMapTable(NSObjectMapKeyCallBacks, NSObjectMapValueCallBacks, 3);
@@ -1024,7 +1024,7 @@ static void progressCallback(void *object, const char *description, int type, in
         while(invalidKeys != NULL){
             GPGKey	*aKey = [self _keyWithFpr:invalidKeys->fpr fromKeys:keys]; // fpr or keyID!
 
-#warning FIXME Workaround for bug in <= gpgme 1.1.3 - invalidKeys might contains recipient keys, not signer keys => invalidKeys not in keys
+#warning FIXME Workaround for bug in <= gpgme 1.1.4 - invalidKeys might contains recipient keys, not signer keys => invalidKeys not in keys
             if(aKey != nil){
                 if([keyErrors objectForKey:aKey] != nil)
                     NSLog(@"### Does not support having more than one error per key. Ignoring error %u (%@) for key %@", invalidKeys->reason, GPGErrorDescription(invalidKeys->reason), aKey);
@@ -2216,12 +2216,16 @@ enum {
         // Should we pass error back to result?
         if([[localException name] isEqualToString:GPGException])
             resultError = [[[localException userInfo] objectForKey:GPGErrorKey] unsignedIntValue];
-        else
+        else{
+            [keyData release];
+            [savedOperationData release];
             [localException raise];
+        }
     NS_ENDHANDLER
     [keyData release];
     _operationMask |= savedOperationMask;
     [_operationData addEntriesFromDictionary:savedOperationData];
+    [savedOperationData release];
 
     return resultError;
 }
