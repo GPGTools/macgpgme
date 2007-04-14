@@ -39,7 +39,7 @@ static NSRecursiveLock	*mapTableLock = nil;
 
 + (void) initialize
 {
-    [super initialize];
+    // Do not call super - see +initialize documentation
     if(mapTable == NULL){
         NSString    *aPath;
         
