@@ -505,7 +505,7 @@ static void progressCallback(void *object, const char *description, int type, in
                 
                 if(recipients->status == GPGErrorNoError){
                     aKey = [aContext keyFromFingerprint:aKeyID secretKey:YES];
-                    NSAssert1(aKey != nil, @"### Unable to find decryption secret key %s?!", recipients->keyid); // FIXME It may happen that assertion fails! See with Martin B. - due to agent and NFS?
+                    NSAssert1(aKey != nil, @"### Unable to find decryption secret key %s?!", recipients->keyid); // FIXME: It may happen that assertion fails! See with Martin B. - due to agent and NFS?
                 }
                 else{
                     aKey = [aContext keyFromFingerprint:aKeyID secretKey:NO];
@@ -1008,7 +1008,7 @@ static void progressCallback(void *object, const char *description, int type, in
         if([[aKey fingerprint] isEqualToString:aFingerprint] || [[aKey keyID] isEqualToString:aFingerprint])
             return aKey;
 
-#warning FIXME Workaround for bug in gpgme
+#warning FIXME: Workaround for bug in gpgme
 //    [NSException raise:NSInternalInconsistencyException format:@"### Unable to find key matching %s among %@", fpr, keys];
 
     return nil;
@@ -1024,7 +1024,7 @@ static void progressCallback(void *object, const char *description, int type, in
         while(invalidKeys != NULL){
             GPGKey	*aKey = [self _keyWithFpr:invalidKeys->fpr fromKeys:keys]; // fpr or keyID!
 
-#warning FIXME Workaround for bug in <= gpgme 1.1.4 - invalidKeys might contains recipient keys, not signer keys => invalidKeys not in keys
+#warning FIXME: Workaround for bug in <= gpgme 1.1.4 - invalidKeys might contains recipient keys, not signer keys => invalidKeys not in keys
             if(aKey != nil){
                 if([keyErrors objectForKey:aKey] != nil)
                     NSLog(@"### Does not support having more than one error per key. Ignoring error %u (%@) for key %@", invalidKeys->reason, GPGErrorDescription(invalidKeys->reason), aKey);
@@ -1253,7 +1253,7 @@ static void progressCallback(void *object, const char *description, int type, in
     GPGKey              *aKey;
     
     while((aKey = [keyEnum nextObject]))
-        // FIXME No difference between secret and public keys
+        // FIXME: No difference between secret and public keys
         [convertedDictionary setObject:[dictionary objectForKey:aKey] forKey:[aKey fingerprint]];
     
     return convertedDictionary;
@@ -1368,8 +1368,10 @@ static void progressCallback(void *object, const char *description, int type, in
     anError = gpgme_op_genkey(_context, [xmlString UTF8String], [publicKeyData gpgmeData], [secretKeyData gpgmeData]);
     [self setOperationMask:KeyGenerationOperation];
     [_operationData setObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey];
-    if(anError != GPG_ERR_NO_ERROR)
+    if(anError != GPG_ERR_NO_ERROR){
+        NSLog(@"%@", xmlString);
         [[NSException exceptionWithGPGError:anError userInfo:[NSDictionary dictionaryWithObject:[xmlString autorelease] forKey:@"XML"]] raise];
+    }
     [xmlString release];
 
     operationResults = [self operationResults];
@@ -1396,9 +1398,9 @@ static void progressCallback(void *object, const char *description, int type, in
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     deletedKeyFingerprints = [NSArray arrayWithObject:aFingerprint];
     [_operationData setObject:deletedKeyFingerprints forKey:@"deletedKeyFingerprints"];
-#warning TODO We should mark GPGKey as deleted, and it would raise an exception on any method invocation
+    // TODO: We should mark GPGKey as deleted, and it would raise an exception on any method invocation
     [[NSNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, GPGContextKey, deletedKeyFingerprints, @"deletedKeyFingerprints", nil]];
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:GPGImportDeletedKeyMask] forKey:aFingerprint] forKey:GPGChangesKey]]; // FIXME No difference between secret and public keys
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGKeyringChangedNotification object:nil userInfo:[NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:GPGImportDeletedKeyMask] forKey:aFingerprint] forKey:GPGChangesKey]]; // FIXME: No difference between secret and public keys
     [aFingerprint release];
 }
 
@@ -1632,7 +1634,7 @@ enum {
             
             if(tryEmbeddedOnes){
                 // Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
-#warning FIXME Embed gpgkeys_* 1.2 binaries (backwards compatible)
+#warning FIXME: Embed gpgkeys_* 1.2 binaries (backwards compatible)
                 launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
                 if(!launchPath || ![[NSFileManager defaultManager] fileExistsAtPath:launchPath]){
                     [gpgOptions release];
@@ -1661,7 +1663,7 @@ enum {
 			[aTask setArguments:[NSArray arrayWithObject:@"-V"]]; // Get version
 			anOutputPipe = [NSPipe pipe];
 			[aTask setStandardOutput:[anOutputPipe fileHandleForWriting]];
-			[aTask launch]; // FIXME Shouldn't we do that asynchronously too?
+			[aTask launch]; // FIXME: Shouldn't we do that asynchronously too?
 			// Output is on 2 lines: first contains format version,
 			// second contains executable version; we are interested only in format version,
 			// and reading first 2 bytes should be enough. If we use -readDataToEndOfFile
@@ -1817,7 +1819,6 @@ enum {
         [[inputPipe fileHandleForWriting] closeFile];
         [gpgOptions release];
         [commandString release];
-        [helper->taskHandlerLock unlock];
         [helper release];
         [[theContext operationData] setObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey];
         NSMapRemove(_helperPerContext, theContext);
@@ -1906,11 +1907,11 @@ enum {
         NSMapRemove(_helperPerContext, context);
         [self autorelease];
         [_helperPerContextLock unlock];
-        [taskHandlerLock unlock];
+        // taskHandlerLock is not locked at that time
         [localException raise];
     NS_ENDHANDLER
     
-    [taskHandlerLock unlock];
+    // taskHandlerLock is not locked at that time
     if(aNotification != nil){
         NSMapRemove(_helperPerContext, context);
         [_helperPerContextLock unlock];
@@ -2111,7 +2112,7 @@ enum {
     // Executed in main thread
     NSMutableDictionary *aDict = [NSMutableDictionary dictionaryWithDictionary:passedOptions];
     
-	if(fetchedKeys!=Nil) //only set the remaining patterns if the array is not nil
+	if(fetchedKeys != nil) //only set the remaining patterns if the array is not nil
 		[aDict setObject:fetchedKeys forKey:@"_keys"];
     NSMapRemove(_helperPerContext, context);
     [[self class] performCommand:command forContext:context argument:[argument subarrayWithRange:NSMakeRange(1, [argument count] - 1)] serverOptions:aDict needsLocking:NO];
@@ -2130,12 +2131,12 @@ enum {
 - (void) handleResultsIfPossible
 {
     // WARNING: might be executed in a secondary thread
-    BOOL    handleResults;
+    BOOL    lockCondition;
     
     [taskHandlerLock lock];
-    handleResults = ([taskHandlerLock condition] == 1);
-    [taskHandlerLock unlockWithCondition:[taskHandlerLock condition] - 1];
-    if(handleResults)
+    lockCondition = [taskHandlerLock condition];
+    [taskHandlerLock unlockWithCondition:lockCondition - 1];
+    if(lockCondition == 1)
         [self handleResults];
 }
 
@@ -2181,7 +2182,7 @@ enum {
 
 - (void) asyncSearchForKeysMatchingPatterns:(NSArray *)searchPatterns serverOptions:(NSDictionary *)options
 {
-    // TODO Add support for multiple keyservers: combine results, and stop when all tasks stopped
+    // TODO: Add support for multiple keyservers: combine results, and stop when all tasks stopped
     NSParameterAssert(searchPatterns != nil && [searchPatterns count] > 0);
 
     if([self protocol] != GPGOpenPGPProtocol)
