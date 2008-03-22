@@ -14,7 +14,7 @@ ifeq ($(GNUSTEP_SYSTEM_ROOT),)
 else
 
 FRAMEWORK_NAME = MacGPGME
-MacGPGME_CURRENT_VERSION_NAME = 1.1.3
+MacGPGME_CURRENT_VERSION_NAME = 1.1.4
 
 MacGPGME_OBJC_FILES = GPGContext.m GPGData.m GPGEngine.m GPGExceptions.m \
            GPGKey.m GPGKeySignature.m GPGObject.m GPGPrettyInfo.m \

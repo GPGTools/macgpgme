@@ -1,73 +1,38 @@
 gpgme library
 =============
 
-*** WARNING These instructions are for MacOS X >= 10.3.x, and will NOT work as-is for 10.2 ***
+*** WARNING These instructions are for MacOS X 10.5.x, and will NOT work as-is for previous versions ***
 
-In order to build this framework, you need gpgme 1.1.2 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.2), and libgpg-error 1.2, as well as libintl. These instructions show you how to build these libraries as static libraries, and not dynamic ones; this way you have no problem when installing your framework (not other dependency than framework's).
+In order to build this framework, you need gpgme 1.1.4 or greater installed (and whatever version of GnuPG that requires; currently >= 1.2.2), and libgpg-error 1.6. These instructions show you how to build these libraries as static libraries, and not dynamic ones; this way you have no problem when installing your framework (not other dependency than framework's).
 
 To download and install it, proceed like this:
 
-# Since gpgme 1.1.1, we also need libintl, which is not installed on OSX - let download and install a static lib
-# FIXME Maybe we can always use gnupg intl distribution
-curl -O ftp://sunsite.cnlab-switch.ch/gettext/gettext-0.14.5.tar.gz
-curl -O ftp://sunsite.cnlab-switch.ch/gettext/gettext-0.14.5.tar.gz.sig
-gpg --verify gettext-0.14.5.tar.gz.sig
-gnutar xzf gettext-0.14.5.tar.gz
-cd gettext-0.14.5/gettext-runtime
 
-# For Universal Binaries:
-env CFLAGS="-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc" \
-    ./configure --disable-shared --disable-dependency-tracking --disable-libasprintf --disable-csharp
-mv libtool libtool-original
-sed 's,/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/../../../ ,/Developer/SDKs/MacOSX10.4u.sdk&,;s, /usr/lib",/Developer/SDKs/MacOSX10.4u.sdk&,' < libtool-original > libtool
-sudo make install
+libgpg-error
+------------
+curl -O ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.6.tar.bz2
+curl -O ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.6.tar.bz2.sig
+gpg --verify libgpg-error-1.6.tar.bz2.sig
+gnutar xjf libgpg-error-1.6.tar.bz2
+cd libgpg-error-1.6
 
-# Else, for normal build:
-./configure --disable-shared --disable-dependency-tracking --disable-libasprintf --disable-csharp
+env CFLAGS="-isysroot /Developer/SDKs/MacOSX10.5.sdk -arch ppc -arch i386" \
+    ./configure --disable-shared --disable-dependency-tracking
 sudo make install
 
 cd ..
 
-curl -O ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.2.tar.bz2
-curl -O ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.2.tar.bz2.sig
-gpg --verify libgpg-error-1.2.tar.bz2.sig
-gnutar xjf libgpg-error-1.2.tar.bz2
-cd libgpg-error-1.2
 
-# For Universal Binaries:
-env CFLAGS="-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386 -I/usr/local/include" \
-    LDFLAGS="-L/usr/local/lib -lintl -framework CoreFoundation" \
-    ./configure --disable-shared --disable-dependency-tracking --with-libintl-prefix=/usr/local
-mv libtool libtool-original
-sed 's,/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/../../../ ,/Developer/SDKs/MacOSX10.4u.sdk&,;s, /usr/lib",/Developer/SDKs/MacOSX10.4u.sdk&,' < libtool-original > libtool
-sudo make install
+gpgme
+-----
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.1.4.tar.bz2
+curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.1.4.tar.bz2.sig
+gpg --verify gpgme-1.1.4.tar.bz2.sig
+gnutar xjf gpgme-1.1.4.tar.bz2
+cd gpgme-1.1.4
 
-# Else, for normal build:
-env CFLAGS="-I/usr/local/include" \
-    LDFLAGS="-L/usr/local/lib -lintl -framework CoreFoundation" \
-    ./configure --disable-shared --disable-dependency-tracking --with-libintl-prefix=/usr/local
-sudo make install
-
-cd ..
-
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.1.2.tar.bz2
-curl -O ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-1.1.2.tar.bz2.sig
-gpg --verify gpgme-1.1.2.tar.bz2.sig
-gnutar xjf gpgme-1.1.2.tar.bz2
-cd gpgme-1.1.2
-
-# For Universal Binaries:
-env CFLAGS="-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc -I/usr/local/include" \
-    LDFLAGS="-L/usr/local/lib -lintl -framework CoreFoundation" \
-    ./configure --disable-shared --disable-dependency-tracking --with-gpg-error-prefix=/usr/local --with-gpg=/usr/local/bin/gpg --without-pth
-mv libtool libtool-original
-sed 's,/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/../../../ ,/Developer/SDKs/MacOSX10.4u.sdk&,;s, /usr/lib",/Developer/SDKs/MacOSX10.4u.sdk&,' < libtool-original > libtool
-sudo make install
-
-# Else, for normal build:
-env CFLAGS="-I/usr/local/include" \
-    LDFLAGS="-L/usr/local/lib -lintl -framework CoreFoundation" \
-    ./configure --disable-shared --disable-dependency-tracking --with-gpg-error-prefix=/usr/local --with-gpg=/usr/local/bin/gpg --without-pth
+env CFLAGS="-isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386 -arch ppc" \
+    ./configure --enable-static --disable-shared --disable-dependency-tracking --with-gpg-error-prefix=/usr/local --with-gpg=/usr/local/bin/gpg --without-pth --disable-glibtest
 sudo make install
 
 cd ..
@@ -88,11 +53,11 @@ If you prefer to have a standalone installed version of MacGPGME.framework (why 
 (Why? It's really hard to create a portable access path to ~/Library/Frameworks. Very easy to create one to /Library/Frameworks)
 
 
-Documentation generation
+Documentation generation (NOT VALID YET ON 10.5 - ONLY FOR 10.4)
 ========================
 HTML documentation can be generated automatically from code with HeaderDoc. For this you need to have a patched version of HeaderDoc 8.5.10. Why a patched version? Because the original version, which comes installed with Xcode 2.4, is broken in many aspects - read the headerdoc-dev mailing list archives for more info at http://lists.apple.com/archives/headerdoc-dev (for more information on the patch: http://lists.apple.com/archives/headerdoc-dev/2005/Dec/msg00001.html).
 
-1) Make a folder somewhere sensble to keep everything and cd to that folder.
+1) Make a folder somewhere sensible to keep everything and cd to that folder.
 
 2) Download and verify the patch archive:
   curl -O http://www.sente.ch/pub/beta/HeaderDoc/HeaderDocPatches.zip
@@ -100,7 +65,7 @@ HTML documentation can be generated automatically from code with HeaderDoc. For 
   gpg --verify HeaderDocPatches.zip.asc
   unzip HeaderDocPatches.zip
 
-3) Use safari or your favourite browser to download the original headerDoc utility (you can't use curl as you first need to login with your ADC username and pasword) into the folder you created: http://www.opensource.apple.com/darwinsource/tarballs/apsl/headerdoc-8.5.10.tar.gz
+3) Use Safari or your favourite browser to download the original headerDoc utility (you can't use curl as you first need to login with your ADC username and pasword) into the folder you created: http://www.opensource.apple.com/darwinsource/tarballs/apsl/headerdoc-8.5.10.tar.gz
 
 4) unarchive headerDoc and patch it:
   gnutar xzf headerdoc-8.5.10.tar.gz
@@ -114,4 +79,4 @@ HTML documentation can be generated automatically from code with HeaderDoc. For 
 
 The patched version will install files in /Library/Perl/5.8.6/Extras/HeaderDoc and /usr/local, whereas original HeaderDoc distribution remains intact in /System/Library/Perl/5.8.6/Extras/HeaderDoc and /usr/. To use it on the command line, ensure you have /usr/local/bin in your $PATH (you can check this by typing: "echo $PATH" in Terminal and checking that "/usr/local/bin" is one of the listed paths). Verify also that you don't have a (very) old version of HeaderDoc in /System/Library/Perl/5.8.6/darwin-thread-multi-2level/HeaderDoc (or something like that) - you should delete it.
 
-Documentation is generated automatically each time yo compile MacGPGME; to avoid that, select the Run Script build phase of the MacGPGME target and display the Info panel: check the 'only on install' checkbox. Documentation is put into framework's Resources/English.lproj/Documentation folder.
+Documentation is generated automatically each time you compile MacGPGME; to avoid that, select the Run Script build phase of the MacGPGME target and display the Info panel: check the 'only on install' checkbox. Documentation is put into framework's Resources/English.lproj/Documentation folder.

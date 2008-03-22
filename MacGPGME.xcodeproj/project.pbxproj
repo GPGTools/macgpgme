@@ -12,6 +12,9 @@
 		4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B6855E7087F4A6B00859ACB /* GPGRemoteUserID.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */; };
 		4B6856FD088004DA00859ACB /* GPGKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6856FC088004DA00859ACB /* GPGKeyDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		551DF4390B2886CF0061FE17 /* MacGPGMETestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */; };
+		551DF47B0B288DBF0061FE17 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
+		551DF5010B288E5C0061FE17 /* MacGPGME.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
 		5543FA93071493C4009979E9 /* GPGKeyGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 5543FA91071493C4009979E9 /* GPGKeyGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5543FA94071493C4009979E9 /* GPGKeyGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 5543FA92071493C4009979E9 /* GPGKeyGroup.m */; };
 		5543FB080714A339009979E9 /* MacGPGME.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
@@ -31,7 +34,6 @@
 		554B559E069F0111005E1C92 /* GPGKeySignature.h in Headers */ = {isa = PBXBuildFile; fileRef = 55627BD203BB4FD000000001 /* GPGKeySignature.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		554B559F069F0111005E1C92 /* GPGUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = 55627BD603BC654000000001 /* GPGUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		554B55A0069F0111005E1C92 /* GPGSubkey.h in Headers */ = {isa = PBXBuildFile; fileRef = 551033F104C1912B00000001 /* GPGSubkey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B55A1069F0111005E1C92 /* GPGOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 551033F704C1991800000001 /* GPGOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		554B55A2069F0111005E1C92 /* GPGAsyncHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */; };
 		554B55A4069F0111005E1C92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		554B55A5069F0111005E1C92 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F55CD03802D65F6201C07EFC /* Localizable.strings */; };
@@ -48,10 +50,8 @@
 		554B55B4069F0111005E1C92 /* GPGKeySignature.m in Sources */ = {isa = PBXBuildFile; fileRef = 55627BD303BB4FD000000001 /* GPGKeySignature.m */; };
 		554B55B5069F0111005E1C92 /* GPGUserID.m in Sources */ = {isa = PBXBuildFile; fileRef = 55627BD703BC654000000001 /* GPGUserID.m */; };
 		554B55B6069F0111005E1C92 /* GPGSubkey.m in Sources */ = {isa = PBXBuildFile; fileRef = 551033F204C1912B00000001 /* GPGSubkey.m */; };
-		554B55B7069F0111005E1C92 /* GPGOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 551033F804C1991800000001 /* GPGOptions.m */; };
 		554B55B8069F0111005E1C92 /* GPGAsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */; };
 		554B55BA069F0111005E1C92 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
-		554B55DA069F0245005E1C92 /* Controller.h in Headers */ = {isa = PBXBuildFile; fileRef = F550BC4D0201F2BB01A80016 /* Controller.h */; };
 		554B55DC069F0245005E1C92 /* CheckMark.tiff in Resources */ = {isa = PBXBuildFile; fileRef = F550BC500201F2BB01A80016 /* CheckMark.tiff */; };
 		554B55DD069F0245005E1C92 /* GPGTester.nib in Resources */ = {isa = PBXBuildFile; fileRef = F550BC550201F2BB01A80016 /* GPGTester.nib */; };
 		554B55DE069F0245005E1C92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F550BC580201F2BB01A80016 /* InfoPlist.strings */; };
@@ -63,14 +63,22 @@
 		555E7F7107A311A500B1F725 /* MacGPGME.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
 		556012E009BB3C0800B31634 /* libgpg-error.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556012DE09BB3C0800B31634 /* libgpg-error.a */; };
 		556012E109BB3C0800B31634 /* libgpgme-pthread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556012DF09BB3C0800B31634 /* libgpgme-pthread.a */; };
-		556012E409BB3C4500B31634 /* libintl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556012E309BB3C4500B31634 /* libintl.a */; };
 		556012E709BB3C6A00B31634 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556012E609BB3C6A00B31634 /* libiconv.dylib */; };
 		5587C98007A2E96400F17B27 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5587C97F07A2E96400F17B27 /* AddressBook.framework */; };
 		55B5189607AC37A6005C1DB3 /* MacGPGME_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 55B5189507AC37A6005C1DB3 /* MacGPGME_Prefix.pch */; };
 		55B964A607A3BA9A0060059A /* COPYING.LESSER in Resources */ = {isa = PBXBuildFile; fileRef = 55C6D0E20795C2CD007186C6 /* COPYING.LESSER */; };
+		55BDD1CD0D954B3C0083C540 /* GPGOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 55BDD1CB0D954B3C0083C540 /* GPGOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55BDD1CE0D954B3C0083C540 /* GPGOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 55BDD1CC0D954B3C0083C540 /* GPGOptions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		551DF4320B2886570061FE17 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 554B558F069F0111005E1C92;
+			remoteInfo = MacGPGME;
+		};
 		554B55ED069F025E005E1C92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -126,8 +134,10 @@
 		551033F104C1912B00000001 /* GPGSubkey.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GPGSubkey.h; sourceTree = "<group>"; };
 		551033F204C1912B00000001 /* GPGSubkey.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GPGSubkey.m; sourceTree = "<group>"; };
 		551033F504C1915A00000001 /* TODO */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
-		551033F704C1991800000001 /* GPGOptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GPGOptions.h; sourceTree = "<group>"; };
-		551033F804C1991800000001 /* GPGOptions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GPGOptions.m; sourceTree = "<group>"; };
+		551DF42B0B2886420061FE17 /* MacGPGMETesting.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacGPGMETesting.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "MacGPGMETesting-Info.plist"; sourceTree = "<group>"; };
+		551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGMETestCase.h; sourceTree = "<group>"; };
+		551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacGPGMETestCase.m; sourceTree = "<group>"; };
 		5543FA91071493C4009979E9 /* GPGKeyGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyGroup.h; sourceTree = "<group>"; };
 		5543FA92071493C4009979E9 /* GPGKeyGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeyGroup.m; sourceTree = "<group>"; };
 		554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Info-MacGPGME.plist"; sourceTree = "<group>"; };
@@ -140,7 +150,6 @@
 		554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGAsyncHelper.m; sourceTree = "<group>"; };
 		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "/usr/local/lib/libgpg-error.a"; sourceTree = "<absolute>"; };
 		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "/usr/local/lib/libgpgme-pthread.a"; sourceTree = "<absolute>"; };
-		556012E309BB3C4500B31634 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = /usr/local/lib/libintl.a; sourceTree = "<absolute>"; };
 		556012E609BB3C6A00B31634 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = /usr/lib/libiconv.dylib; sourceTree = "<absolute>"; };
 		55627BD203BB4FD000000001 /* GPGKeySignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeySignature.h; sourceTree = "<group>"; };
 		55627BD303BB4FD000000001 /* GPGKeySignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeySignature.m; sourceTree = "<group>"; };
@@ -150,6 +159,8 @@
 		55757BCC094E2E85008EE5CC /* DocExternalReferences.xref */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = DocExternalReferences.xref; sourceTree = "<group>"; };
 		5587C97F07A2E96400F17B27 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
 		55B5189507AC37A6005C1DB3 /* MacGPGME_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGME_Prefix.pch; sourceTree = "<group>"; };
+		55BDD1CB0D954B3C0083C540 /* GPGOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPGOptions.h; path = /Users/dave/Developer/MacGPGME/GPGOptions.h; sourceTree = "<absolute>"; };
+		55BDD1CC0D954B3C0083C540 /* GPGOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPGOptions.m; path = /Users/dave/Developer/MacGPGME/GPGOptions.m; sourceTree = "<absolute>"; };
 		55C6D0E20795C2CD007186C6 /* COPYING.LESSER */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; path = COPYING.LESSER; sourceTree = "<group>"; };
 		55FCC5C0093F9339005A146B /* MacGPGME.hdoc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MacGPGME.hdoc; sourceTree = "<group>"; };
 		7F7B9541042B59C40028F28B /* Danish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Danish; path = Danish.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -182,6 +193,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		551DF4280B2886420061FE17 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				551DF47B0B288DBF0061FE17 /* Foundation.framework in Frameworks */,
+				551DF5010B288E5C0061FE17 /* MacGPGME.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		554B55B9069F0111005E1C92 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -189,7 +209,6 @@
 				554B55BA069F0111005E1C92 /* Foundation.framework in Frameworks */,
 				556012E009BB3C0800B31634 /* libgpg-error.a in Frameworks */,
 				556012E109BB3C0800B31634 /* libgpgme-pthread.a in Frameworks */,
-				556012E409BB3C4500B31634 /* libintl.a in Frameworks */,
 				556012E709BB3C6A00B31634 /* libiconv.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,6 +231,7 @@
 			children = (
 				554B55C0069F0111005E1C92 /* MacGPGME.framework */,
 				554B55EB069F0245005E1C92 /* GPGTester.app */,
+				551DF42B0B2886420061FE17 /* MacGPGMETesting.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -225,12 +245,13 @@
 				0BD1790F012998187F000001 /* gpgme.h */,
 				551033EF04C190E500000001 /* gpg-error.h */,
 				08FB77AEFE84172EC02AAC07 /* Classes */,
-				551033F604C198F800000001 /* GPGOptions */,
+				551DF4360B2886A50061FE17 /* Unit Testing */,
 				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
 				554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */,
 				554B55EA069F0245005E1C92 /* Info-GPGTester.plist */,
+				551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */,
 			);
 			name = GPG;
 			sourceTree = "<group>";
@@ -239,7 +260,6 @@
 			isa = PBXGroup;
 			children = (
 				556012E609BB3C6A00B31634 /* libiconv.dylib */,
-				556012E309BB3C4500B31634 /* libintl.a */,
 				556012DE09BB3C0800B31634 /* libgpg-error.a */,
 				556012DF09BB3C0800B31634 /* libgpgme-pthread.a */,
 				1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */,
@@ -260,6 +280,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				55BDD1CB0D954B3C0083C540 /* GPGOptions.h */,
+				55BDD1CC0D954B3C0083C540 /* GPGOptions.m */,
 				0BD178CF01298E177F000001 /* MacGPGME.h */,
 				0BD178D001298E177F000001 /* GPGContext.h */,
 				0BD178D101298E177F000001 /* GPGContext.m */,
@@ -322,13 +344,13 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		551033F604C198F800000001 /* GPGOptions */ = {
+		551DF4360B2886A50061FE17 /* Unit Testing */ = {
 			isa = PBXGroup;
 			children = (
-				551033F704C1991800000001 /* GPGOptions.h */,
-				551033F804C1991800000001 /* GPGOptions.m */,
+				551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */,
+				551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */,
 			);
-			path = GPGOptions;
+			name = "Unit Testing";
 			sourceTree = "<group>";
 		};
 		F550BC4A0201F2BB01A80016 /* GPGTester */ = {
@@ -414,7 +436,6 @@
 				554B559E069F0111005E1C92 /* GPGKeySignature.h in Headers */,
 				554B559F069F0111005E1C92 /* GPGUserID.h in Headers */,
 				554B55A0069F0111005E1C92 /* GPGSubkey.h in Headers */,
-				554B55A1069F0111005E1C92 /* GPGOptions.h in Headers */,
 				554B55A2069F0111005E1C92 /* GPGAsyncHelper.h in Headers */,
 				5543FA93071493C4009979E9 /* GPGKeyGroup.h in Headers */,
 				55B5189607AC37A6005C1DB3 /* MacGPGME_Prefix.pch in Headers */,
@@ -422,6 +443,7 @@
 				4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */,
 				4B6856FD088004DA00859ACB /* GPGKeyDefines.h in Headers */,
 				554CA68F08F9608F00E135BC /* GPGSignatureNotation.h in Headers */,
+				55BDD1CD0D954B3C0083C540 /* GPGOptions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,13 +451,31 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				554B55DA069F0245005E1C92 /* Controller.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		551DF42A0B2886420061FE17 /* MacGPGMETesting */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 551DF42D0B2886450061FE17 /* Build configuration list for PBXNativeTarget "MacGPGMETesting" */;
+			buildPhases = (
+				551DF4260B2886420061FE17 /* Resources */,
+				551DF4270B2886420061FE17 /* Sources */,
+				551DF4280B2886420061FE17 /* Frameworks */,
+				551DF4290B2886420061FE17 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				551DF4330B2886570061FE17 /* PBXTargetDependency */,
+			);
+			name = MacGPGMETesting;
+			productName = MacGPGMETesting;
+			productReference = 551DF42B0B2886420061FE17 /* MacGPGMETesting.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 		554B558F069F0111005E1C92 /* MacGPGME */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 55541F6D085AE6E100548474 /* Build configuration list for PBXNativeTarget "MacGPGME" */;
@@ -445,7 +485,7 @@
 				554B55A9069F0111005E1C92 /* Sources */,
 				554B55B9069F0111005E1C92 /* Frameworks */,
 				554B55BD069F0111005E1C92 /* Rez */,
-				554B55BE069F0111005E1C92 /* ShellScript */,
+				554B55BE069F0111005E1C92 /* Generate Documentation */,
 			);
 			buildRules = (
 			);
@@ -485,6 +525,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 55541F7B085AE6E100548474 /* Build configuration list for PBXProject "MacGPGME" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -499,14 +540,23 @@
 			mainGroup = 0867D691FE84028FC02AAC07 /* GPG */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				554B558F069F0111005E1C92 /* MacGPGME */,
 				554B55D7069F0245005E1C92 /* GPGTester */,
+				551DF42A0B2886420061FE17 /* MacGPGMETesting */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		551DF4260B2886420061FE17 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		554B55A3069F0111005E1C92 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -547,18 +597,40 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		554B55BE069F0111005E1C92 /* ShellScript */ = {
+		551DF4290B2886420061FE17 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		554B55BE069F0111005E1C92 /* Generate Documentation */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			name = "Generate Documentation";
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "HeaderDoc2HTML=\"/usr/local/bin/headerdoc2html\"\nGatherHeaderDoc=\"/usr/local/bin/gatherheaderdoc\"\nexternalXRefFile=\"${TEMP_FILES_DIR}/HeaderDoc.xref\"\ndocumentationDir=\"${TARGET_BUILD_DIR}/${DOCUMENTATION_FOLDER_PATH}\"\n\nif [ ! -x \"${HeaderDoc2HTML}\" -a ! -L \"${HeaderDoc2HTML}\" ]; then \\\n\tHeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nfi\n\nif [ ! -x \"${GatherHeaderDoc}\" -a ! -L \"${GatherHeaderDoc}\" ]; then \\\n\tGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nfi\n\nrm -rf \"${documentationDir}\"\nmkdir -p \"${documentationDir}\"\n\necho \"Extracting documentation...\"\n\"${HeaderDoc2HTML}\" -o \"${documentationDir}\" \"${PROJECT_DIR}\"\n\necho \"Resolving links...\"\nrm -rf \"${externalXRefFile}\"\ntr '$' '\\1' < DocExternalReferences.xref > \"${externalXRefFile}\"\n\"${GatherHeaderDoc}\" -x \"${externalXRefFile}\" \"${documentationDir}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		551DF4270B2886420061FE17 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				551DF4390B2886CF0061FE17 /* MacGPGMETestCase.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		554B55A9069F0111005E1C92 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -576,12 +648,12 @@
 				554B55B4069F0111005E1C92 /* GPGKeySignature.m in Sources */,
 				554B55B5069F0111005E1C92 /* GPGUserID.m in Sources */,
 				554B55B6069F0111005E1C92 /* GPGSubkey.m in Sources */,
-				554B55B7069F0111005E1C92 /* GPGOptions.m in Sources */,
 				554B55B8069F0111005E1C92 /* GPGAsyncHelper.m in Sources */,
 				5543FA94071493C4009979E9 /* GPGKeyGroup.m in Sources */,
 				4B68559C087F451800859ACB /* GPGRemoteKey.m in Sources */,
 				4B6855E7087F4A6B00859ACB /* GPGRemoteUserID.m in Sources */,
 				554CA69008F9608F00E135BC /* GPGSignatureNotation.m in Sources */,
+				55BDD1CE0D954B3C0083C540 /* GPGOptions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,6 +669,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		551DF4330B2886570061FE17 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 554B558F069F0111005E1C92 /* MacGPGME */;
+			targetProxy = 551DF4320B2886570061FE17 /* PBXContainerItemProxy */;
+		};
 		554B55EE069F025E005E1C92 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 554B558F069F0111005E1C92 /* MacGPGME */;
@@ -652,6 +729,120 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		551DF42E0B2886450061FE17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(value)",
+					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MacGPGMETesting;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		551DF42F0B2886450061FE17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(value)",
+					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
+				);
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MacGPGMETesting;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		551DF4300B2886450061FE17 /* Debug (standalone) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(value)",
+					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
+				);
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MacGPGMETesting;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = "Debug (standalone)";
+		};
+		551DF4310B2886450061FE17 /* Release (standalone) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(value)",
+					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
+				);
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MacGPGMETesting;
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = "Release (standalone)";
+		};
 		55541F6E085AE6E100548474 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -694,39 +885,28 @@
 		55541F6F085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					i386,
+					ppc,
+				);
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 15;
-				DEBUGGING_SYMBOLS = NO;
+				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 15;
-				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.1.3;
+				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_VERSION = 1.1.4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				OPTIMIZATION_CFLAGS = "-Os";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = (
-					"-seg1addr",
-					0x686E0000,
-					"-headerpad_max_install_names",
-				);
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = MacGPGME;
-				SECTORDER_FLAGS = "";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
+				WARNING_CFLAGS = "-Wmost";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -822,6 +1002,7 @@
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = "Info-GPGTester.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
@@ -920,7 +1101,6 @@
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH)";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Debug;
 		};
@@ -932,7 +1112,6 @@
 					i386,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Release;
 		};
@@ -941,7 +1120,6 @@
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH)";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = "Debug (standalone)";
 		};
@@ -953,13 +1131,23 @@
 					i386,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = "Release (standalone)";
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		551DF42D0B2886450061FE17 /* Build configuration list for PBXNativeTarget "MacGPGMETesting" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				551DF42E0B2886450061FE17 /* Debug */,
+				551DF42F0B2886450061FE17 /* Release */,
+				551DF4300B2886450061FE17 /* Debug (standalone) */,
+				551DF4310B2886450061FE17 /* Release (standalone) */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		55541F6D085AE6E100548474 /* Build configuration list for PBXNativeTarget "MacGPGME" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
