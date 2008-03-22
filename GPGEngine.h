@@ -224,6 +224,47 @@ typedef enum {
  */
 - (void) setHomeDirectory:(NSString *)homeDirectory;
 
+/*!
+ *  @method     executablePathDefaultsKey
+ *  @abstract   Returns the key used to store the user-defined executable path
+ *              in user's defaults.
+ *  @discussion Returns a user defaults's key.
+ *
+ *              Implemented only for the OpenPGP engine.
+ */
+- (NSString *) executablePathDefaultsKey;
+
+/*!
+ *  @method     userHasSelectedExecutablePath
+ *  @abstract   Informs whether user has defined the path where the crypto
+ *              engine executable is located.
+ *  @discussion We store in user defaults the location where the crypto engine
+ *              executable is located. If that location has never been set in
+ *              defaults, returns NO.
+ *
+ *              Implemented only for the OpenPGP engine.
+ */
+- (BOOL) userHasSelectedExecutablePath;
+
+/*!
+ *  @method     knownExecutablePaths
+ *  @abstract   Returns potential crypto engine executable paths.
+ *  @discussion For the OpenPGP engine, searches for gpg2, then gpg, in 
+ *              well-known locations: <code>/usr/local/bin</code>, 
+ *              <code>/opt/local/bin</code>, <code>/sw/bin</code>.
+ *
+ *              Implemented only for the OpenPGP engine.
+ */
+- (NSArray *) knownExecutablePaths;
+
+/*!
+ *  @method     availableExecutablePaths
+ *  @abstract   Returns all existing crypto engine executable paths.
+ *
+ *              Implemented only for the OpenPGP engine.
+ */
+- (NSArray *) availableExecutablePaths;
+
 @end
 
 #ifdef __cplusplus

@@ -42,6 +42,7 @@ static NSRecursiveLock	*mapTableLock = nil;
     // Do not call super - see +initialize documentation
     if(mapTable == NULL){
         NSString    *aPath;
+        GPGEngine   *openPGPEngine;
         
         mapTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks, NSNonRetainedObjectMapValueCallBacks, 100);
         mapTableLock = [[NSRecursiveLock alloc] init];
@@ -56,17 +57,25 @@ static NSRecursiveLock	*mapTableLock = nil;
             [NSThread detachNewThreadSelector:@selector(release) toTarget:aThreadStarter withObject:nil];
         }
 
-        setlocale (LC_ALL, "");
+        setlocale (LC_ALL, "en_US.UTF-8");
         // Let's initialize libgpgme sub-systems now.
         NSAssert(gpgme_check_version(NULL) != NULL, @"### Unable to initialize gpgme sub-systems.");
         // Let's initialize default locale; we don't use that possibility in MacGPGME.framework yet
-        gpgme_set_locale(NULL, LC_CTYPE, setlocale(LC_CTYPE, NULL));
-        gpgme_set_locale(NULL, LC_MESSAGES, setlocale(LC_MESSAGES, NULL));
+        gpgme_set_locale(NULL, LC_CTYPE, setlocale(LC_CTYPE, "en_US.UTF-8"));
+        gpgme_set_locale(NULL, LC_MESSAGES, setlocale(LC_MESSAGES, "en_US.UTF-8"));
         
         // Let's add new user defaults suite, the one containing global prefs
         // for all MacGPGME-based apps
         [[NSUserDefaults standardUserDefaults] addSuiteNamed:GPGUserDefaultsSuiteName];
-        aPath = [[NSUserDefaults standardUserDefaults] stringForKey:GPGOpenPGPExecutablePathKey];
+        // TODO: remove following code, later; client app should do the test itself.
+        openPGPEngine = [GPGEngine engineForProtocol:GPGOpenPGPProtocol];
+        aPath = [[NSUserDefaults standardUserDefaults] stringForKey:[openPGPEngine executablePathDefaultsKey]];
+        if(aPath == nil){
+            NSArray *availableExecutablePaths = [openPGPEngine availableExecutablePaths];
+            
+            if([availableExecutablePaths count] > 0)
+                aPath = [availableExecutablePaths objectAtIndex:0];
+        }
         if(aPath != nil){
             NS_DURING
                 [[GPGEngine engineForProtocol:GPGOpenPGPProtocol] setExecutablePath:aPath];

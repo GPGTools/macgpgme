@@ -30,6 +30,7 @@
 #include <MacGPGME/GPGPrettyInfo.h>
 #include <MacGPGME/GPGContext.h>
 #include <MacGPGME/GPGInternals.h>
+#include <MacGPGME/GPGOptions.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
 
@@ -209,6 +210,62 @@
         return [NSString stringWithFormat:@"<%@ %p> [freed context]", NSStringFromClass([self class]), self];
     else
         return [NSString stringWithFormat:@"<%@ %p> %@ (min. %@), %@ (%@), %@ - %@", NSStringFromClass([self class]), self, GPGProtocolDescription([self engineProtocol]), [self requestedVersion], [self executablePath], [self version], [self homeDirectory], (_context != nil ? [_context description] : @"global")];
+}
+
+- (NSString *) executablePathDefaultsKey
+{
+    switch([self engineProtocol]){
+        case GPGOpenPGPProtocol:
+            return GPGOpenPGPExecutablePathKey;
+        case GPGCMSProtocol:
+        default:
+            [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+    }
+    
+    return nil;
+}
+
+- (BOOL) userHasSelectedExecutablePath
+{
+    return [[NSUserDefaults standardUserDefaults] stringForKey:[self executablePathDefaultsKey]] != nil;
+}
+
+- (NSArray *) knownExecutablePaths
+{
+    switch([self engineProtocol]){
+        case GPGOpenPGPProtocol:
+            return [NSArray arrayWithObjects:@"/usr/local/bin/gpg2", @"/usr/local/bin/gpg", @"/opt/local/bin/gpg2", @"/opt/local/bin/gpg", @"/sw/bin/gpg2", @"/sw/bin/gpg", nil];
+        case GPGCMSProtocol:
+        default:
+            [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+    }
+    
+    return nil;
+}
+
+- (NSArray *) availableExecutablePaths
+{
+    switch([self engineProtocol]){
+        case GPGOpenPGPProtocol:{
+            NSFileManager   *fm = [NSFileManager defaultManager];
+            NSEnumerator    *pathEnum = [[self knownExecutablePaths] objectEnumerator];
+            NSMutableArray  *validPaths = [NSMutableArray array];
+            NSString        *eachPath;
+            
+            while(eachPath = [pathEnum nextObject]){
+                eachPath = [eachPath stringByResolvingSymlinksInPath];
+                if(![validPaths containsObject:eachPath] && [fm isExecutableFileAtPath:eachPath])
+                    [validPaths addObject:eachPath];
+            }
+            
+            return validPaths;
+        }
+        case GPGCMSProtocol:
+        default:
+            [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+    }
+    
+    return nil;
 }
 
 @end
