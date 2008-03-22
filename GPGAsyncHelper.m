@@ -45,7 +45,11 @@ static void eventCallback(void *data, gpgme_event_io_t type, void *type_data);
         
         _dataLock = [[NSLock allocWithZone:aZone] init];
         _runSemaphore = [[NSConditionLock allocWithZone:aZone] initWithCondition:0];
+#if defined(MAC_OS_X_VERSION_10_5) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5)
+        _paramsPerFd = NSCreateMapTableWithZone(NSIntegerMapKeyCallBacks, NSObjectMapValueCallBacks, 10, aZone);
+#else
         _paramsPerFd = NSCreateMapTableWithZone(NSIntMapKeyCallBacks, NSObjectMapValueCallBacks, 10, aZone);
+#endif
         _contexts = [[NSMutableSet allocWithZone:aZone] initWithCapacity:3];
         [NSThread detachNewThreadSelector:@selector(run) toTarget:self withObject:nil];
     }
