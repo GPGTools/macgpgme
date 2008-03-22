@@ -81,9 +81,8 @@
     return _trustItem->type;
 }
 
-#warning TODO
 /*
-    We could also implement the following calls:
+    TODO: We could also implement -key
     - (GPGKey *) key
     (we need to create a local context to get the named key; key should be cached)
 */

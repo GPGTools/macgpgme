@@ -105,7 +105,7 @@
 {
     switch(_version){
         case 0:
-#warning FIXME Not implemented for GPGRemoteKey inited by -initWithRecipient:
+#warning FIXME: Not implemented for GPGRemoteKey inited by -initWithRecipient:
             return [self unescapedString:[[[_colonFormatStrings objectAtIndex:0] componentsSeparatedByString:@":"] objectAtIndex:6]]; // Not always available, not localized
         case 1:
             return GPGPublicKeyAlgorithmDescription([self algorithm]);
