@@ -52,7 +52,7 @@
     GPGContext	*aContext = [[GPGContext alloc] init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyringChanged:) name:GPGKeyringChangedNotification object:nil];
-    aString = [NSString stringWithFormat:@"Available engines:\n%@\nGroups:\n%@", [[GPGEngine availableEngines] debugDescription], [aContext keyGroups]];
+    aString = [NSString stringWithFormat:@"Available engines:\n%@\nGroups:\n%@", [[GPGEngine availableEngines] valueForKey:@"debugDescription"], [aContext keyGroups]];
     [xmlTextView setString:aString];
     [progressIndicator setDisplayedWhenStopped:NO];
     [progressIndicator setUsesThreadedAnimation:YES];
@@ -583,7 +583,7 @@
     }
 }
 
-- (BOOL) validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL) validateMenuItem:(NSMenuItem *)menuItem
 {
     if([menuItem action] == @selector(export:) || /*[menuItem action] == @selector(encrypt:) ||*/ [menuItem action] == @selector(sign:))
         return [keyTableView numberOfSelectedRows] > 0;
@@ -1072,7 +1072,7 @@ static gpgme_error_t addCallback(void *data, int fd, int dir, gpgme_io_cb_t fnc,
             theContextParams.ioContexts[i].fnc_data = fnc_data;
             theContextParams.ioContexts[i].fileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fd];
             if(dir == 1)
-#warning TODO move this call in eventCallback:START
+                // TODO: move this call in eventCallback:START
                 [[NSNotificationCenter defaultCenter] addObserver:theContextParams.controller selector:@selector(fileHandleDataAvailable:) name:NSFileHandleDataAvailableNotification object:theContextParams.ioContexts[i].fileHandle]; // observer should be theContextParams.ioContexts[i]
             else{
                 NSLog(@"WARNING: no way with NSFileHandle to write async!");
@@ -1083,7 +1083,7 @@ static gpgme_error_t addCallback(void *data, int fd, int dir, gpgme_io_cb_t fnc,
                 return gpg_err_make(GPG_ERR_SOURCE_USER_2, GPG_ERR_GENERAL);
             }
             *tag = (void *)i;
-#warning TODO move this call in eventCallback:START
+            // TODO: move this call in eventCallback:START
             [theContextParams.ioContexts[i].fileHandle waitForDataInBackgroundAndNotify];
             return GPG_ERR_NO_ERROR;
         }

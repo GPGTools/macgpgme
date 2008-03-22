@@ -1,50 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>IBDocumentLocation</key>
-	<string>627 86 356 240 0 0 1680 1028 </string>
-	<key>IBEditorPositions</key>
-	<dict>
-		<key>29</key>
-		<string>109 353 260 44 0 0 1680 1028 </string>
-		<key>561</key>
-		<string>593 560 482 384 0 0 1680 1028 </string>
-	</dict>
 	<key>IBFramework Version</key>
-	<string>443.0</string>
+	<string>629</string>
+	<key>IBLastKnownRelativeProjectPath</key>
+	<string>../../../MacGPGME.xcodeproj</string>
+	<key>IBOldestOS</key>
+	<integer>5</integer>
 	<key>IBOpenObjects</key>
 	<array>
-		<integer>501</integer>
-		<integer>29</integer>
-		<integer>21</integer>
-		<integer>561</integer>
+		<integer>222</integer>
 	</array>
 	<key>IBSystem Version</key>
-	<string>8F46</string>
-	<key>IBUserGuides</key>
-	<dict>
-		<key>Encryption</key>
-		<dict>
-			<key>guideLocations</key>
-			<array/>
-			<key>guidesLocked</key>
-			<string>NO</string>
-		</dict>
-		<key>Passphrase</key>
-		<dict>
-			<key>guideLocations</key>
-			<array/>
-			<key>guidesLocked</key>
-			<string>NO</string>
-		</dict>
-		<key>Signing</key>
-		<dict>
-			<key>guideLocations</key>
-			<array/>
-			<key>guidesLocked</key>
-			<string>NO</string>
-		</dict>
-	</dict>
+	<string>9C7010</string>
+	<key>targetFramework</key>
+	<string>IBCocoaFramework</string>
 </dict>
 </plist>

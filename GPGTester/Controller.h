@@ -60,9 +60,9 @@ extern "C" {
     IBOutlet NSButtonCell	*isInvalidSwitch;
     IBOutlet NSButtonCell	*hasExpiredSwitch;
     IBOutlet NSButtonCell	*isDisabledSwitch;
-    IBOutlet NSTextField	*ownerTrustField;
-    IBOutlet NSTextField	*trustLevelField;
-    IBOutlet NSTextField	*trustTypeTextField;
+    IBOutlet NSTextFieldCell	*ownerTrustField;
+    IBOutlet NSTextFieldCell	*trustLevelField;
+    IBOutlet NSTextFieldCell	*trustTypeTextField;
     
     IBOutlet NSTextField	*passphraseDescriptionTextField;
     IBOutlet NSTextField	*passphraseTextField;
@@ -80,7 +80,7 @@ extern "C" {
     IBOutlet NSTextField	*signingOutputFilenameTextField;
     IBOutlet NSPanel		*signingPanel;
 
-    IBOutlet NSButtonCell	*deleteSwitch;
+    IBOutlet NSButton       *deleteSwitch;
     IBOutlet NSButton		*deleteButton;
 
     IBOutlet NSMatrix		*searchTypeMatrix;
