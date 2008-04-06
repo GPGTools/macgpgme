@@ -127,6 +127,7 @@ enum {
 @implementation GPGContext
 
 static void progressCallback(void *object, const char *description, int type, int current, int total);
+static NSLock   *_waitOperationLock = nil;
 
 + (void) initialize
 {
@@ -134,6 +135,7 @@ static void progressCallback(void *object, const char *description, int type, in
     if(_helperPerContextLock == nil){
         _helperPerContextLock = [[NSLock alloc] init];
         _helperPerContext = NSCreateMapTable(NSObjectMapKeyCallBacks, NSObjectMapValueCallBacks, 3);
+        _waitOperationLock = [[NSLock alloc] init];
     }
 }
 
@@ -775,14 +777,17 @@ static void progressCallback(void *object, const char *description, int type, in
 
 @implementation GPGContext(GPGAsynchronousOperations)
 
-#warning Only one thread at a time can call gpgme_wait => protect usage with mutex!
-
 + (GPGContext *) waitOnAnyRequest:(BOOL)hang
 {
     gpgme_error_t	anError = GPG_ERR_NO_ERROR;
-    gpgme_ctx_t		returnedCtx = gpgme_wait(NULL, &anError, hang);
+    gpgme_ctx_t		returnedCtx;
     GPGContext		*newContext;
 
+    // Only one thread at a time can call gpgme_wait => protect usage with mutex!
+    [_waitOperationLock lock];
+    returnedCtx = gpgme_wait(NULL, &anError, hang);
+    [_waitOperationLock unlock];
+    
     if(anError != GPG_ERR_NO_ERROR){
         // Returns an existing context
         if(returnedCtx != NULL){
@@ -821,7 +826,12 @@ static void progressCallback(void *object, const char *description, int type, in
     synchronized by locking primitives.
     */
     gpgme_error_t	anError = GPG_ERR_NO_ERROR;
-    gpgme_ctx_t		returnedCtx = gpgme_wait(_context, &anError, hang);
+    gpgme_ctx_t		returnedCtx;
+
+    // Only one thread at a time can call gpgme_wait => protect usage with mutex!
+    [_waitOperationLock lock];
+    returnedCtx = gpgme_wait(_context, &anError, hang);
+    [_waitOperationLock unlock];
 
     if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
@@ -1368,10 +1378,8 @@ static void progressCallback(void *object, const char *description, int type, in
     anError = gpgme_op_genkey(_context, [xmlString UTF8String], [publicKeyData gpgmeData], [secretKeyData gpgmeData]);
     [self setOperationMask:KeyGenerationOperation];
     [_operationData setObject:[NSNumber numberWithUnsignedInt:anError] forKey:GPGErrorKey];
-    if(anError != GPG_ERR_NO_ERROR){
-        NSLog(@"%@", xmlString);
+    if(anError != GPG_ERR_NO_ERROR)
         [[NSException exceptionWithGPGError:anError userInfo:[NSDictionary dictionaryWithObject:[xmlString autorelease] forKey:@"XML"]] raise];
-    }
     [xmlString release];
 
     operationResults = [self operationResults];
@@ -1618,10 +1626,13 @@ enum {
     }
     aHostName = [aHostName substringFromIndex:aRange.location + urlSchemeSeparatorLength];
 
-    aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"libexec/gnupg"]; // E.g. from /usr/local/bin/gpg to /usr/local/libexec/gnupg
+    if([[[theContext engine] version] characterAtIndex:0] == '1')
+        aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"libexec/gnupg"]; // E.g. from /usr/local/bin/gpg to /usr/local/libexec/gnupg
+    else
+        aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"libexec"]; // E.g. from /usr/local/bin/gpg to /usr/local/libexec
     aString = [aString stringByAppendingPathComponent:launchPath];
     if(![[NSFileManager defaultManager] fileExistsAtPath:aString]){
-        aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"lib/gnupg"]; // E.g. from /usr/local/bin/gpg to /usr/local/lib/gnupg (needed for Fink installations!)
+        aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"lib/gnupg"]; // E.g. from /sw/bin/gpg to /sw/lib/gnupg (needed for Fink installations!)
         aString = [aString stringByAppendingPathComponent:launchPath];
         if(![[NSFileManager defaultManager] fileExistsAtPath:aString]){
             BOOL	tryEmbeddedOnes = YES;
@@ -1633,6 +1644,7 @@ enum {
             }
             
             if(tryEmbeddedOnes){
+#if 0
                 // Try to use embedded version - we should embed only gpg 1.2 version of these executables, as for gpg 1.4 all binaries are installed
 #warning FIXME: Embed gpgkeys_* 1.2 binaries (backwards compatible)
                 launchPath = [[NSBundle bundleForClass:self] pathForResource:[launchPath stringByDeletingPathExtension] ofType:[launchPath pathExtension]]; // -pathForAuxiliaryExecutable: does not work for frameworks?!
@@ -1640,6 +1652,11 @@ enum {
                     [gpgOptions release];
                     [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
                 }
+#else
+                // We no longer embed executables - everyone now uses gpg >= 1.4
+                [gpgOptions release];
+                [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorKeyServerError) userInfo:[NSDictionary dictionaryWithObject:@"Unsupported keyserver type" forKey:GPGAdditionalReasonKey]] raise];
+#endif
             }
             else
                 launchPath = aString;
@@ -1650,6 +1667,7 @@ enum {
     else
         launchPath = aString;
 
+    // TODO: verify that it works too with gpg2
 	formatVersionNumber = [executableVersions objectForKey:launchPath];
 	if(!formatVersionNumber){
 		// We need to test the format version used by the executable
