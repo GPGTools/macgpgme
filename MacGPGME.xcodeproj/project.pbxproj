@@ -159,8 +159,8 @@
 		55757BCC094E2E85008EE5CC /* DocExternalReferences.xref */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = DocExternalReferences.xref; sourceTree = "<group>"; };
 		5587C97F07A2E96400F17B27 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
 		55B5189507AC37A6005C1DB3 /* MacGPGME_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGME_Prefix.pch; sourceTree = "<group>"; };
-		55BDD1CB0D954B3C0083C540 /* GPGOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GPGOptions.h; path = /Users/dave/Developer/MacGPGME/GPGOptions.h; sourceTree = "<absolute>"; };
-		55BDD1CC0D954B3C0083C540 /* GPGOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPGOptions.m; path = /Users/dave/Developer/MacGPGME/GPGOptions.m; sourceTree = "<absolute>"; };
+		55BDD1CB0D954B3C0083C540 /* GPGOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGOptions.h; sourceTree = "<group>"; };
+		55BDD1CC0D954B3C0083C540 /* GPGOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGOptions.m; sourceTree = "<group>"; };
 		55C6D0E20795C2CD007186C6 /* COPYING.LESSER */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; path = COPYING.LESSER; sourceTree = "<group>"; };
 		55FCC5C0093F9339005A146B /* MacGPGME.hdoc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MacGPGME.hdoc; sourceTree = "<group>"; };
 		7F7B9541042B59C40028F28B /* Danish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Danish; path = Danish.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -847,23 +847,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 15;
-				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.1.3;
+				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_VERSION = 1.1.4;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x686E0000,
@@ -873,22 +870,15 @@
 				SECTORDER_FLAGS = "";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
+				WARNING_CFLAGS = "-Wmost";
 				WRAPPER_EXTENSION = framework;
+				ZERO_LINK = YES;
 			};
 			name = Debug;
 		};
 		55541F6F085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
@@ -915,11 +905,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 15;
-				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.1.3;
+				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_VERSION = 1.1.4;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -927,28 +916,19 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x686E0000,
 					"-headerpad_max_install_names",
 				);
 				PRODUCT_NAME = MacGPGME;
-				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
+				WARNING_CFLAGS = "-Wmost";
 				WRAPPER_EXTENSION = framework;
 				ZERO_LINK = YES;
 			};
@@ -957,26 +937,18 @@
 		55541F71085AE6E100548474 /* Release (standalone) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 15;
-				DEBUGGING_SYMBOLS = NO;
+				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 15;
-				FRAMEWORK_SEARCH_PATHS = "";
-				FRAMEWORK_VERSION = 1.1.3;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_VERSION = 1.1.4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				OPTIMIZATION_CFLAGS = "-Os";
-				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x686E0000,
@@ -984,13 +956,8 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = MacGPGME;
-				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
+				WARNING_CFLAGS = "-Wmost";
 				WRAPPER_EXTENSION = framework;
 				ZERO_LINK = NO;
 			};
