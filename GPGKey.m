@@ -145,7 +145,7 @@ NSString *GPGStringFromChars(const char * chars)
     if(![self isSecret])
         return self;
     else{
-#warning FIXME: Cache result!
+        // TODO: Cache result
         GPGContext	*aContext = [[GPGContext alloc] init];
         GPGKey		*aKey = nil;
 
