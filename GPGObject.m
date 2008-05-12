@@ -84,6 +84,7 @@ static NSRecursiveLock	*mapTableLock = nil;
                 NSLog(@"No valid gpg engine at '%@'; you need to change default engine path", aPath);
             NS_ENDHANDLER
         }
+        [[NSDistributedNotificationCenter defaultCenter] addObserver:[GPGOptions class] selector:@selector(defaultsDidChange:) name:GPGDefaultsDidChangeNotification object:nil];
     }
 }
 
