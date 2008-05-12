@@ -36,6 +36,7 @@
 #include <MacGPGME/GPGSubkey.h>
 #include <MacGPGME/GPGDefines.h>
 #include <MacGPGME/GPGKeyGroup.h>
+#include <MacGPGME/GPGOptions.h>
 #include <MacGPGME/GPGRemoteKey.h>
 #include <MacGPGME/GPGRemoteUserID.h>
 #include <MacGPGME/GPGSignatureNotation.h>
@@ -125,6 +126,11 @@ extern "C" {
 - (void) setContext:(GPGContext *)context;
 - (void) invalidateContext;
 - (void) reloadContextEngineInfo;
+@end
+
+
+@interface GPGOptions(GPGInternals)
+- (NSArray *) _subOptionsForName:(NSString *)optionName;
 @end
 
 

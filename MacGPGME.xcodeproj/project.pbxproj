@@ -69,6 +69,8 @@
 		55B964A607A3BA9A0060059A /* COPYING.LESSER in Resources */ = {isa = PBXBuildFile; fileRef = 55C6D0E20795C2CD007186C6 /* COPYING.LESSER */; };
 		55BDD1CD0D954B3C0083C540 /* GPGOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 55BDD1CB0D954B3C0083C540 /* GPGOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55BDD1CE0D954B3C0083C540 /* GPGOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 55BDD1CC0D954B3C0083C540 /* GPGOptions.m */; };
+		55C01A6C0DB0FA9D00EA8CD5 /* GPGEngineHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 55C01A6A0DB0FA9D00EA8CD5 /* GPGEngineHelper.h */; };
+		55C01A6D0DB0FA9D00EA8CD5 /* GPGEngineHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 55C01A6B0DB0FA9D00EA8CD5 /* GPGEngineHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -161,6 +163,8 @@
 		55B5189507AC37A6005C1DB3 /* MacGPGME_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGME_Prefix.pch; sourceTree = "<group>"; };
 		55BDD1CB0D954B3C0083C540 /* GPGOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGOptions.h; sourceTree = "<group>"; };
 		55BDD1CC0D954B3C0083C540 /* GPGOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGOptions.m; sourceTree = "<group>"; };
+		55C01A6A0DB0FA9D00EA8CD5 /* GPGEngineHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGEngineHelper.h; sourceTree = "<group>"; };
+		55C01A6B0DB0FA9D00EA8CD5 /* GPGEngineHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGEngineHelper.m; sourceTree = "<group>"; };
 		55C6D0E20795C2CD007186C6 /* COPYING.LESSER */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; path = COPYING.LESSER; sourceTree = "<group>"; };
 		55FCC5C0093F9339005A146B /* MacGPGME.hdoc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MacGPGME.hdoc; sourceTree = "<group>"; };
 		7F7B9541042B59C40028F28B /* Danish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Danish; path = Danish.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -322,6 +326,8 @@
 				F55CD03C02D65F9C01C07EFC /* LocalizableStrings.m */,
 				554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */,
 				554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */,
+				55C01A6A0DB0FA9D00EA8CD5 /* GPGEngineHelper.h */,
+				55C01A6B0DB0FA9D00EA8CD5 /* GPGEngineHelper.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -444,6 +450,7 @@
 				4B6856FD088004DA00859ACB /* GPGKeyDefines.h in Headers */,
 				554CA68F08F9608F00E135BC /* GPGSignatureNotation.h in Headers */,
 				55BDD1CD0D954B3C0083C540 /* GPGOptions.h in Headers */,
+				55C01A6C0DB0FA9D00EA8CD5 /* GPGEngineHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,6 +661,7 @@
 				4B6855E7087F4A6B00859ACB /* GPGRemoteUserID.m in Sources */,
 				554CA69008F9608F00E135BC /* GPGSignatureNotation.m in Sources */,
 				55BDD1CE0D954B3C0083C540 /* GPGOptions.m in Sources */,
+				55C01A6D0DB0FA9D00EA8CD5 /* GPGEngineHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
