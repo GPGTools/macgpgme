@@ -52,7 +52,7 @@
     GPGContext	*aContext = [[GPGContext alloc] init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyringChanged:) name:GPGKeyringChangedNotification object:nil];
-    aString = [NSString stringWithFormat:@"Available engines:\n%@\nGroups:\n%@", [[GPGEngine availableEngines] valueForKey:@"debugDescription"], [aContext keyGroups]];
+    aString = [NSString stringWithFormat:@"Available engines:\n%@\nGroups:\n%@", [[GPGEngine availableEngines] valueForKey:@"debugDescription"], [[aContext keyGroups] valueForKey:@"name"]];
     [xmlTextView setString:aString];
     [progressIndicator setDisplayedWhenStopped:NO];
     [progressIndicator setUsesThreadedAnimation:YES];
@@ -857,7 +857,7 @@
     
     if(keySignatureBrowserContext == nil){
         keySignatureBrowserContext = [[GPGContext alloc] init];
-        [keySignatureBrowserContext setKeyListMode:GPGKeyListModeSignatures];
+        [keySignatureBrowserContext setKeyListMode:GPGKeyListModeSignatures | GPGKeyListModeLocal | GPGKeyListModeSignatureNotations];
     }
     
     return keySignatureBrowserContext;

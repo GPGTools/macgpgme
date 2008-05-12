@@ -139,6 +139,8 @@
 				<string>NSMatrix</string>
 				<key>secretKeySwitch</key>
 				<string>NSButton</string>
+				<key>signatureTreeController</key>
+				<string>NSTreeController</string>
 				<key>signingArmoredSwitch</key>
 				<string>NSButtonCell</string>
 				<key>signingDetachedSwitch</key>

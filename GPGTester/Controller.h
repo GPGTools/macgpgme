@@ -95,6 +95,7 @@ extern "C" {
     NSMutableSet			*selectedDownloadedKeys;
 
     IBOutlet NSImageView	*imageView;
+    IBOutlet NSTreeController   *signatureTreeController;
 }
 
 - (IBAction) searchKeys:(id)sender;
