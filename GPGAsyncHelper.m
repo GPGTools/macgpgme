@@ -25,7 +25,7 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#import "GPGAsyncHelper.h"
+#include "GPGAsyncHelper.h"
 #include <MacGPGME/GPGContext.h>
 #include <MacGPGME/GPGInternals.h>
 #include <MacGPGME/GPGTrustItem.h>

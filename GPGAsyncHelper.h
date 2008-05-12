@@ -23,7 +23,17 @@
 //  More info at <http://macgpg.sourceforge.net/>
 //
 
-#import <Foundation/Foundation.h>
+#ifndef GPGASYNCHELPER_H
+#define GPGASYNCHELPER_H
+
+#include <Foundation/Foundation.h>
+
+#ifdef __cplusplus
+extern "C" {
+#if 0 /* just to make Emacs auto-indent happy */
+}
+#endif
+#endif
 
 
 @class GPGContext;
@@ -42,3 +52,8 @@
 - (void) prepareAsyncOperationInContext:(GPGContext *)context;
 
 @end
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* GPGASYNCHELPER_H */
