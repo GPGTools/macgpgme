@@ -32,6 +32,7 @@ static NSString *gnupgVersion = nil;
 
 NSString * const GPGUserDefaultsSuiteName = @"net.sourceforge.macgpg";
 NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
+NSString * const GPGDefaultsDidChangeNotification = @"GPGDefaultsDidChangeNotification";
 
 
 @interface GPGOptions(Private)
@@ -148,54 +149,6 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
     return (![[[self homeDirectory] stringByStandardizingPath] isEqualToString:[[self activeHomeDirectory] stringByStandardizingPath]]);
 }
 
-+ (NSString *) systemHttpProxy
-{
-#warning TODO: Take http proxy from System
-    // See /System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Headers/SCDynamicStoreCopySpecific.h
-    // or /System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/InternetConfig.h
-    return nil;
-}
-
-+ (NSString *) activeHttpProxy
-{
-    NSString	*httpProxy = [self activeEnvironmentVariableValueForName:@"http_proxy"];
-
-    return httpProxy;
-}
-
-+ (NSString *) httpProxy
-{
-#warning deprecated?
-    NSString	*httpProxy = [self futureEnvironmentVariableValueForName:@"http_proxy"];
-
-    return httpProxy;
-}
-
-+ (void) setHttpProxy:(NSString *)httpProxy
-{
-#warning deprecated?
-    if([httpProxy rangeOfCharacterFromSet:[NSCharacterSet alphanumericCharacterSet]].length > 0)
-        [self setFutureEnvironmentVariableValue:httpProxy forName:@"http_proxy"];
-    else
-        [self setFutureEnvironmentVariableValue:nil forName:@"http_proxy"];
-}
-
-+ (BOOL) httpProxyChanged
-{
-    NSString	*activeHttpProxy = [self activeHttpProxy];
-    NSString	*httpProxy = [self httpProxy];
-
-    if(activeHttpProxy == nil)
-        if(httpProxy == nil)
-            return NO;
-        else
-            return YES;
-    else if(httpProxy == nil)
-        return YES;
-    else
-        return ![activeHttpProxy isEqualToString:httpProxy];
-}
-
 + (NSString *) gpgPath
 {
     return [[GPGEngine engineForProtocol:GPGOpenPGPProtocol] executablePath];
@@ -203,12 +156,32 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
 
 + (NSString *) optionsFilename
 {
-    NSString	*aVersion = [self gnupgVersion];
+    // FIXME: valid only for GPGPreferences; should not be used outside of this context
+    return [[self homeDirectory] stringByAppendingPathComponent:@"gpg.conf"];
+}
+
+/*
+ * Subscribed in +[GPGObject initialize]
+ */
++ (void) defaultsDidChange:(NSNotification *)notification
+{
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (void) setDefaultValue:(id)value forKey:(NSString *)key
+{
+    NSUserDefaults      *defaults = [NSUserDefaults standardUserDefaults];
+    NSMutableDictionary *aDict;
     
-    if(aVersion != nil && [aVersion rangeOfString:@"1.0."].length > 0)
-        return [[self homeDirectory] stringByAppendingPathComponent:@"options"];
+    [defaults synchronize];
+    aDict = [NSMutableDictionary dictionaryWithDictionary:[defaults persistentDomainForName:GPGUserDefaultsSuiteName]];
+    if(value)
+        [aDict setObject:value forKey:key];
     else
-        return [[self homeDirectory] stringByAppendingPathComponent:@"gpg.conf"];
+        [aDict removeObjectForKey:key];
+    [defaults setPersistentDomain:aDict forName:GPGUserDefaultsSuiteName];
+    [defaults synchronize];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:GPGDefaultsDidChangeNotification object:nil];
 }
 
 - (void) parseOptionsFromLines:(NSArray *)lines save:(BOOL)save
@@ -291,7 +264,7 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
 
 - (void) reloadOptions
 {
-    NSString	*filename = [[self class] optionsFilename];
+    NSString	*filename = path;
     NSString	*optionsAsString;
     NSData		*fileData;
     BOOL		wasInUnicode = NO;
@@ -312,7 +285,7 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
         optionsAsString = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
     [fileData release];
     if(optionsAsString == nil){
-        NSLog(@"GPGPreferences: Unable to read file %@", filename);
+        NSLog(@"%s: Unable to read file %@", __PRETTY_FUNCTION__, filename);
         // If we were unable to read it, gpg is probably unable too
         optionsAsString = @"";
     }
@@ -329,7 +302,14 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
 
 - (id) init
 {
+    return [self initWithPath:[[self class] optionsFilename]];
+}
+
+- (id) initWithPath:(NSString *)aPath
+{
     if(self = [super init]){
+        NSParameterAssert(aPath != nil);
+        path = [aPath copy];
         optionFileLines = [[NSMutableArray alloc] initWithCapacity:100];
         optionNames = [[NSMutableArray alloc] initWithCapacity:20];
         optionValues = [[NSMutableArray alloc] initWithCapacity:20];
@@ -349,26 +329,26 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
     [optionValues release];
     [optionStates release];
     [optionLineNumbers release];
+    [path release];
     
     [super dealloc];
 }
 
 - (void) doSaveOptions
 {
-    NSString	*filename = [[self class] optionsFilename];
     NSString	*content = [optionFileLines componentsJoinedByString:@"\n"];
     
     if(![content hasSuffix:@"\n"])
         content = [content stringByAppendingString:@"\n"];
 
-    NSAssert1([[content dataUsingEncoding:NSUTF8StringEncoding] writeToFile:filename atomically:YES], @"Unable to save options in %@", filename);
+    NSAssert1([[content dataUsingEncoding:NSUTF8StringEncoding] writeToFile:path atomically:YES], @"Unable to save options in %@", path);
 }
 
 - (void) saveOptions
 {
-#warning TODO: Save only if modified
+    // TODO: Save only if modified
     [self doSaveOptions];
-#warning TODO: Test new options file by running gpg (gpg: /Users/kindov/.gnupg/options:21: invalid option)
+    // TODO: Test new options file by running gpg (gpg: /Users/kindov/.gnupg/options:21: invalid option)
     [self reloadOptions];
 }
 
@@ -642,17 +622,39 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
     if([self optionStateForName:optionName]){
         NSArray	*optionParameters;
         int		setIndex, unsetIndex;
-
+        
         optionParameters = [[[self _subOptionsForName:optionName] reverseObjectEnumerator] allObjects]; // Reversed array
-
+        
         setIndex = [optionParameters indexOfObject:subOptionName];
+        if(setIndex == NSNotFound){
+            // TODO: name=value
+        }
         unsetIndex = [optionParameters indexOfObject:[@"no-" stringByAppendingString:subOptionName]];
-
+        
         return (setIndex < unsetIndex);
     }
     else
-        // In fact we should return the default value...
+        // FIXME: In fact we should return the default value
         return NO;
+}
+
+- (NSString *) subOptionValue:(NSString *)subOptionName state:(BOOL *)statePtr forName:(NSString *)optionName
+{
+    if([self optionStateForName:optionName]){
+        NSEnumerator    *paramEnum = [[self _subOptionsForName:optionName] reverseObjectEnumerator];
+        NSString        *eachParam;
+        NSString        *subOptionNameEquals = [subOptionName stringByAppendingString:@"="];
+        
+        while(eachParam = [paramEnum nextObject]){
+            if([eachParam hasPrefix:subOptionNameEquals])
+                return [eachParam substringFromIndex:[subOptionNameEquals length]];
+        }
+        
+        return nil;
+    }
+    else
+        // FIXME: In fact we should return the default value
+        return nil;
 }
 
 - (void) setSubOption:(NSString *)subOptionName state:(BOOL)state forName:(NSString *)optionName
@@ -663,6 +665,23 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
     [subOptions removeObject:disabledSubOptionName];
     [subOptions removeObject:subOptionName];
     [subOptions addObject:(state ? subOptionName:disabledSubOptionName)];
+    [self setOptionValue:[subOptions componentsJoinedByString:@","] forName:optionName];
+    [self setOptionState:YES forName:optionName];
+}
+
+- (void) setSubOption:(NSString *)subOptionName value:(NSString *)value state:(BOOL)state forName:(NSString *)optionName
+{
+    NSMutableArray	*subOptions = [NSMutableArray arrayWithArray:[self _subOptionsForName:optionName]];
+    NSEnumerator    *subOptionEnum = [[NSArray arrayWithArray:subOptions] objectEnumerator];
+    NSString        *eachSubOption;
+    NSString        *subOptionNameEquals = [subOptionName stringByAppendingString:@"="];
+    
+    while(eachSubOption = [subOptionEnum nextObject])
+        if([eachSubOption hasPrefix:subOptionNameEquals])
+            [subOptions removeObject:eachSubOption];
+
+    if(state)
+        [subOptions addObject:[subOptionNameEquals stringByAppendingString:value]];
     [self setOptionValue:[subOptions componentsJoinedByString:@","] forName:optionName];
     [self setOptionState:YES forName:optionName];
 }
@@ -694,46 +713,6 @@ NSString * const GPGOpenPGPExecutablePathKey = @"GPGOpenPGPExecutablePath";
         return [self gnupgVersion];
     else
         return gnupgVersion;
-}
-
-+ (NSString *) outputFromGPGTaskWithArgument:(NSString *)argument
-{
-    NSTask		*aTask = [[NSTask alloc] init];
-    NSPipe		*aPipe = [NSPipe pipe];
-    NSString	*outputString = nil;
-
-    [aTask setLaunchPath:[self gpgPath]];
-    [aTask setArguments:[NSArray arrayWithObjects:@"--utf8-strings", @"--charset", @"utf8", argument, nil]];
-    [aTask setStandardOutput:aPipe];
-
-    NS_DURING
-        NSData	*outputData;
-        NSRange	aRange;
-
-        [aTask launch];
-//        outputData = [[aPipe fileHandleForReading] readDataToEndOfFile]; // No longer working in all cases:
-//        *** -[NSConcreteFileHandle readDataOfLength:]: Interrupted system call
-        [aTask waitUntilExit];
-        outputData = [[aPipe fileHandleForReading] readDataToEndOfFile]; // Reading data after waitUntilExit will not block process as long as data to read does not exceed pipe buffer size, I think. If it does, maybe use readDataToEndOfFileAndNotify?
-
-        outputString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
-        // Patch! Seems that translated strings are not displayed using passed encoding, but using ISOLatin1!
-        if(outputString == nil)
-            outputString = [[NSString alloc] initWithData:outputData encoding:NSISOLatin1StringEncoding];
-        aRange = [outputString lineRangeForRange:NSMakeRange(0, [outputString length])];
-        aRange = [outputString lineRangeForRange:NSMakeRange(aRange.location, [outputString length] - aRange.location)];
-        outputString = [[outputString autorelease] substringWithRange:aRange];
-        if([aTask terminationStatus] != 0)
-            [NSException raise:NSGenericException format:@"### GPGOptions: error %d during execution of '%@ %@'", [aTask terminationStatus], [aTask launchPath], [[aTask arguments] componentsJoinedByString:@" "]];
-    NS_HANDLER
-        NSLog(@"### GPGOptions: error during execution of '%@ %@': %@ %@", [aTask launchPath], [[aTask arguments] componentsJoinedByString:@" "], localException, [localException userInfo]);
-        [aTask release];
-        [localException raise];
-    NS_ENDHANDLER
-
-    [aTask release];
-
-    return outputString;
 }
 
 + (NSString *) gnupgVersion

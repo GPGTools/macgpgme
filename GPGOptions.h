@@ -53,6 +53,16 @@ GPG_EXPORT NSString * const GPGUserDefaultsSuiteName;
  */
 GPG_EXPORT NSString * const GPGOpenPGPExecutablePathKey;
 
+/*!
+ *  @const      GPGDefaultsDidChangeNotification
+ *  @abstract   Posted after defaults in the @link ////macgpg/c/const/GPGUserDefaultsSuiteName GPGUserDefaultsSuiteName \@link defaults domain have been changed.
+ *  @discussion Object is (currently) nil.
+ *
+ *              This notification is also posted by the distributed notification
+ *              center. object is also nil.
+ */
+GPG_EXPORT NSString * const GPGDefaultsDidChangeNotification;
+
 
 /*!
  *  @class      GPGOptions
@@ -72,6 +82,7 @@ GPG_EXPORT NSString * const GPGOpenPGPExecutablePathKey;
  */
 @interface GPGOptions : NSObject
 {
+    NSString        *path;
     NSMutableArray	*optionFileLines;
     NSMutableArray	*optionNames;
     NSMutableArray	*optionValues;
@@ -80,69 +91,6 @@ GPG_EXPORT NSString * const GPGOpenPGPExecutablePathKey;
     BOOL			hasModifications;
 }
 
-/*!
- *  @methodgroup File locations
- */
-
-/*!
- *  @method     gpgPath
- *  @abstract   Shortcut for
- *              <code>[[GPGEngine engineForProtocol:GPGOpenPGPProtocol] executablePath]</code>.
- */
-+ (NSString *) gpgPath;
-
-/*!
- *  @method     optionsFilename
- *  @abstract   Returns the full path name to GnuPG configuration file.
- *  @discussion It depends on GnuPG version. If user changed GnuPG's home
- *              directory without logging out and in, returned value might be
- *              not yet valid.
- *  @exception  Raises an exception when GnuPG version cannot be found out.
- */
-+ (NSString *) optionsFilename;
-
-/*!
- *  @methodgroup GnuPG version
- */
-
-/*!
- *  @method     gnupgVersion
- *  @abstract   Shortcut for
- *              <code>[[GPGEngine engineForProtocol:GPGOpenPGPProtocol] version]</code>.
- */
-+ (NSString *) gnupgVersion;
-
-
-/*!
- *  @methodgroup GnuPG home directory
- */
-
-/*!
- *  @method     homeDirectory
- *  @abstract   Returns the home directory used by GnuPG, as configured by user.
- *  @discussion Returns the home directory used by GnuPG, as configured by user.
- *              Result may be different than the one returned by 
- *              <code>@link //macgpg/occ/instm/GPGEngine/homeDirectory homeDirectory@/link</code>
- *              (GPGEngine). Maybe user will need to logout and login to get it active, due
- *              to the use of environment variable <code>GNUPGHOME</code>.
- */
-+ (NSString *) homeDirectory;
-
-/*!
- *  @method     setHomeDirectory:
- *  @abstract   Sets the home directory for GnuPG.
- *  @discussion Maybe user will need to logout and login to get it active, due
- *              to the use of environment variable <code>GNUPGHOME</code>.
- *              Invoking this method has not the same effect as invoking
- *              <code>@link //macgpg/occ/instm/GPGEngine/setHomeDirectory: setHomeDirectory:@/link</code> 
- *              (GPGEngine): here the modification will be permanent, valid only
- *              after user logged out and in again, whereas
- *              <code>@link //macgpg/occ/instm/GPGEngine/setHomeDirectory: setHomeDirectory:@/link</code>
- *              (GPGEngine) has an effect only as long as the program using
- *              MacGPGME framework is running.
- *  @param      homeDirectory Path to new home directory
- */
-+ (void) setHomeDirectory:(NSString *)homeDirectory;
 
 /*!
  *  @method     homeDirectoryChanged
@@ -156,35 +104,17 @@ GPG_EXPORT NSString * const GPGOpenPGPExecutablePathKey;
 
 
 /*!
- *  @methodgroup HTTP proxy
+ *  @method     setDefaultValue:forKey:
+ *  @abstract   Sets default in GPGUserDefaultsSuiteName defaults suite.
+ *  @discussion Posts a @link //macgpg/c/const/GPGDefaultsDidChangeNotification GPGDefaultsDidChangeNotification@/link
+ *              notification. If <i>value</i> is nil, default is removed.
+ *  @param      value The defaults value
+ *  @param      key The defaults key
  */
++ (void) setDefaultValue:(id)value forKey:(NSString *)key;
 
-/*!
- *  @method     httpProxy
- *  @abstract   Returns the HTTP proxy used by GnuPG, when connecting to key
- *              servers.
- *  @discussion Maybe user will need to logout and login to get it active, due
- *              to the use of environment variable <code>http_proxy</code>.
- */
-+ (NSString *) httpProxy;
 
-/*!
- *  @method     setHttpProxy:
- *  @abstract   Sets the HTTP proxy to be used by GnuPG, when connecting to key
- *              servers.
- *  @discussion Maybe user will need to logout and login to get it active, due
- *              to the use of environment variable <code>http_proxy</code>.
- *  @param      httpProxy New proxy
- */
-+ (void) setHttpProxy:(NSString *)httpProxy;
-
-/*!
- *  @method     httpProxyChanged
- *  @abstract   Returns whether user changed GnuPG's HTTP proxy, and 
- *              modification might not yet be active.
- */
-+ (BOOL) httpProxyChanged;
-
+- (id) initWithPath:(NSString *)path;
 
 /*!
  *  @methodgroup Setting options
@@ -342,8 +272,8 @@ GPG_EXPORT NSString * const GPGOpenPGPExecutablePathKey;
 /*!
  *  @method     setOptionState:forName:
  *  @abstract   (brief description)
- *  @discussion If <i>state</i> is YES and option does not yet exist, it is
- *              created. You need to call <code>@link saveOptions saveOptions@/link</code>.
+ *  @discussion If <i>state</i> is <code>YES</code> and option does not yet
+ *              exist, it is created. You need to call <code>@link saveOptions saveOptions@/link</code>.
  *  @param      state (description)
  *  @param      name (description)
  */
@@ -367,14 +297,37 @@ GPG_EXPORT NSString * const GPGOpenPGPExecutablePathKey;
  *  @method     setSubOption:state:forName:
  *  @abstract   Sets sub-option's state, in named option, and enables option.
  *  @discussion Used for <code>keyserver-options</code> option. If <i>state</i>
- *              is YES and option does not yet exist, it is created. You need to
- *              call <code>@link saveOptions saveOptions@/link</code>.
+ *              is <code>YES</code> and option does not yet exist, it is
+ *              created. You need to call <code>@link saveOptions saveOptions@/link</code>.
  *  @param      subOptionName Sub-option name
  *  @param      state Sub-option new state
  *  @param      optionName Option name
  */
 - (void) setSubOption:(NSString *)subOptionName state:(BOOL)state forName:(NSString *)optionName;
 
+/*!
+ *  @method     subOptionValue:state:forName:
+ *  @abstract   Returns sub-option's value and state, in named option.
+ *  @discussion Used for <code>keyserver-options</code> option.
+ *  @param      subOptionName Sub-option name
+ *  @param      statePtr Used to return state; may be NULL
+ *  @param      optionName Option name
+ */
+- (NSString *) subOptionValue:(NSString *)subOptionName state:(BOOL *)statePtr forName:(NSString *)optionName;
+
+/*!
+ *  @method     setSubOption:value:state:forName:
+ *  @abstract   Sets sub-option's value and state, in named option, and enables
+ *              option.
+ *  @discussion Used for <code>keyserver-options</code> option. If <i>state</i>
+ *              is <code>YES</code> and option does not yet exist, it is
+ *              created. You need to call <code>@link saveOptions saveOptions@/link</code>.
+ *  @param      subOptionName Sub-option name
+ *  @param      value Sub-option new value
+ *  @param      state Sub-option new state
+ *  @param      optionName Option name
+ */
+- (void) setSubOption:(NSString *)subOptionName value:(NSString *)value state:(BOOL)state forName:(NSString *)optionName;
 
 /*!
  *  @methodgroup Loading and saving options
