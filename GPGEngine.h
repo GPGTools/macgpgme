@@ -146,6 +146,13 @@ typedef enum {
 + (GPGEngine *) engineForProtocol:(GPGProtocol)protocol;
 
 /*!
+ *  @method     setDefaultExecutablePath:forProtocol:
+ *  @abstract   Sets the default executable path for the given protocol.
+ *  @discussion You can reset the value by passing nil. Path is stored in defaults.
+ */
++ (void) setDefaultExecutablePath:(NSString *)path forProtocol:(GPGProtocol)protocol;
+
+/*!
  *  @method     engineProtocol
  *  @abstract   Returns the protocol for which the crypto engine is used.
  *  @discussion You can convert this to a string with 
@@ -206,23 +213,31 @@ typedef enum {
  *  @method     homeDirectory
  *  @abstract   Returns the directory name of the crypto engine's configuration 
  *              directory.
- *  @discussion If it is nil, then the default directory is used; for the 
- *              OpenPGP engine, it is <code>$HOME/.gnupg</code>, or 
- *              <code>$GNUPGHOME</code> if environment variable is set.
+ *  @discussion Never returns nil.
  */
 - (NSString *) homeDirectory;
 
 /*!
- *  @method     setHomeDirectory:
- *  @abstract   Sets the directory name of the crypto engine's configuration 
- *              directory.
+ *  @method     customHomeDirectory
+ *  @abstract   Returns the customized directory name of the crypto engine's 
+ *              configuration directory, when not set to default.
+ *  @discussion If it is nil, then the default directory is used; for the 
+ *              OpenPGP engine, it is <code>$HOME/.gnupg</code>, or 
+ *              <code>$GNUPGHOME</code> if environment variable is set.
+ */
+- (NSString *) customHomeDirectory;
+
+/*!
+ *  @method     setCustomHomeDirectory:
+ *  @abstract   Customizes the directory name of the crypto engine's 
+ *              configuration directory.
  *  @discussion Sets the directory name of the crypto engine's configuration
  *              directory. If it is nil, then the default directory is used; for 
  *              the OpenPGP engine, it is <code>$HOME/.gnupg</code>, or
  *              <code>$GNUPGHOME</code> if environment variable is set.
  *  @param      homeDirectory Path to engine home directory.
  */
-- (void) setHomeDirectory:(NSString *)homeDirectory;
+- (void) setCustomHomeDirectory:(NSString *)homeDirectory;
 
 /*!
  *  @method     executablePathDefaultsKey
@@ -240,7 +255,7 @@ typedef enum {
  *              engine executable is located.
  *  @discussion We store in user defaults the location where the crypto engine
  *              executable is located. If that location has never been set in
- *              defaults, returns NO.
+ *              defaults, returns <code>NO</code>.
  *
  *              Implemented only for the OpenPGP engine.
  */
@@ -264,6 +279,40 @@ typedef enum {
  *              Implemented only for the OpenPGP engine.
  */
 - (NSArray *) availableExecutablePaths;
+
+/*! 
+ *  @method     executeWithArguments:localizedOutput:error:
+ *  @abstract   Launches engine's executable with passed arguments and gets
+ *              output synchronously.
+ *  @discussion
+ *  @param      arguments Array of <code>@link //apple_ref/occ/cl/NSString NSString@/link</code>
+ *              parameters, appended to default parameters.
+ *  @param      localizedOutput When <code>NO</code>, executable is launched in
+ *              English locale, to allow easy parsing of output.
+ *  @param      errorPtr Optional output error argument.
+ */
+- (NSString *) executeWithArguments:(NSArray *)arguments localizedOutput:(BOOL)localizedOutput error:(NSError **)errorPtr;
+
+/*!
+ *  @method     optionsFilename
+ *  @abstract   Returns the full path name to engine's configuration file.
+ *  @discussion It may depend on the engine's version. If user changed engine's
+ *              home directory without logging out and in, returned value might
+ *              be not yet valid.
+ *
+ *              Implemented only for the OpenPGP engine.
+ *  @exception  Raises an exception when engine version cannot be found out.
+ */
+- (NSString *) optionsFilename;
+
+/*!
+ *  @method     extensionsPath
+ *  @abstract   Returns the default directory name where extensions are stored.
+ *
+ *              Implemented only for the OpenPGP engine version 1.x.
+ *  @exception  Raises an exception when engine version cannot be found out.
+ */
+- (NSString *) extensionsPath;
 
 @end
 

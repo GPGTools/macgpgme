@@ -33,11 +33,16 @@
 #include <MacGPGME/GPGOptions.h>
 #include <Foundation/Foundation.h>
 #include <gpgme.h>
+#include "GPGEngineHelper.h"
 
 
 #define _engine ((gpgme_engine_info_t)_internalRepresentation)
 #define INVALID_CONTEXT ((GPGContext *)-1)
 
+
+@interface GPGEngine(Private)
++ (NSString *) executablePathDefaultsKeyForProtocol:(GPGProtocol)protocol;
+@end
 
 @implementation GPGEngine
 
@@ -106,6 +111,21 @@
     return [defaultHomeDirectoryPerProtocol objectForKey:aProtocol];
 }
 
++ (void) setDefaultExecutablePath:(NSString *)path forProtocol:(GPGProtocol)protocol
+{
+    if(protocol != GPGOpenPGPProtocol)
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+    
+    [GPGOptions setDefaultValue:path forKey:GPGOpenPGPExecutablePathKey];
+}
+
++ (NSString *) _defaultExecutablePathForProtocol:(GPGProtocol)protocol
+{
+    NSString    *aPath = [[NSUserDefaults standardUserDefaults] stringForKey:[self executablePathDefaultsKeyForProtocol:protocol]];
+
+    return aPath;
+}
+
 - (GPGProtocol) engineProtocol
 {
     NSAssert(_context != INVALID_CONTEXT, @"### GPGEngine instance was associated to a GPGContext that has been freed.");
@@ -171,6 +191,13 @@
 
 - (NSString *) homeDirectory
 {
+    NSString    *homeDirectory = [self customHomeDirectory];
+    
+    return (homeDirectory != nil ? homeDirectory : [[self class] defaultHomeDirectoryForProtocol:[self engineProtocol]]);
+}
+
+- (NSString *) customHomeDirectory
+{
     const char	*aCString;
     
     NSAssert(_context != INVALID_CONTEXT, @"### GPGEngine instance was associated to a GPGContext that has been freed.");
@@ -179,9 +206,9 @@
     return GPGStringFromChars(aCString);
 }
 
-- (void) setHomeDirectory:(NSString *)homeDirectory
+- (void) setCustomHomeDirectory:(NSString *)homeDirectory
 {
-    NSString    *myHomeDirectory = [self homeDirectory];
+    NSString    *myHomeDirectory = [self customHomeDirectory];
     
     if(myHomeDirectory != homeDirectory && ![myHomeDirectory isEqualToString:homeDirectory]){
         const char      *aCString = [homeDirectory fileSystemRepresentation];
@@ -212,17 +239,25 @@
         return [NSString stringWithFormat:@"<%@ %p> %@ (min. %@), %@ (%@), %@ - %@", NSStringFromClass([self class]), self, GPGProtocolDescription([self engineProtocol]), [self requestedVersion], [self executablePath], [self version], [self homeDirectory], (_context != nil ? [_context description] : @"global")];
 }
 
-- (NSString *) executablePathDefaultsKey
++ (NSString *) executablePathDefaultsKeyForProtocol:(GPGProtocol)protocol
 {
-    switch([self engineProtocol]){
+    switch(protocol){
         case GPGOpenPGPProtocol:
             return GPGOpenPGPExecutablePathKey;
         case GPGCMSProtocol:
         default:
-            [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+            return nil;
     }
+}
+
+- (NSString *) executablePathDefaultsKey
+{
+    NSString    *aKey = [[self class] executablePathDefaultsKeyForProtocol:[self engineProtocol]];
     
-    return nil;
+    if(aKey == nil)
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+    
+    return aKey;
 }
 
 - (BOOL) userHasSelectedExecutablePath
@@ -234,7 +269,7 @@
 {
     switch([self engineProtocol]){
         case GPGOpenPGPProtocol:
-            return [NSArray arrayWithObjects:@"/usr/local/bin/gpg2", @"/usr/local/bin/gpg", @"/opt/local/bin/gpg2", @"/opt/local/bin/gpg", @"/sw/bin/gpg2", @"/sw/bin/gpg", nil];
+            return [NSArray arrayWithObjects:@"/usr/local/bin/gpg2", @"/opt/local/bin/gpg2", @"/sw/bin/gpg2", @"/usr/local/bin/gpg", @"/opt/local/bin/gpg", @"/sw/bin/gpg", nil];
         case GPGCMSProtocol:
         default:
             [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
@@ -268,6 +303,40 @@
     return nil;
 }
 
+- (NSString *) executeWithArguments:(NSArray *)arguments localizedOutput:(BOOL)localizedOutput error:(NSError **)errorPtr
+{
+    return [GPGEngineHelper executeEngine:self withArguments:arguments localizedOutput:localizedOutput error:errorPtr];
+}
+
+- (NSString *) optionsFilename
+{
+    switch([self engineProtocol]){
+        case GPGOpenPGPProtocol:{
+            NSString	*aVersion = [self version];
+            
+            if(aVersion != nil && [aVersion rangeOfString:@"1.0."].length > 0)
+                return [[self homeDirectory] stringByAppendingPathComponent:@"options"];
+            else
+                return [[self homeDirectory] stringByAppendingPathComponent:@"gpg.conf"];
+        }
+        case GPGCMSProtocol:
+        default:
+            [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+            return nil; // Never reached
+    }
+}
+
+- (NSString *) extensionsPath
+{
+    NSString    *extensionsPath = nil;
+
+    if(![self engineProtocol] == GPGOpenPGPProtocol)
+        [[NSException exceptionWithGPGError:gpgme_err_make(GPG_MacGPGMEFrameworkErrorSource, GPGErrorNotImplemented) userInfo:nil] raise];
+    extensionsPath = [[[[self executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"lib/gnupg"]; // E.g. from /usr/local/bin/gpg to /usr/local/lib/gnupg
+    
+    return extensionsPath;
+}
+
 @end
 
 @implementation GPGEngine(GPGInternals)
@@ -278,9 +347,19 @@
     
     while(engineInfo != NULL){
         GPGEngine	*newEngine = [[GPGEngine alloc] initWithInternalRepresentation:engineInfo];
+        NSString    *defaultExecutablePath;
         
         [engines addObject:newEngine];
         [newEngine setContext:context];
+        defaultExecutablePath = [GPGEngine _defaultExecutablePathForProtocol:[newEngine engineProtocol]];
+        if(defaultExecutablePath != nil){
+            NS_DURING
+                [newEngine setExecutablePath:defaultExecutablePath];
+            NS_HANDLER
+                // Ignore error and log it
+                NSLog(@"No valid gpg engine at '%@'; you need to change default engine path", defaultExecutablePath);
+            NS_ENDHANDLER
+        }
         engineInfo = engineInfo->next;
         [newEngine release];
     }
