@@ -202,7 +202,7 @@ static NSLock   *_waitOperationLock = nil;
         while(anEngineCopy = [engineCopyEnum nextObject]){
             if([anEngineCopy engineProtocol] == [anEngine engineProtocol]){
                 [anEngineCopy setExecutablePath:[anEngine executablePath]];
-                [anEngineCopy setHomeDirectory:[anEngine homeDirectory]];
+                [anEngineCopy setCustomHomeDirectory:[anEngine customHomeDirectory]];
                 break;
             }
         }
@@ -770,6 +770,11 @@ static void progressCallback(void *object, const char *description, int type, in
             return anEngine;
     
     return nil;
+}
+
+- (GPGOptions *) options
+{
+    return [[[GPGOptions alloc] initWithPath:[[self engine] optionsFilename]] autorelease];
 }
 
 @end
@@ -1491,11 +1496,6 @@ static void progressCallback(void *object, const char *description, int type, in
 @end
 
 
-@interface GPGOptions(GPGContext_Revealed)
-- (NSArray *) _subOptionsForName:(NSString *)optionName;
-@end
-
-
 enum {
     _GPGContextHelperSearchCommand,
     _GPGContextHelperGetCommand,
@@ -1556,11 +1556,12 @@ enum {
     NSNumber			*formatVersionNumber = nil;
     int                 urlSchemeSeparatorLength = 3; // Length of ://
     BOOL                passHostArgument = YES;
+    int                 engineMajorVersion;
 
 	if(executableVersions == nil)
 		executableVersions = [[NSMutableDictionary alloc] initWithCapacity:5];
 	
-    gpgOptions = [[GPGOptions alloc] init];
+    gpgOptions = [[theContext options] retain];
     aHostName = [thePassedOptions objectForKey:@"keyserver"];
     if(aHostName == nil){
         NSArray	*optionValues = [gpgOptions activeOptionValuesForName:@"keyserver"];
@@ -1587,37 +1588,38 @@ enum {
             aRange = [aHostName rangeOfString:@"://"];
         }
     }
+    engineMajorVersion = [[[theContext engine] version] characterAtIndex:0] - '0';
     aString = [aHostName lowercaseString];
     if([aString hasPrefix:@"ldap://"]){
-        launchPath = @"gpgkeys_ldap"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_ldap" : @"gpgkeys_ldap"); // Hardcoded
         aProtocol = @"ldap";
     }
     else if([aString hasPrefix:@"x-hkp://"]){
-        launchPath = @"gpgkeys_hkp"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_hkp" : @"gpgkeys_hkp"); // Hardcoded
         aProtocol = @"x-hkp";
     }
     else if([aString hasPrefix:@"hkp://"]){
-        launchPath = @"gpgkeys_hkp"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_hkp" : @"gpgkeys_hkp"); // Hardcoded
         aProtocol = @"hkp";
     }
     else if([aString hasPrefix:@"http://"]){
-        launchPath = @"gpgkeys_curl"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_curl" : @"gpgkeys_curl"); // Hardcoded
         aProtocol = @"http";
     }
     else if([aString hasPrefix:@"https://"]){
-        launchPath = @"gpgkeys_curl"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_curl" : @"gpgkeys_curl"); // Hardcoded
         aProtocol = @"https";
     }
     else if([aString hasPrefix:@"ftp://"]){
-        launchPath = @"gpgkeys_curl"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_curl" : @"gpgkeys_curl"); // Hardcoded
         aProtocol = @"ftp";
     }
     else if([aString hasPrefix:@"ftps://"]){
-        launchPath = @"gpgkeys_curl"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_curl" : @"gpgkeys_curl"); // Hardcoded
         aProtocol = @"ftps";
     }
     else if([aString hasPrefix:@"finger:"]){
-        launchPath = @"gpgkeys_finger"; // Hardcoded
+        launchPath = (engineMajorVersion == 2 ? @"gpg2keys_finger" : @"gpgkeys_finger"); // Hardcoded
         aProtocol = @"finger";
     }
     else{
@@ -1626,10 +1628,11 @@ enum {
     }
     aHostName = [aHostName substringFromIndex:aRange.location + urlSchemeSeparatorLength];
 
-    if([[[theContext engine] version] characterAtIndex:0] == '1')
+    if(engineMajorVersion == 1)
         aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"libexec/gnupg"]; // E.g. from /usr/local/bin/gpg to /usr/local/libexec/gnupg
-    else
-        aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"libexec"]; // E.g. from /usr/local/bin/gpg to /usr/local/libexec
+    else{
+        aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"libexec"]; // E.g. from /usr/local/bin/gpg2 to /usr/local/libexec
+    }
     aString = [aString stringByAppendingPathComponent:launchPath];
     if(![[NSFileManager defaultManager] fileExistsAtPath:aString]){
         aString = [[[[[theContext engine] executablePath] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"lib/gnupg"]; // E.g. from /sw/bin/gpg to /sw/lib/gnupg (needed for Fink installations!)
@@ -1638,7 +1641,7 @@ enum {
             BOOL	tryEmbeddedOnes = YES;
             
             if([aProtocol isEqualToString:@"http"]){
-                launchPath = @"gpgkeys_http"; // Hardcoded
+                launchPath = (engineMajorVersion == 2 ? @"gpg2keys_http" : @"gpgkeys_http"); // Hardcoded
                 aString = [[aString stringByDeletingLastPathComponent] stringByAppendingPathComponent:launchPath];
                 tryEmbeddedOnes = ![[NSFileManager defaultManager] fileExistsAtPath:aString];
             }
@@ -2288,7 +2291,7 @@ enum {
 
 - (NSArray *) keyGroups
 {
-    GPGOptions          *options = [[GPGOptions alloc] init];
+    GPGOptions          *options = [self options];
     NSArray             *groupOptionValues = [options activeOptionValuesForName:@"group"];
     NSEnumerator        *groupDefEnum = [groupOptionValues objectEnumerator];
     NSMutableDictionary *groupsPerName = [NSMutableDictionary dictionaryWithCapacity:[groupOptionValues count]];
@@ -2321,8 +2324,6 @@ enum {
         [groupsPerName setObject:newGroup forKey:aName];
         [newGroup release];
     }
-    
-    [options release];
     
     return [groupsPerName allValues];
 }

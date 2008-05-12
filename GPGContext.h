@@ -47,6 +47,7 @@ extern "C" {
 @class NSMutableSet;
 @class GPGData;
 @class GPGKey;
+@class GPGOptions;
 
 
 /*!
@@ -385,15 +386,15 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *  @method     setUsesArmor:
  *  @abstract   Enables or disables the use of an <i>ASCII armor</i> for all
  *              output.
- *  @discussion Default value is NO.
- *  @param      armor YES or NO.
+ *  @discussion Default value is <code>NO</code>.
+ *  @param      armor <code>YES</code> or <code>NO</code>.
  */
 - (void) setUsesArmor:(BOOL)armor;
 
 /*!
  *  @method     usesArmor
  *  @abstract   Returns whether context uses <i>ASCII armor</i> or not.
- *  @discussion Default value is NO.
+ *  @discussion Default value is <code>NO</code>.
  */
 - (BOOL) usesArmor;
 
@@ -412,15 +413,15 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              This option is only relevant to the OpenPGP crypto engine, and
  *              ignored by all other engines.
  * 
- *              Default value is NO.
- *  @param      mode YES or NO.
+ *              Default value is <code>NO</code>.
+ *  @param      mode <code>YES</code> or <code>NO</code>.
  */
 - (void) setUsesTextMode:(BOOL)mode;
 
 /*!
  *  @method     usesTextMode
  *  @abstract   Returns whether context uses <i>text mode</i> or not.
- *  @discussion Default value is NO.
+ *  @discussion Default value is <code>NO</code>.
  */
 - (BOOL) usesTextMode;
 
@@ -863,6 +864,17 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  */
 - (GPGEngine *) engine;
 
+/*!
+ *  @method     options
+ *  @abstract   Convenience method. Returns the options file of currently used
+ *              engine.
+ *  @discussion Will return a new instance on each invocation. If you change the
+ *              engine or its home directory, you need to ask for a new
+ *              <code>@link //macgpg/occ/cl/GPGOptions GPGOptions@/link</code> 
+ *              instance.
+ */
+- (GPGOptions *) options;
+
 @end
 
 
@@ -876,13 +888,14 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
 /*!
  *  @method     waitOnAnyRequest:
  *  @abstract   Waits for any finished request.
- *  @discussion Waits for any finished request. When <i>hang</i> is YES the
- *              method will wait, otherwise it will return immediately when
+ *  @discussion Waits for any finished request. When <i>hang</i> is <code>YES</code>
+ *              the method will wait, otherwise it will return immediately when
  *              there is no pending finished request.
  *
  *              Returns the context of the finished request or nil if 
- *              <i>hang</i> is NO and no request has finished.
- *  @param      hang NO will return immediately, YES will wait.
+ *              <i>hang</i> is <code>NO</code> and no request has finished.
+ *  @param      hang <code>NO</code> will return immediately, <code>YES</code>
+ *              will wait.
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              exception which reflects the termination status of the 
  *              operation (in case of error). The exception's userInfo
@@ -900,13 +913,15 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              the crypto back-end and watches over the run time status of the
  *              back-end process.
  *
- *              If <i>hang</i> is YES the method does not return until the
- *              operation is completed or cancelled. Otherwise the method will
- *              not block for a long time.
+ *              If <i>hang</i> is <code>YES</code> the method does not return
+ *              until the operation is completed or cancelled. Otherwise the
+ *              method will not block for a long time.
  *
- *              Returns YES if there is a finished request for context or NO if
- *              <i>hang</i> is NO and no request (for context) has finished.
- *  @param      hang NO will return immediately, YES will wait.
+ *              Returns <code>YES</code> if there is a finished request for
+ *              context or <code>NO</code> if <i>hang</i> is <code>NO</code> and
+ *              no request (for context) has finished.
+ *  @param      hang <code>NO</code> will return immediately, <code>YES</code> 
+ *              will wait.
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              exception which reflects the termination status of the 
  *              operation (in case of error). The exception's userInfo
@@ -1133,14 +1148,14 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              and <code>@link //macgpg/occ/cl/GPGKeyGroup GPGKeyGroup@/link</code>
  *              objects; you can mix them.
  *
- *              If the <i>trustAllKeys</i> parameter is set to YES, then all
- *              passed keys will be trusted, even if the keys do not have a high
- *              enough validity in the <i>key ring</i>. This flag should be used
- *              with care; in general it is not a good idea to use any untrusted
- *              keys.
+ *              If the <i>trustAllKeys</i> parameter is set to <code>YES</code>,
+ *              then all passed keys will be trusted, even if the keys do not
+ *              have a high enough validity in the <i>key ring</i>. This flag
+ *              should be used with care; in general it is not a good idea to
+ *              use any untrusted keys.
  *  @param      inputData Data to encrypt
  *  @param      recipientKeys Keys and key groups to use for encryption
- *  @param      trustAllKeys Ignore <i>key ring</i> trust validities when YES
+ *  @param      trustAllKeys Ignore <i>key ring</i> trust validities when <code>YES</code>
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              exception with error code:<dl>
  *              <dt><code>@link //macgpg/c/econst/GPGErrorUnusablePublicKey GPGErrorUnusablePublicKey@/link</code></dt>
@@ -1186,7 +1201,7 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              objects; you can mix them.
  *  @param      inputData Data to sign and encrypt
  *  @param      keys Keys and key groups to use for encryption
- *  @param      trustAllKeys Ignore <i>key ring</i> trust validities when YES
+ *  @param      trustAllKeys Ignore <i>key ring</i> trust validities when <code>YES</code>
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              exception with error code:<dl>
  *              <dt><code>@link //macgpg/c/econst/GPGErrorNoData GPGErrorNoData@/link</code></dt>
@@ -1388,10 +1403,10 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *  @abstract   Deletes the given <i>key</i> from the standard <i>key ring</i> 
  *              of the crypto engine used by the context.
  *  @discussion To delete a secret key along with the public key,
- *              <i>allowSecret</i> must be YES, else only the public key is
+ *              <i>allowSecret</i> must be <code>YES</code>, else only the public key is
  *              deleted, if that is supported.
  *  @param      key Key to delete
- *  @param      allowSecret Delete also matching secret key when YES
+ *  @param      allowSecret Delete also matching secret key when <code>YES</code>
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
  *              exception with error code:<dl>
  *              <dt><code>@link //macgpg/c/econst/GPGErrorNoPublicKey GPGErrorNoPublicKey@/link</code></dt>
@@ -1400,7 +1415,7 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              <dd><i>key</i> was not specified unambiguously.</dd>
  *              <dt><code>@link //macgpg/c/econst/GPGErrorConflict GPGErrorConflict@/link</code></dt>
  *              <dd>Secret key for <i>key</i> is available, but 
- *               <i>allowSecret</i> is NO.</dd></dl>
+ *               <i>allowSecret</i> is <code>NO</code>.</dd></dl>
  *              Other exceptions could be raised too.
  */
 - (void) deleteKey:(GPGKey *)key evenIfSecretKey:(BOOL)allowSecret;
@@ -1413,10 +1428,10 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
 /*!
  *  @method     keyFromFingerprint:secretKey:
  *  @abstract   Fetches a single key, given its fingerprint (or key ID).
- *  @discussion If <i>secretKey</i> is YES, returns a secret key, else returns a
- *              public key. You can set the key list mode if you want to
- *              retrieve key signatures too. Returns nil if no matching key is
- *              found.
+ *  @discussion If <i>secretKey</i> is <code>YES</code>, returns a secret key,
+ *              else returns a public key. You can set the key list mode if you
+ *              want to retrieve key signatures too. Returns nil if no matching
+ *              key is found.
  *  @param      fingerprint Fingerprint or key ID
  *  @param      secretKey Searches secret keys only
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>
@@ -1493,8 +1508,8 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              search to a certain common name or user, not to list many
  *              specific keys at once by listing their fingerprints or key IDs.
  *
- *              If <i>secretKeysOnly</i> is YES, searches only for secret keys, 
- *              else searches only for public keys.
+ *              If <i>secretKeysOnly</i> is <code>YES</code>, searches only for 
+ *              secret keys, else searches only for public keys.
  *
  *              This call also resets any pending key listing operation.
  *
@@ -1783,8 +1798,8 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
 
 /*!
  *  @method     isPerformingAsyncOperation
- *  @abstract   Returns YES when the context is performing an asynchronous 
- *              operation.
+ *  @abstract   Returns <code>YES</code> when the context is performing an  
+ *              asynchronous operation.
  */
 -(BOOL) isPerformingAsyncOperation;
 
@@ -1822,8 +1837,8 @@ GPG_EXPORT NSString	* const GPGNextTrustItemKey;
  *              object to its passphrase delegate when needing a passphrase.
  *  @discussion <i>key</i> is the secret key for which the user is asked a
  *              passphrase. <i>key</i> is nil only in case of symmetric
- *              signature/decryption. <i>again</i> is set to YES if user typed a
- *              wrong passphrase the previous time(s).
+ *              signature/decryption. <i>again</i> is set to <code>YES</code>
+ *              if user typed a wrong passphrase the previous time(s).
  *
  *              If you return nil, it means that user cancelled passphrase 
  *              request.
