@@ -439,7 +439,8 @@ typedef enum {
 
 /*!
  *  @method     isAtEnd
- *  @abstract   Returns YES if there are no more bytes to read (EOF).
+ *  @abstract   Returns <code>YES</code> if there are no more bytes to read
+ *              (EOF).
  *  @discussion Convenience method. Though read pointer is changed during 
  *              computing, it is left unchanged on return.
  *  @exception  <code>@link //macgpg/c/data/GPGException GPGException@/link</code>

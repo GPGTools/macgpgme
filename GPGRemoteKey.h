@@ -88,8 +88,8 @@ extern "C" {
 
 /*!
  *  @method     isEqual:
- *  @abstract   Returns YES if both the receiver and <i>anObject</i> have the
- *              same <i>key ID</i> and of the same class.
+ *  @abstract   Returns <code>YES</code> if both the receiver and <i>anObject</i>
+ *              have the same <i>key ID</i> and of the same class.
  */
 - (BOOL) isEqual:(id)anObject;
 

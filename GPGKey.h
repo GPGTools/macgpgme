@@ -88,8 +88,8 @@ extern "C" {
 
 /*!
  *  @method     isEqual:
- *  @abstract   Returns YES if both the receiver and <i>anObject</i> have the
- *              same <i>fingerprint</i>, are both subclasses of GPGKey,
+ *  @abstract   Returns <code>YES</code> if both the receiver and <i>anObject</i>
+ *              have the same <i>fingerprint</i>, are both subclasses of GPGKey,
  *              and are both public or secret keys.
  *  @param      anObject An object to compare to
  */

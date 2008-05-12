@@ -300,7 +300,8 @@ typedef enum {
 
 /*!
  *  @method     wrongKeyUsage
- *  @abstract   Returns YES if the key was not used according to its policy.
+ *  @abstract   Returns <code>YES</code> if the key was not used according to
+ *              its policy.
  *  @discussion Not used for new signatures.
  */
 - (BOOL) wrongKeyUsage;

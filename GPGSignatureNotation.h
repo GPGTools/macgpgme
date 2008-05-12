@@ -116,8 +116,8 @@ typedef unsigned int GPGSignatureNotationFlags;
  *  @method     isHumanReadable
  *  @abstract   Returns whether flags indicates that notation data is 
  *              human-readable or not.
- *  @discussion Convenience method. Policy URL notation data always returns NO. 
- *              When returns YES, value is a <code>@link //apple_ref/occ/cl/NSString NSString@/link</code>,
+ *  @discussion Convenience method. Policy URL notation data always returns <code>NO</code>. 
+ *              When returns <code>YES</code>, value is a <code>@link //apple_ref/occ/cl/NSString NSString@/link</code>,
  *              else value is a <code>@link //apple_ref/occ/cl/NSData NSData@/link</code>
  *              (except for policy URLs which are always strings).
  */
@@ -130,7 +130,7 @@ typedef unsigned int GPGSignatureNotationFlags;
  *  @discussion Convenience method.
  *
  *              <strong>WARNING:</strong> with <code>gpg</code> &lt;= 1.4,
- *              always returns NO.
+ *              always returns <code>NO</code>.
  */
 - (BOOL) isCritical;
 
