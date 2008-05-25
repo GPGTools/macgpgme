@@ -139,6 +139,53 @@ static NSLock   *_waitOperationLock = nil;
     }
 }
 
+- (void)_updateEnvironment
+{
+    // Agent-specific code:
+    // Agent saves info in file ~/.gpg-agent-info.
+    // If agent is restarted, then our environment is no longer up-to-date.
+    // We need to re-read that file and update our environment.
+    NSString    *agentEnvironment = [NSString stringWithContentsOfFile:[NSHomeDirectory() stringByAppendingPathComponent:@".gpg-agent-info"]]; // WARNING: we hardcode that path
+    BOOL        resetEnvironment = YES;
+    
+    if([agentEnvironment length] > 0){
+        NSArray         *lines = [agentEnvironment componentsSeparatedByString:@"\n"];
+        NSEnumerator    *lineEnum = [lines objectEnumerator];
+        NSString        *eachLine;
+        
+        while(eachLine = [lineEnum nextObject]){
+            unsigned    lineLength = [eachLine length];
+            
+            if(lineLength > 0){ // Ignore empty lines
+                unsigned    anIndex = [eachLine rangeOfString:@"="].location;
+                
+                if(anIndex != NSNotFound && anIndex < lineLength - 1){
+                    NSString    *key = [eachLine substringToIndex:anIndex];
+                    NSString    *value = [eachLine substringFromIndex:anIndex + 1];
+                    NSString    *currentValue = [[[NSProcessInfo processInfo] environment] objectForKey:key];
+                    
+                    if(![currentValue isEqualToString:value]){
+                        if(setenv([key cStringUsingEncoding:NSUTF8StringEncoding], [value cStringUsingEncoding:NSUTF8StringEncoding], 1) != 0)
+                            perror([[NSString stringWithFormat:@"### Error: unable to change environment variable '%@' to '%@'", key, value] cStringUsingEncoding:NSUTF8StringEncoding]);
+                        else{
+                            resetEnvironment = NO;
+                        }
+                    }
+                    else{
+                        resetEnvironment = NO;
+                    }
+                }
+                else
+                    NSLog(@"### Error: invalid line in ~/.gpg-agent-info:\n%@", eachLine);
+            }
+        }
+    }
+    
+    if(resetEnvironment){
+        unsetenv("GPG_AGENT_INFO");
+    }
+}
+
 - (id) init
 {
     gpgme_ctx_t		aContext;
@@ -148,6 +195,9 @@ static NSLock   *_waitOperationLock = nil;
         [self release];
         [[NSException exceptionWithGPGError:anError userInfo:nil] raise];
     }
+    
+    [self _updateEnvironment];
+    
     self = [self initWithInternalRepresentation:aContext];
     gpgme_set_progress_cb(aContext, progressCallback, self);
     _operationData = [[NSMutableDictionary allocWithZone:[self zone]] init];
