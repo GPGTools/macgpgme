@@ -385,6 +385,7 @@ typedef enum {
     GPGErrorUser15                       =  1038,
     GPGErrorUser16                       =  1039,
 
+    GPGErrorMissingErrno                 = 16381,
     GPGErrorUnknownErrno                 = 16382,
     GPGErrorEOF                          = 16383,
 
@@ -693,12 +694,24 @@ GPG_EXPORT GPGError GPGMakeError(GPGErrorSource src, GPGErrorCode cde);
  *  @discussion The function GPGMakeErrorFromErrno is like
  *              <code>@link GPGMakeError GPGMakeError@/link</code>, 
  *              but it takes a system error like <code>errno</code> instead of a
-*               <code>@link //macgpg/c/tdef/GPGErrorCode GPGErrorCode@/link</code>
+ *              <code>@link //macgpg/c/tdef/GPGErrorCode GPGErrorCode@/link</code>
  *              error code.
  *  @param      src The error source
  *  @param      cde The system error code
  */
 GPG_EXPORT GPGError GPGMakeErrorFromErrno(GPGErrorSource src, int cde);
+
+/*!
+ *  @function   GPGMakeErrorFromSystemError
+ *  @abstract   Returns the error value consisting of the default error source
+ *              and the latest system error (<code>errno</code>).
+ *  @discussion Retrieves the error code directly from the <code>errno</code>
+ *              variable. This returns <code>GPGErrorUnknownErrno</code> as 
+ *              error code if the system error is not mapped and 
+ *              <code>GPGErrorMissingErrno</code> if <code>errno</code> has the
+ *              value 0.
+ */
+GPG_EXPORT GPGError GPGMakeErrorFromSystemError();
 
 /*!
  *  @constant   GPGException

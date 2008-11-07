@@ -56,6 +56,11 @@ GPGError GPGMakeErrorFromErrno(GPGErrorSource src, int cde)
     return gpgme_err_make_from_errno(src, cde);
 }
 
+GPGError GPGMakeErrorFromSystemError()
+{
+    return gpg_error_from_syserror();
+}
+
 NSString *GPGErrorDescription(GPGError error)
 {
     const size_t	bufferIncrement = 128;
