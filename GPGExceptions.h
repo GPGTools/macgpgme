@@ -639,7 +639,7 @@ typedef unsigned int	GPGError;
 
 /*!
  *  @function   GPGErrorDescription
- *  @abstract   Returns the (yet unlocalized) description of an error.
+ *  @abstract   Returns the localized description of an error.
  *  @discussion This string can be used to output a diagnostic message to the 
  *              user.
  *  @param      error The error
@@ -649,7 +649,7 @@ GPG_EXPORT NSString	*GPGErrorDescription(GPGError error);
 
 /*!
  *  @function   GPGErrorSourceDescription
- *  @abstract   Returns the (yet unlocalized) name of an error source.
+ *  @abstract   Returns the localized name of an error source.
  *  @discussion This string can be used to output a diagnostic message to the 
  *              user.
  *  @param      errorSource The error source
@@ -719,7 +719,7 @@ GPG_EXPORT GPGError GPGMakeErrorFromSystemError();
  *  @discussion A GPGException exception can be raised by nearly any MacGPGME
  *              call.
  *
- *              Its <i>reason</i> contains the (unlocalized) description of
+ *              Its <i>reason</i> contains the localized description of
  *              <code>@link GPGError GPGError@/link</code>.
  *
  *              Its <i>userInfo</i> dictionary can contain the following keys:
