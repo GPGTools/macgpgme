@@ -15,6 +15,8 @@
 		551DF4390B2886CF0061FE17 /* MacGPGMETestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */; };
 		551DF47B0B288DBF0061FE17 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		551DF5010B288E5C0061FE17 /* MacGPGME.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
+		55226A940F053E4500CE3509 /* locale in Resources */ = {isa = PBXBuildFile; fileRef = 552269AB0F053E4400CE3509 /* locale */; };
+		55226A9B0F053F7300CE3509 /* libintl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 55226A9A0F053F7300CE3509 /* libintl.a */; };
 		5543FA93071493C4009979E9 /* GPGKeyGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 5543FA91071493C4009979E9 /* GPGKeyGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5543FA94071493C4009979E9 /* GPGKeyGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 5543FA92071493C4009979E9 /* GPGKeyGroup.m */; };
 		5543FB080714A339009979E9 /* MacGPGME.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
@@ -140,6 +142,8 @@
 		551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MacGPGMETesting-Info.plist"; sourceTree = "<group>"; };
 		551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGMETestCase.h; sourceTree = "<group>"; };
 		551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacGPGMETestCase.m; sourceTree = "<group>"; };
+		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = /usr/local/share/locale; sourceTree = "<absolute>"; };
+		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = /usr/local/lib/libintl.a; sourceTree = "<absolute>"; };
 		5543FA91071493C4009979E9 /* GPGKeyGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyGroup.h; sourceTree = "<group>"; };
 		5543FA92071493C4009979E9 /* GPGKeyGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeyGroup.m; sourceTree = "<group>"; };
 		554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-MacGPGME.plist"; sourceTree = "<group>"; };
@@ -214,6 +218,7 @@
 				556012E009BB3C0800B31634 /* libgpg-error.a in Frameworks */,
 				556012E109BB3C0800B31634 /* libgpgme-pthread.a in Frameworks */,
 				556012E709BB3C6A00B31634 /* libiconv.dylib in Frameworks */,
+				55226A9B0F053F7300CE3509 /* libintl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +268,7 @@
 		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				55226A9A0F053F7300CE3509 /* libintl.a */,
 				556012E609BB3C6A00B31634 /* libiconv.dylib */,
 				556012DE09BB3C0800B31634 /* libgpg-error.a */,
 				556012DF09BB3C0800B31634 /* libgpgme-pthread.a */,
@@ -275,6 +281,7 @@
 		089C1665FE841158C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				552269AB0F053E4400CE3509 /* locale */,
 				089C1666FE841158C02AAC07 /* InfoPlist.strings */,
 				F55CD03802D65F6201C07EFC /* Localizable.strings */,
 			);
@@ -493,6 +500,7 @@
 				554B55B9069F0111005E1C92 /* Frameworks */,
 				554B55BD069F0111005E1C92 /* Rez */,
 				554B55BE069F0111005E1C92 /* Generate Documentation */,
+				55226A960F053E5F00CE3509 /* Filter C locales */,
 			);
 			buildRules = (
 			);
@@ -571,6 +579,7 @@
 				554B55A4069F0111005E1C92 /* InfoPlist.strings in Resources */,
 				554B55A5069F0111005E1C92 /* Localizable.strings in Resources */,
 				55B964A607A3BA9A0060059A /* COPYING.LESSER in Resources */,
+				55226A940F053E4500CE3509 /* locale in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -616,6 +625,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		55226A960F053E5F00CE3509 /* Filter C locales */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				/usr/local/share/locale,
+			);
+			name = "Filter C locales";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Remove all localizations not in libgpg-error nor gettext-runtime domains\nfind \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/locale\" -type f \\( -name \\*.mo -a -not -name gettext-runtime.mo -a -not -name libgpg-error.mo \\) -delete\nexit 0\n";
 		};
 		554B55BE069F0111005E1C92 /* Generate Documentation */ = {
 			isa = PBXShellScriptBuildPhase;
