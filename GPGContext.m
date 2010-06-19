@@ -1733,7 +1733,7 @@ enum {
 			[aTask setLaunchPath:launchPath];
 			[aTask setArguments:[NSArray arrayWithObject:@"-V"]]; // Get version
 			anOutputPipe = [NSPipe pipe];
-			[aTask setStandardOutput:[anOutputPipe fileHandleForWriting]];
+			[aTask setStandardOutput:anOutputPipe];
 			[aTask launch]; // FIXME: Shouldn't we do that asynchronously too?
 			// Output is on 2 lines: first contains format version,
 			// second contains executable version; we are interested only in format version,
@@ -1842,9 +1842,9 @@ enum {
     inputPipe = [NSPipe pipe];
     anOutputPipe = [NSPipe pipe];
     anErrorPipe = [NSPipe pipe];
-    [aTask setStandardInput:[inputPipe fileHandleForReading]];
-    [aTask setStandardOutput:[anOutputPipe fileHandleForWriting]];
-    [aTask setStandardError:[anErrorPipe fileHandleForWriting]];
+    [aTask setStandardInput:inputPipe];
+    [aTask setStandardOutput:anOutputPipe];
+    [aTask setStandardError:anErrorPipe];
     [[NSNotificationCenter defaultCenter] addObserver:helper selector:@selector(gotOutputResults:) name:NSFileHandleReadToEndOfFileCompletionNotification object:[anOutputPipe fileHandleForReading]];
     [[NSNotificationCenter defaultCenter] addObserver:helper selector:@selector(gotErrorResults:) name:NSFileHandleReadToEndOfFileCompletionNotification object:[anErrorPipe fileHandleForReading]];
     [[NSNotificationCenter defaultCenter] addObserver:helper selector:@selector(taskEnded:) name:NSTaskDidTerminateNotification object:aTask];
