@@ -933,10 +933,10 @@
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
+				HEADER_SEARCH_PATHS = "../../library-build/include";
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
+				LIBRARY_SEARCH_PATHS = "../../library-build/lib";
 				MACH_O_TYPE = mh_dylib;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = "-headerpad_max_install_names";
