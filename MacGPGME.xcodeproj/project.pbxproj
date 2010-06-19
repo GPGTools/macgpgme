@@ -898,10 +898,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
+				HEADER_SEARCH_PATHS = "../../library-build/include";
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
+				LIBRARY_SEARCH_PATHS = "../../library-build/lib";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
 					"-seg1addr",
