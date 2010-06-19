@@ -74,6 +74,7 @@
 		55BDD1CE0D954B3C0083C540 /* GPGOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 55BDD1CC0D954B3C0083C540 /* GPGOptions.m */; };
 		55C01A6C0DB0FA9D00EA8CD5 /* GPGEngineHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 55C01A6A0DB0FA9D00EA8CD5 /* GPGEngineHelper.h */; };
 		55C01A6D0DB0FA9D00EA8CD5 /* GPGEngineHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 55C01A6B0DB0FA9D00EA8CD5 /* GPGEngineHelper.m */; };
+		AC9EECE711CCAB5D00162438 /* libintl.h in Headers */ = {isa = PBXBuildFile; fileRef = AC9EECE611CCAB5D00162438 /* libintl.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,15 +128,15 @@
 		0BD178DD01298E177F000001 /* GPGObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGObject.m; sourceTree = "<group>"; };
 		0BD178E001298E177F000001 /* GPGTrustItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGTrustItem.h; sourceTree = "<group>"; };
 		0BD178E101298E177F000001 /* GPGTrustItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGTrustItem.m; sourceTree = "<group>"; };
-		0BD1790F012998187F000001 /* gpgme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpgme.h; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include/gpgme.h"; sourceTree = "<absolute>"; };
+		0BD1790F012998187F000001 /* gpgme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpgme.h; path = "../../library-build/include/gpgme.h"; sourceTree = SOURCE_ROOT; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		1B1944C511CC282D0092B810 /* libassuan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libassuan.a; path = "../../new-approach/test/library-build/lib/libassuan.a"; sourceTree = SOURCE_ROOT; };
+		1B1944C511CC282D0092B810 /* libassuan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libassuan.a; path = "../../library-build/lib/libassuan.a"; sourceTree = SOURCE_ROOT; };
 		4B685599087F451800859ACB /* GPGRemoteKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteKey.h; sourceTree = "<group>"; };
 		4B68559A087F451800859ACB /* GPGRemoteKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteKey.m; sourceTree = "<group>"; };
 		4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteUserID.h; sourceTree = "<group>"; };
 		4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteUserID.m; sourceTree = "<group>"; };
 		4B6856FC088004DA00859ACB /* GPGKeyDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyDefines.h; sourceTree = "<group>"; };
-		551033EF04C190E500000001 /* gpg-error.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "gpg-error.h"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include/gpg-error.h"; sourceTree = "<absolute>"; };
+		551033EF04C190E500000001 /* gpg-error.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "gpg-error.h"; path = "../../library-build/include/gpg-error.h"; sourceTree = SOURCE_ROOT; };
 		551033F004C1911000000001 /* frameworkEmbedding.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = frameworkEmbedding.sh; sourceTree = "<group>"; };
 		551033F104C1912B00000001 /* GPGSubkey.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GPGSubkey.h; sourceTree = "<group>"; };
 		551033F204C1912B00000001 /* GPGSubkey.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GPGSubkey.m; sourceTree = "<group>"; };
@@ -144,8 +145,8 @@
 		551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MacGPGMETesting-Info.plist"; sourceTree = "<group>"; };
 		551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGMETestCase.h; sourceTree = "<group>"; };
 		551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacGPGMETestCase.m; sourceTree = "<group>"; };
-		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/share/locale"; sourceTree = "<absolute>"; };
-		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libintl.a"; sourceTree = "<absolute>"; };
+		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = "../../library-build/share/locale"; sourceTree = SOURCE_ROOT; };
+		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = "../../library-build/lib/libintl.a"; sourceTree = SOURCE_ROOT; };
 		5543FA91071493C4009979E9 /* GPGKeyGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyGroup.h; sourceTree = "<group>"; };
 		5543FA92071493C4009979E9 /* GPGKeyGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeyGroup.m; sourceTree = "<group>"; };
 		554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-MacGPGME.plist"; sourceTree = "<group>"; };
@@ -156,8 +157,8 @@
 		554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignatureNotation.m; sourceTree = "<group>"; };
 		554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGAsyncHelper.h; sourceTree = "<group>"; };
 		554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGAsyncHelper.m; sourceTree = "<group>"; };
-		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libgpg-error.a"; sourceTree = "<absolute>"; };
-		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libgpgme-pthread.a"; sourceTree = "<absolute>"; };
+		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "../../library-build/lib/libgpg-error.a"; sourceTree = SOURCE_ROOT; };
+		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "../../library-build/lib/libgpgme-pthread.a"; sourceTree = SOURCE_ROOT; };
 		556012E609BB3C6A00B31634 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = /usr/lib/libiconv.dylib; sourceTree = "<absolute>"; };
 		55627BD203BB4FD000000001 /* GPGKeySignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeySignature.h; sourceTree = "<group>"; };
 		55627BD303BB4FD000000001 /* GPGKeySignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeySignature.m; sourceTree = "<group>"; };
@@ -177,6 +178,7 @@
 		7F7B9542042B59C40028F28B /* Danish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Danish; path = Danish.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7FA06EA603E842E1002884EA /* Italian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Italian; path = Italian.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7FA06EA703E842E1002884EA /* Italian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Italian; path = Italian.lproj/Localizable.strings; sourceTree = "<group>"; };
+		AC9EECE611CCAB5D00162438 /* libintl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libintl.h; path = "../../library-build/include/libintl.h"; sourceTree = SOURCE_ROOT; };
 		F549FD5602BFA3AB0128824A /* GPGPrettyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGPrettyInfo.h; sourceTree = "<group>"; };
 		F549FD5702BFA3AB0128824A /* GPGPrettyInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGPrettyInfo.m; sourceTree = "<group>"; };
 		F550BC4D0201F2BB01A80016 /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Controller.h; path = GPGTester/Controller.h; sourceTree = "<group>"; };
@@ -295,6 +297,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				AC9EECE611CCAB5D00162438 /* libintl.h */,
 				55BDD1CB0D954B3C0083C540 /* GPGOptions.h */,
 				55BDD1CC0D954B3C0083C540 /* GPGOptions.m */,
 				0BD178CF01298E177F000001 /* MacGPGME.h */,
@@ -462,6 +465,7 @@
 				554CA68F08F9608F00E135BC /* GPGSignatureNotation.h in Headers */,
 				55BDD1CD0D954B3C0083C540 /* GPGOptions.h in Headers */,
 				55C01A6C0DB0FA9D00EA8CD5 /* GPGEngineHelper.h in Headers */,
+				AC9EECE711CCAB5D00162438 /* libintl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
