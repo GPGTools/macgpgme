@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B1944C611CC282D0092B810 /* libassuan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1944C511CC282D0092B810 /* libassuan.a */; };
 		4B68559B087F451800859ACB /* GPGRemoteKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B685599087F451800859ACB /* GPGRemoteKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B68559C087F451800859ACB /* GPGRemoteKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B68559A087F451800859ACB /* GPGRemoteKey.m */; };
 		4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -126,14 +127,15 @@
 		0BD178DD01298E177F000001 /* GPGObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGObject.m; sourceTree = "<group>"; };
 		0BD178E001298E177F000001 /* GPGTrustItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGTrustItem.h; sourceTree = "<group>"; };
 		0BD178E101298E177F000001 /* GPGTrustItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGTrustItem.m; sourceTree = "<group>"; };
-		0BD1790F012998187F000001 /* gpgme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpgme.h; path = /usr/local/include/gpgme.h; sourceTree = "<absolute>"; };
+		0BD1790F012998187F000001 /* gpgme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpgme.h; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include/gpgme.h"; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		1B1944C511CC282D0092B810 /* libassuan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libassuan.a; path = "../../new-approach/test/library-build/lib/libassuan.a"; sourceTree = SOURCE_ROOT; };
 		4B685599087F451800859ACB /* GPGRemoteKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteKey.h; sourceTree = "<group>"; };
 		4B68559A087F451800859ACB /* GPGRemoteKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteKey.m; sourceTree = "<group>"; };
 		4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteUserID.h; sourceTree = "<group>"; };
 		4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteUserID.m; sourceTree = "<group>"; };
 		4B6856FC088004DA00859ACB /* GPGKeyDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyDefines.h; sourceTree = "<group>"; };
-		551033EF04C190E500000001 /* gpg-error.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "gpg-error.h"; path = "/usr/local/include/gpg-error.h"; sourceTree = "<absolute>"; };
+		551033EF04C190E500000001 /* gpg-error.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "gpg-error.h"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include/gpg-error.h"; sourceTree = "<absolute>"; };
 		551033F004C1911000000001 /* frameworkEmbedding.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = frameworkEmbedding.sh; sourceTree = "<group>"; };
 		551033F104C1912B00000001 /* GPGSubkey.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GPGSubkey.h; sourceTree = "<group>"; };
 		551033F204C1912B00000001 /* GPGSubkey.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GPGSubkey.m; sourceTree = "<group>"; };
@@ -142,8 +144,8 @@
 		551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MacGPGMETesting-Info.plist"; sourceTree = "<group>"; };
 		551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGMETestCase.h; sourceTree = "<group>"; };
 		551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacGPGMETestCase.m; sourceTree = "<group>"; };
-		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = /usr/local/share/locale; sourceTree = "<absolute>"; };
-		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = /usr/local/lib/libintl.a; sourceTree = "<absolute>"; };
+		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/share/locale"; sourceTree = "<absolute>"; };
+		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libintl.a"; sourceTree = "<absolute>"; };
 		5543FA91071493C4009979E9 /* GPGKeyGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyGroup.h; sourceTree = "<group>"; };
 		5543FA92071493C4009979E9 /* GPGKeyGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeyGroup.m; sourceTree = "<group>"; };
 		554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-MacGPGME.plist"; sourceTree = "<group>"; };
@@ -154,8 +156,8 @@
 		554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignatureNotation.m; sourceTree = "<group>"; };
 		554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGAsyncHelper.h; sourceTree = "<group>"; };
 		554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGAsyncHelper.m; sourceTree = "<group>"; };
-		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "/usr/local/lib/libgpg-error.a"; sourceTree = "<absolute>"; };
-		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "/usr/local/lib/libgpgme-pthread.a"; sourceTree = "<absolute>"; };
+		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libgpg-error.a"; sourceTree = "<absolute>"; };
+		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libgpgme-pthread.a"; sourceTree = "<absolute>"; };
 		556012E609BB3C6A00B31634 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = /usr/lib/libiconv.dylib; sourceTree = "<absolute>"; };
 		55627BD203BB4FD000000001 /* GPGKeySignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeySignature.h; sourceTree = "<group>"; };
 		55627BD303BB4FD000000001 /* GPGKeySignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeySignature.m; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 				556012E109BB3C0800B31634 /* libgpgme-pthread.a in Frameworks */,
 				556012E709BB3C6A00B31634 /* libiconv.dylib in Frameworks */,
 				55226A9B0F053F7300CE3509 /* libintl.a in Frameworks */,
+				1B1944C611CC282D0092B810 /* libassuan.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +271,7 @@
 		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				1B1944C511CC282D0092B810 /* libassuan.a */,
 				55226A9A0F053F7300CE3509 /* libintl.a */,
 				556012E609BB3C6A00B31634 /* libiconv.dylib */,
 				556012DE09BB3C0800B31634 /* libgpg-error.a */,
@@ -632,7 +636,7 @@
 			files = (
 			);
 			inputPaths = (
-				/usr/local/share/locale,
+				"/Users/lukele/Developer/GPG/new-approach/test/library-build/share/locale",
 			);
 			name = "Filter C locales";
 			outputPaths = (
@@ -649,7 +653,7 @@
 			name = "Generate Documentation";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "HeaderDoc2HTML=\"/usr/local/bin/headerdoc2html\"\nGatherHeaderDoc=\"/usr/local/bin/gatherheaderdoc\"\nexternalXRefFile=\"${TEMP_FILES_DIR}/HeaderDoc.xref\"\ndocumentationDir=\"${TARGET_BUILD_DIR}/${DOCUMENTATION_FOLDER_PATH}\"\n\nif [ ! -x \"${HeaderDoc2HTML}\" -a ! -L \"${HeaderDoc2HTML}\" ]; then \\\n\tHeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nfi\n\nif [ ! -x \"${GatherHeaderDoc}\" -a ! -L \"${GatherHeaderDoc}\" ]; then \\\n\tGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nfi\n\nrm -rf \"${documentationDir}\"\nmkdir -p \"${documentationDir}\"\n\necho \"Extracting documentation...\"\n\"${HeaderDoc2HTML}\" -o \"${documentationDir}\" \"${PROJECT_DIR}\"\n\necho \"Resolving links...\"\nrm -rf \"${externalXRefFile}\"\ntr '$' '\\1' < DocExternalReferences.xref > \"${externalXRefFile}\"\n\"${GatherHeaderDoc}\" -x \"${externalXRefFile}\" \"${documentationDir}\"\n";
+			shellScript = "HeaderDoc2HTML=\"/Users/lukele/Developer/GPG/new-approach/test/library-build/bin/headerdoc2html\"\nGatherHeaderDoc=\"/Users/lukele/Developer/GPG/new-approach/test/library-build/bin/gatherheaderdoc\"\nexternalXRefFile=\"${TEMP_FILES_DIR}/HeaderDoc.xref\"\ndocumentationDir=\"${TARGET_BUILD_DIR}/${DOCUMENTATION_FOLDER_PATH}\"\n\nif [ ! -x \"${HeaderDoc2HTML}\" -a ! -L \"${HeaderDoc2HTML}\" ]; then \\\n\tHeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nfi\n\nif [ ! -x \"${GatherHeaderDoc}\" -a ! -L \"${GatherHeaderDoc}\" ]; then \\\n\tGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nfi\n\nrm -rf \"${documentationDir}\"\nmkdir -p \"${documentationDir}\"\n\necho \"Extracting documentation...\"\n\"${HeaderDoc2HTML}\" -o \"${documentationDir}\" \"${PROJECT_DIR}\"\n\necho \"Resolving links...\"\nrm -rf \"${externalXRefFile}\"\ntr '$' '\\1' < DocExternalReferences.xref > \"${externalXRefFile}\"\n\"${GatherHeaderDoc}\" -x \"${externalXRefFile}\" \"${documentationDir}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -878,6 +882,8 @@
 		55541F6E085AE6E100548474 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
@@ -888,10 +894,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
 					"-seg1addr",
@@ -911,6 +917,8 @@
 		55541F6F085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -920,13 +928,16 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				INSTALL_PATH = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = MacGPGME;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				WARNING_CFLAGS = "-Wmost";
@@ -937,6 +948,8 @@
 		55541F70085AE6E100548474 /* Debug (standalone) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
@@ -949,10 +962,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
 					"-seg1addr",
@@ -970,6 +983,8 @@
 		55541F71085AE6E100548474 /* Release (standalone) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
 				DYLIB_CURRENT_VERSION = 16;
@@ -977,10 +992,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
 					"-seg1addr",
@@ -1003,7 +1018,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = "Info-GPGTester.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1098,38 +1113,48 @@
 		55541F7C085AE6E100548474 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				GCC_ENABLE_OBJC_GC = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = Debug;
 		};
 		55541F7D085AE6E100548474 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				GCC_ENABLE_OBJC_GC = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = Release;
 		};
 		55541F7E085AE6E100548474 /* Debug (standalone) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				GCC_ENABLE_OBJC_GC = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = "Debug (standalone)";
 		};
 		55541F7F085AE6E100548474 /* Release (standalone) */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				GCC_ENABLE_OBJC_GC = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = "Release (standalone)";
 		};
