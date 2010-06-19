@@ -6,8 +6,35 @@
 	objectVersion = 42;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		1B45A4E311CC967000ED4663 /* Build and Install */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1B45A4F411CC967200ED4663 /* Build configuration list for PBXAggregateTarget "Build and Install" */;
+			buildPhases = (
+				1B45A4FB11CC96CE00ED4663 /* CopyFiles */,
+			);
+			dependencies = (
+				1B45A4F611CC968300ED4663 /* PBXTargetDependency */,
+			);
+			name = "Build and Install";
+			productName = "Build and Install";
+		};
+		1B45A57F11CCA13000ED4663 /* Build gpgme */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1B45A59611CCA18000ED4663 /* Build configuration list for PBXAggregateTarget "Build gpgme" */;
+			buildPhases = (
+				1B45A57E11CCA13000ED4663 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Build gpgme";
+			productName = "Build gpgme";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		1B1944C611CC282D0092B810 /* libassuan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1944C511CC282D0092B810 /* libassuan.a */; };
+		1B45A51711CC970300ED4663 /* MacGPGME.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
 		4B68559B087F451800859ACB /* GPGRemoteKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B685599087F451800859ACB /* GPGRemoteKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B68559C087F451800859ACB /* GPGRemoteKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B68559A087F451800859ACB /* GPGRemoteKey.m */; };
 		4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -77,6 +104,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1B45A4F511CC968300ED4663 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 554B558F069F0111005E1C92;
+			remoteInfo = MacGPGME;
+		};
+		1B45A58611CCA15E00ED4663 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1B45A57F11CCA13000ED4663;
+			remoteInfo = "Build gpgme";
+		};
 		551DF4320B2886570061FE17 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -94,6 +135,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1B45A4FB11CC96CE00ED4663 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "../../../../../build/$(CONFIGURATION)";
+			dstSubfolderSpec = 16;
+			files = (
+				1B45A51711CC970300ED4663 /* MacGPGME.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		554B55DF069F0245005E1C92 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -127,15 +178,15 @@
 		0BD178DD01298E177F000001 /* GPGObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGObject.m; sourceTree = "<group>"; };
 		0BD178E001298E177F000001 /* GPGTrustItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGTrustItem.h; sourceTree = "<group>"; };
 		0BD178E101298E177F000001 /* GPGTrustItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGTrustItem.m; sourceTree = "<group>"; };
-		0BD1790F012998187F000001 /* gpgme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpgme.h; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include/gpgme.h"; sourceTree = "<absolute>"; };
+		0BD1790F012998187F000001 /* gpgme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpgme.h; path = build/dist/include/gpgme.h; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		1B1944C511CC282D0092B810 /* libassuan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libassuan.a; path = "../../new-approach/test/library-build/lib/libassuan.a"; sourceTree = SOURCE_ROOT; };
+		1B1944C511CC282D0092B810 /* libassuan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libassuan.a; path = build/dist/lib/libassuan.a; sourceTree = SOURCE_ROOT; };
 		4B685599087F451800859ACB /* GPGRemoteKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteKey.h; sourceTree = "<group>"; };
 		4B68559A087F451800859ACB /* GPGRemoteKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteKey.m; sourceTree = "<group>"; };
 		4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteUserID.h; sourceTree = "<group>"; };
 		4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteUserID.m; sourceTree = "<group>"; };
 		4B6856FC088004DA00859ACB /* GPGKeyDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyDefines.h; sourceTree = "<group>"; };
-		551033EF04C190E500000001 /* gpg-error.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "gpg-error.h"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include/gpg-error.h"; sourceTree = "<absolute>"; };
+		551033EF04C190E500000001 /* gpg-error.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "gpg-error.h"; path = "build/dist/include/gpg-error.h"; sourceTree = "<absolute>"; };
 		551033F004C1911000000001 /* frameworkEmbedding.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = frameworkEmbedding.sh; sourceTree = "<group>"; };
 		551033F104C1912B00000001 /* GPGSubkey.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GPGSubkey.h; sourceTree = "<group>"; };
 		551033F204C1912B00000001 /* GPGSubkey.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GPGSubkey.m; sourceTree = "<group>"; };
@@ -144,8 +195,8 @@
 		551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MacGPGMETesting-Info.plist"; sourceTree = "<group>"; };
 		551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGMETestCase.h; sourceTree = "<group>"; };
 		551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacGPGMETestCase.m; sourceTree = "<group>"; };
-		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/share/locale"; sourceTree = "<absolute>"; };
-		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libintl.a"; sourceTree = "<absolute>"; };
+		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = build/dist/share/locale; sourceTree = "<absolute>"; };
+		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = build/dist/lib/libintl.a; sourceTree = "<absolute>"; };
 		5543FA91071493C4009979E9 /* GPGKeyGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyGroup.h; sourceTree = "<group>"; };
 		5543FA92071493C4009979E9 /* GPGKeyGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeyGroup.m; sourceTree = "<group>"; };
 		554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-MacGPGME.plist"; sourceTree = "<group>"; };
@@ -156,8 +207,8 @@
 		554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignatureNotation.m; sourceTree = "<group>"; };
 		554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGAsyncHelper.h; sourceTree = "<group>"; };
 		554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGAsyncHelper.m; sourceTree = "<group>"; };
-		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libgpg-error.a"; sourceTree = "<absolute>"; };
-		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib/libgpgme-pthread.a"; sourceTree = "<absolute>"; };
+		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "build/dist/lib/libgpg-error.a"; sourceTree = "<absolute>"; };
+		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "build/dist/lib/libgpgme-pthread.a"; sourceTree = "<absolute>"; };
 		556012E609BB3C6A00B31634 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = /usr/lib/libiconv.dylib; sourceTree = "<absolute>"; };
 		55627BD203BB4FD000000001 /* GPGKeySignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeySignature.h; sourceTree = "<group>"; };
 		55627BD303BB4FD000000001 /* GPGKeySignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeySignature.m; sourceTree = "<group>"; };
@@ -509,6 +560,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				1B45A58711CCA15E00ED4663 /* PBXTargetDependency */,
 			);
 			name = MacGPGME;
 			productInstallPath = Library/Frameworks;
@@ -564,6 +616,8 @@
 				554B558F069F0111005E1C92 /* MacGPGME */,
 				554B55D7069F0245005E1C92 /* GPGTester */,
 				551DF42A0B2886420061FE17 /* MacGPGMETesting */,
+				1B45A4E311CC967000ED4663 /* Build and Install */,
+				1B45A57F11CCA13000ED4663 /* Build gpgme */,
 			);
 		};
 /* End PBXProject section */
@@ -617,6 +671,19 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1B45A57E11CCA13000ED4663 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Building gettext for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gettext 0.18.1.1\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\necho \"Building libgpg-error for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libgpg-error 1.8\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\necho \"Building libassuan for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libassuan 2.0.0\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\necho \"Building gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gpgme 1.3.0\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\nexit 0";
+		};
 		551DF4290B2886420061FE17 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -636,7 +703,7 @@
 			files = (
 			);
 			inputPaths = (
-				"/Users/lukele/Developer/GPG/new-approach/test/library-build/share/locale",
+				build/dist/share/locale,
 			);
 			name = "Filter C locales";
 			outputPaths = (
@@ -653,7 +720,7 @@
 			name = "Generate Documentation";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "HeaderDoc2HTML=\"/Users/lukele/Developer/GPG/new-approach/test/library-build/bin/headerdoc2html\"\nGatherHeaderDoc=\"/Users/lukele/Developer/GPG/new-approach/test/library-build/bin/gatherheaderdoc\"\nexternalXRefFile=\"${TEMP_FILES_DIR}/HeaderDoc.xref\"\ndocumentationDir=\"${TARGET_BUILD_DIR}/${DOCUMENTATION_FOLDER_PATH}\"\n\nif [ ! -x \"${HeaderDoc2HTML}\" -a ! -L \"${HeaderDoc2HTML}\" ]; then \\\n\tHeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nfi\n\nif [ ! -x \"${GatherHeaderDoc}\" -a ! -L \"${GatherHeaderDoc}\" ]; then \\\n\tGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nfi\n\nrm -rf \"${documentationDir}\"\nmkdir -p \"${documentationDir}\"\n\necho \"Extracting documentation...\"\n\"${HeaderDoc2HTML}\" -o \"${documentationDir}\" \"${PROJECT_DIR}\"\n\necho \"Resolving links...\"\nrm -rf \"${externalXRefFile}\"\ntr '$' '\\1' < DocExternalReferences.xref > \"${externalXRefFile}\"\n\"${GatherHeaderDoc}\" -x \"${externalXRefFile}\" \"${documentationDir}\"\n";
+			shellScript = "HeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nexternalXRefFile=\"${TEMP_FILES_DIR}/HeaderDoc.xref\"\ndocumentationDir=\"${TARGET_BUILD_DIR}/${DOCUMENTATION_FOLDER_PATH}\"\n\nif [ ! -x \"${HeaderDoc2HTML}\" -a ! -L \"${HeaderDoc2HTML}\" ]; then \\\n\tHeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nfi\n\nif [ ! -x \"${GatherHeaderDoc}\" -a ! -L \"${GatherHeaderDoc}\" ]; then \\\n\tGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nfi\n\nrm -rf \"${documentationDir}\"\nmkdir -p \"${documentationDir}\"\n\necho \"Extracting documentation...\"\n\"${HeaderDoc2HTML}\" -o \"${documentationDir}\" \"${PROJECT_DIR}\"\n\necho \"Resolving links...\"\nrm -rf \"${externalXRefFile}\"\ntr '$' '\\1' < DocExternalReferences.xref > \"${externalXRefFile}\"\n\"${GatherHeaderDoc}\" -x \"${externalXRefFile}\" \"${documentationDir}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -705,6 +772,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1B45A4F611CC968300ED4663 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 554B558F069F0111005E1C92 /* MacGPGME */;
+			targetProxy = 1B45A4F511CC968300ED4663 /* PBXContainerItemProxy */;
+		};
+		1B45A58711CCA15E00ED4663 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1B45A57F11CCA13000ED4663 /* Build gpgme */;
+			targetProxy = 1B45A58611CCA15E00ED4663 /* PBXContainerItemProxy */;
+		};
 		551DF4330B2886570061FE17 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 554B558F069F0111005E1C92 /* MacGPGME */;
@@ -765,6 +842,76 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1B45A4E811CC967000ED4663 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = "Build and Install";
+			};
+			name = Debug;
+		};
+		1B45A4E911CC967000ED4663 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "Build and Install";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		1B45A4EA11CC967000ED4663 /* Debug (standalone) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "Build and Install";
+			};
+			name = "Debug (standalone)";
+		};
+		1B45A4EB11CC967000ED4663 /* Release (standalone) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "Build and Install";
+			};
+			name = "Release (standalone)";
+		};
+		1B45A58111CCA13000ED4663 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = "Build gpgme";
+			};
+			name = Debug;
+		};
+		1B45A58211CCA13000ED4663 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "Build gpgme";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		1B45A58311CCA13000ED4663 /* Debug (standalone) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "Build gpgme";
+			};
+			name = "Debug (standalone)";
+		};
+		1B45A58411CCA13000ED4663 /* Release (standalone) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "Build gpgme";
+			};
+			name = "Release (standalone)";
+		};
 		551DF42E0B2886450061FE17 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -888,16 +1035,21 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
 				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
 				FRAMEWORK_VERSION = 1.1.4;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
+				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
+				LIBRARY_SEARCH_PATHS = build/dist/lib;
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
 					"-seg1addr",
@@ -924,15 +1076,20 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 15;
 				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
 				FRAMEWORK_VERSION = 1.1.4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
+				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
+				LIBRARY_SEARCH_PATHS = build/dist/lib;
 				MACH_O_TYPE = mh_dylib;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = "-headerpad_max_install_names";
@@ -954,6 +1111,11 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
 				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
 				FRAMEWORK_VERSION = 1.1.4;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -962,10 +1124,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
+				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
-				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
+				LIBRARY_SEARCH_PATHS = build/dist/lib;
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
 					"-seg1addr",
@@ -988,14 +1150,19 @@
 				CURRENT_PROJECT_VERSION = 16;
 				DYLIB_COMPATIBILITY_VERSION = 15;
 				DYLIB_CURRENT_VERSION = 16;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
 				FRAMEWORK_VERSION = 1.1.4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				HEADER_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/include";
+				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
-				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
+				LIBRARY_SEARCH_PATHS = build/dist/lib;
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
 					"-seg1addr",
@@ -1018,7 +1185,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = "Info-GPGTester.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "/Users/lukele/Developer/GPG/new-approach/test/library-build/lib";
+				LIBRARY_SEARCH_PATHS = build/dist/lib;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1161,6 +1328,28 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1B45A4F411CC967200ED4663 /* Build configuration list for PBXAggregateTarget "Build and Install" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B45A4E811CC967000ED4663 /* Debug */,
+				1B45A4E911CC967000ED4663 /* Release */,
+				1B45A4EA11CC967000ED4663 /* Debug (standalone) */,
+				1B45A4EB11CC967000ED4663 /* Release (standalone) */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1B45A59611CCA18000ED4663 /* Build configuration list for PBXAggregateTarget "Build gpgme" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B45A58111CCA13000ED4663 /* Debug */,
+				1B45A58211CCA13000ED4663 /* Release */,
+				1B45A58311CCA13000ED4663 /* Debug (standalone) */,
+				1B45A58411CCA13000ED4663 /* Release (standalone) */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		551DF42D0B2886450061FE17 /* Build configuration list for PBXNativeTarget "MacGPGMETesting" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
