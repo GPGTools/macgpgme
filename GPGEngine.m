@@ -121,6 +121,10 @@
 
 + (NSString *) _defaultExecutablePathForProtocol:(GPGProtocol)protocol
 {
+    NSString *exePath = [self executablePathDefaultsKeyForProtocol:protocol];
+    if (!exePath) {
+        return nil;
+    }
     NSString    *aPath = [[NSUserDefaults standardUserDefaults] stringForKey:[self executablePathDefaultsKeyForProtocol:protocol]];
 
     return aPath;
