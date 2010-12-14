@@ -7,18 +7,6 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		1B45A4E311CC967000ED4663 /* Build and Install */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 1B45A4F411CC967200ED4663 /* Build configuration list for PBXAggregateTarget "Build and Install" */;
-			buildPhases = (
-				1B45A4FB11CC96CE00ED4663 /* CopyFiles */,
-			);
-			dependencies = (
-				1B45A4F611CC968300ED4663 /* PBXTargetDependency */,
-			);
-			name = "Build and Install";
-			productName = "Build and Install";
-		};
 		1B45A57F11CCA13000ED4663 /* Build gpgme */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 1B45A59611CCA18000ED4663 /* Build configuration list for PBXAggregateTarget "Build gpgme" */;
@@ -34,7 +22,6 @@
 
 /* Begin PBXBuildFile section */
 		1B1944C611CC282D0092B810 /* libassuan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1944C511CC282D0092B810 /* libassuan.a */; };
-		1B45A51711CC970300ED4663 /* MacGPGME.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
 		4B68559B087F451800859ACB /* GPGRemoteKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B685599087F451800859ACB /* GPGRemoteKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B68559C087F451800859ACB /* GPGRemoteKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B68559A087F451800859ACB /* GPGRemoteKey.m */; };
 		4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -104,13 +91,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1B45A4F511CC968300ED4663 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 554B558F069F0111005E1C92;
-			remoteInfo = MacGPGME;
-		};
 		1B45A58611CCA15E00ED4663 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -135,16 +115,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1B45A4FB11CC96CE00ED4663 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "../../../../../build/$(CONFIGURATION)";
-			dstSubfolderSpec = 16;
-			files = (
-				1B45A51711CC970300ED4663 /* MacGPGME.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		554B55DF069F0245005E1C92 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -597,6 +567,7 @@
 			isa = PBXProject;
 			buildConfigurationList = 55541F7B085AE6E100548474 /* Build configuration list for PBXProject "MacGPGME" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -616,7 +587,6 @@
 				554B558F069F0111005E1C92 /* MacGPGME */,
 				554B55D7069F0245005E1C92 /* GPGTester */,
 				551DF42A0B2886420061FE17 /* MacGPGMETesting */,
-				1B45A4E311CC967000ED4663 /* Build and Install */,
 				1B45A57F11CCA13000ED4663 /* Build gpgme */,
 			);
 		};
@@ -772,11 +742,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B45A4F611CC968300ED4663 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 554B558F069F0111005E1C92 /* MacGPGME */;
-			targetProxy = 1B45A4F511CC968300ED4663 /* PBXContainerItemProxy */;
-		};
 		1B45A58711CCA15E00ED4663 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1B45A57F11CCA13000ED4663 /* Build gpgme */;
@@ -842,41 +807,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		1B45A4E811CC967000ED4663 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = "Build and Install";
-			};
-			name = Debug;
-		};
-		1B45A4E911CC967000ED4663 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = "Build and Install";
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		1B45A4EA11CC967000ED4663 /* Debug (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "Build and Install";
-			};
-			name = "Debug (standalone)";
-		};
-		1B45A4EB11CC967000ED4663 /* Release (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "Build and Install";
-			};
-			name = "Release (standalone)";
-		};
 		1B45A58111CCA13000ED4663 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1038,6 +968,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks,
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
 				FRAMEWORK_VERSION = 1.1.4;
@@ -1046,14 +977,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = build/dist/lib;
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
-					"-seg1addr",
-					0x686E0000,
+					"-Z",
 					"-headerpad_max_install_names",
 				);
 				PRODUCT_NAME = MacGPGME;
@@ -1086,7 +1017,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
@@ -1128,6 +1059,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
@@ -1163,6 +1095,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = /Library/Frameworks;
@@ -1332,17 +1265,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1B45A4F411CC967200ED4663 /* Build configuration list for PBXAggregateTarget "Build and Install" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1B45A4E811CC967000ED4663 /* Debug */,
-				1B45A4E911CC967000ED4663 /* Release */,
-				1B45A4EA11CC967000ED4663 /* Debug (standalone) */,
-				1B45A4EB11CC967000ED4663 /* Release (standalone) */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
 		1B45A59611CCA18000ED4663 /* Build configuration list for PBXAggregateTarget "Build gpgme" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

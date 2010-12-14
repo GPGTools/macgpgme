@@ -14,20 +14,21 @@ LIBGPG_ERROR_VERSION="1.8"
 LIBASSUAN_VERSION="2.0.0"
 GPGME_VERSION="1.3.0"
 
+devNull=/dev/null
+#devNull=/dev/stdout  # Uncomment for verbose output
+
 # Download the source code and unpack it.
 function fetch {
 	url=$1
 	file=$(basename $url)
 	dir=$2
 	
-	if [ -f "$file" ]; then
-	    return;
-	fi
-	
-	curl -O $url
-	
-	if [ $? -ne 0 ]; then
-	    bailout "Failed to download source at $url";
+	if [ ! -f "$file" ]; then
+		curl -O $url
+		
+		if [ $? -ne 0 ]; then
+			bailout "Failed to download source at $url";
+		fi
 	fi
 	
 	extract "$file" "$2"
@@ -79,14 +80,14 @@ function build_gettext {
 	    bailout "$version directory doesn't exist."
 	fi
 	
-	pushd "$version" 1> /dev/null
-	
+	pushd "$version" > $devNull
+		
 	CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
         ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
         --disable-java --disable-native-java --disable-csharp \
         --with-included-gettext --with-included-glib \
         --with-included-libcroco --with-included-libxml --disable-libasprintf \
-        1> /dev/null
+        > $devNull
     
     ret=$?
     
@@ -94,7 +95,7 @@ function build_gettext {
         bailout "$version - failed to configure"
     fi
     
-    make install 1> /dev/null
+    make install > $devNull
     
     ret=$?
     
@@ -102,7 +103,7 @@ function build_gettext {
         bailout "$version - failed to build and install"
     fi
     
-    popd 1> /dev/null
+    popd > $devNull
 
 }
 
@@ -120,20 +121,20 @@ function build_libgpg_error {
         bailout "$version directory doesn't exist."
     fi
     
-    pushd "$version" 1> /dev/null
+    pushd "$version" > $devNull
 
     CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
     LDFLAGS="-framework CoreFoundation" \
     ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
-    --with-libintl-prefix="$PREFIX" 1> /dev/null
+    --with-libintl-prefix="$PREFIX" > $devNull
     
     ret=$?
     
     if [ $ret -ne 0 ]; then
         bailout "$version - failed to configure"
     fi
-    
-    make install 1> /dev/null
+
+    make install > $devNull
     
     ret=$?
     
@@ -141,7 +142,7 @@ function build_libgpg_error {
         bailout "$version - failed to build and install"
     fi
 
-    popd 1> /dev/null
+    popd > $devNull
 
 }
 
@@ -160,19 +161,19 @@ function build_libassuan {
 	    bailout "$version directory doesn't exist."
 	fi
 
-    pushd "$version" 1> /dev/null
+    pushd "$version" > $devNull
 
     CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
     ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
-    --with-gpg-error-prefix="$PREFIX" 1> /dev/null
+    --with-gpg-error-prefix="$PREFIX" > $devNull
     
     ret=$?
 
     if [ $ret -ne 0 ]; then
         bailout "$version - failed to configure"
     fi
-    
-    make install 1> /dev/null
+
+    make install > $devNull
     
     ret=$?
     
@@ -180,7 +181,7 @@ function build_libassuan {
         bailout "$version - failed to build and install"
     fi
     
-    popd 1> /dev/null
+    popd > $devNull
 
 }
 
@@ -198,21 +199,21 @@ function build_gpgme {
 	    bailout "$version directory doesn't exist."
 	fi
 
-    pushd "$version" 1> /dev/null
+    pushd "$version" > $devNull
 
     CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
     ./configure --prefix="$PREFIX" --enable-static --disable-shared \
     --disable-dependency-tracking --with-gpg-error-prefix="$PREFIX" \
     --with-gpg="$PREFIX/bin/gpg" --with-libassuan-prefix="$PREFIX" \
-    --without-pth --disable-glibtest 1> /dev/null
+    --without-pth --disable-glibtest > $devNull
     
     ret=$?
     
     if [ $ret -ne 0 ]; then
         bailout "$version - failed to configure"
     fi
-    
-    make install 1> /dev/null
+
+    make install > $devNull
     
     ret=$?
     
@@ -220,7 +221,7 @@ function build_gpgme {
         bailout "$version - failed to build and install"
     fi
     
-    popd 1> /dev/null
+    popd > $devNull
 }
 
 function build {
@@ -247,7 +248,7 @@ library=$2
 version=$3
 
 mkdir -p "$SOURCES"
-pushd "$SOURCES" 1> /dev/null
+pushd "$SOURCES" > $devNull
 
 if [ "$action" == "clean" ]; then
     clean $library $version;
@@ -270,7 +271,7 @@ else
 
 fi
 
-popd 1> /dev/null
+popd > $devNull
 
 echo "gpgme was built successfully."
 exit 0
