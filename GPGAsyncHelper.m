@@ -186,7 +186,7 @@ static void eventCallback(void *data, gpgme_event_io_t type, void *type_data);
         else
             [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 //        [_runSemaphore unlock];
-        [localAP release];
+        [localAP drain];
     }
 }
 
