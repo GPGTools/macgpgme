@@ -145,7 +145,7 @@ static NSLock   *_waitOperationLock = nil;
     // Agent saves info in file ~/.gpg-agent-info.
     // If agent is restarted, then our environment is no longer up-to-date.
     // We need to re-read that file and update our environment.
-    NSString    *agentEnvironment = [NSString stringWithContentsOfFile:[NSHomeDirectory() stringByAppendingPathComponent:@".gpg-agent-info"]]; // WARNING: we hardcode that path
+    NSString    *agentEnvironment = [NSString stringWithContentsOfFile:[NSHomeDirectory() stringByAppendingPathComponent:@".gpg-agent-info"] encoding:NSUTF8StringEncoding error:nil]; // WARNING: we hardcode that path
     BOOL        resetEnvironment = YES;
     
     if([agentEnvironment length] > 0){
