@@ -38,19 +38,6 @@
 static NSMapTable       *mapTable = NULL;
 static NSRecursiveLock	*mapTableLock = nil;
 
-
-static BOOL trySetExecutablePath(NSString *aPath)
-{
-    NS_DURING
-        [[GPGEngine engineForProtocol:GPGOpenPGPProtocol] setExecutablePath:aPath];
-    NS_HANDLER
-        // Ignore error and log it
-        NSLog(@"No valid gpg engine at '%@'; you need to change default engine path", aPath);
-        aPath = nil;
-    NS_ENDHANDLER
-    return aPath != nil;
-}
-
 + (void) initialize
 {
     // Do not call super - see +initialize documentation
@@ -66,13 +53,13 @@ static BOOL trySetExecutablePath(NSString *aPath)
         // one NSThread has been created, that's why we create a dummy
         // thread before doing anything with gpgme.
         if(![NSThread isMultiThreaded]){
-            NSObject	*aThreadStarter = [[NSObject alloc] init];
+            NSObject	*aThreadStarter = [[NSObject alloc] init];	
             
             [NSThread detachNewThreadSelector:@selector(release) toTarget:aThreadStarter withObject:nil];
         }
 
         const char    *localeIdentifier = [[[NSLocale currentLocale] localeIdentifier] UTF8String];
-
+        
         setlocale (LC_ALL, localeIdentifier);
         // Let's initialize libgpgme sub-systems now.
         NSAssert(gpgme_check_version(NULL) != NULL, @"### Unable to initialize gpgme sub-systems.");
@@ -90,18 +77,20 @@ static BOOL trySetExecutablePath(NSString *aPath)
         [[NSUserDefaults standardUserDefaults] addSuiteNamed:GPGUserDefaultsSuiteName];
         // TODO: remove following code, later; client app should do the test itself.
         openPGPEngine = [GPGEngine engineForProtocol:GPGOpenPGPProtocol];
-		// See if the user's preference set a default GPG engine; if so, try to use it.
         aPath = [[NSUserDefaults standardUserDefaults] stringForKey:[openPGPEngine executablePathDefaultsKey]];
-        if(aPath == nil || !trySetExecutablePath(aPath)){
+        if(aPath == nil){
             NSArray *availableExecutablePaths = [openPGPEngine availableExecutablePaths];
             
-			if([availableExecutablePaths count] > 0)
+            if([availableExecutablePaths count] > 0)
                 aPath = [availableExecutablePaths objectAtIndex:0];
-            else
-                aPath = nil;
         }
         if(aPath != nil){
-            trySetExecutablePath(aPath);
+            NS_DURING
+                [[GPGEngine engineForProtocol:GPGOpenPGPProtocol] setExecutablePath:aPath];
+            NS_HANDLER
+                // Ignore error and log it
+                NSLog(@"No valid gpg engine at '%@'; you need to change default engine path", aPath);
+            NS_ENDHANDLER
         }
         [[NSDistributedNotificationCenter defaultCenter] addObserver:[GPGOptions class] selector:@selector(defaultsDidChange:) name:GPGDefaultsDidChangeNotification object:nil];
     }

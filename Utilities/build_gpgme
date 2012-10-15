@@ -81,8 +81,13 @@ function build_gettext {
 	fi
 	
 	pushd "$version" > $devNull
-		
-	CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
+	
+	patch -N gettext-tools/gnulib-lib/stpncpy.c < "$SRCROOT/Utilities/stpncpy.c.patch"
+	patch -N gettext-tools/gnulib-lib/libxml/xmlversion.in.h < "$SRCROOT/Utilities/xmlversion.in.h.patch"
+	patch -N gettext-runtime/intl/loadmsgcat.c < "$SRCROOT/Utilities/loadmsgcat.c.patch"
+
+
+	CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
         ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
         --disable-java --disable-native-java --disable-csharp \
         --with-included-gettext --with-included-glib \
@@ -123,7 +128,7 @@ function build_libgpg_error {
     
     pushd "$version" > $devNull
 
-    CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
+    CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
     LDFLAGS="-framework CoreFoundation" \
     ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
     --with-libintl-prefix="$PREFIX" > $devNull
@@ -163,7 +168,7 @@ function build_libassuan {
 
     pushd "$version" > $devNull
 
-    CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
+    CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
     ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
     --with-gpg-error-prefix="$PREFIX" > $devNull
     
@@ -201,7 +206,7 @@ function build_gpgme {
 
     pushd "$version" > $devNull
 
-    CFLAGS="-isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386" \
+    CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
     ./configure --prefix="$PREFIX" --enable-static --disable-shared \
     --disable-dependency-tracking --with-gpg-error-prefix="$PREFIX" \
     --with-gpg="$PREFIX/bin/gpg" --with-libassuan-prefix="$PREFIX" \

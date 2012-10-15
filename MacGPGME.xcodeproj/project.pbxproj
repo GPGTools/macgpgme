@@ -3,645 +3,366 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		1B45A57F11CCA13000ED4663 /* Build gpgme */ = {
+		D836D5371628821D00D3B874 /* gpgme */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 1B45A59611CCA18000ED4663 /* Build configuration list for PBXAggregateTarget "Build gpgme" */;
+			buildConfigurationList = D836D5381628821D00D3B874 /* Build configuration list for PBXAggregateTarget "gpgme" */;
 			buildPhases = (
-				1B45A57E11CCA13000ED4663 /* ShellScript */,
+				D836D53B1628822500D3B874 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = "Build gpgme";
-			productName = "Build gpgme";
+			name = gpgme;
+			productName = gpgme;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		1B1944C611CC282D0092B810 /* libassuan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B1944C511CC282D0092B810 /* libassuan.a */; };
-		4B68559B087F451800859ACB /* GPGRemoteKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B685599087F451800859ACB /* GPGRemoteKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B68559C087F451800859ACB /* GPGRemoteKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B68559A087F451800859ACB /* GPGRemoteKey.m */; };
-		4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B6855E7087F4A6B00859ACB /* GPGRemoteUserID.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */; };
-		4B6856FD088004DA00859ACB /* GPGKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6856FC088004DA00859ACB /* GPGKeyDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		551DF4390B2886CF0061FE17 /* MacGPGMETestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */; };
-		551DF47B0B288DBF0061FE17 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
-		551DF5010B288E5C0061FE17 /* MacGPGME.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
-		55226A940F053E4500CE3509 /* locale in Resources */ = {isa = PBXBuildFile; fileRef = 552269AB0F053E4400CE3509 /* locale */; };
-		55226A9B0F053F7300CE3509 /* libintl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 55226A9A0F053F7300CE3509 /* libintl.a */; };
-		5543FA93071493C4009979E9 /* GPGKeyGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 5543FA91071493C4009979E9 /* GPGKeyGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5543FA94071493C4009979E9 /* GPGKeyGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 5543FA92071493C4009979E9 /* GPGKeyGroup.m */; };
-		5543FB080714A339009979E9 /* MacGPGME.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
-		554B5591069F0111005E1C92 /* MacGPGME.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178CF01298E177F000001 /* MacGPGME.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B5592069F0111005E1C92 /* GPGContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178D001298E177F000001 /* GPGContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B5593069F0111005E1C92 /* GPGData.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178D201298E177F000001 /* GPGData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B5594069F0111005E1C92 /* GPGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178D401298E177F000001 /* GPGDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B5595069F0111005E1C92 /* GPGEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178D501298E177F000001 /* GPGEngine.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B5596069F0111005E1C92 /* GPGExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178D701298E177F000001 /* GPGExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B5597069F0111005E1C92 /* GPGInternals.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178D901298E177F000001 /* GPGInternals.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		554B5598069F0111005E1C92 /* GPGKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178DA01298E177F000001 /* GPGKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B5599069F0111005E1C92 /* GPGObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178DC01298E177F000001 /* GPGObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B559A069F0111005E1C92 /* GPGTrustItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BD178E001298E177F000001 /* GPGTrustItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B559B069F0111005E1C92 /* GPGSignature.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F6E05602E18E8B01000002 /* GPGSignature.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B559C069F0111005E1C92 /* GPGPrettyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = F549FD5602BFA3AB0128824A /* GPGPrettyInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B559D069F0111005E1C92 /* LocalizableStrings.h in Headers */ = {isa = PBXBuildFile; fileRef = F55CD03B02D65F9C01C07EFC /* LocalizableStrings.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		554B559E069F0111005E1C92 /* GPGKeySignature.h in Headers */ = {isa = PBXBuildFile; fileRef = 55627BD203BB4FD000000001 /* GPGKeySignature.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B559F069F0111005E1C92 /* GPGUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = 55627BD603BC654000000001 /* GPGUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B55A0069F0111005E1C92 /* GPGSubkey.h in Headers */ = {isa = PBXBuildFile; fileRef = 551033F104C1912B00000001 /* GPGSubkey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554B55A2069F0111005E1C92 /* GPGAsyncHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */; };
-		554B55A4069F0111005E1C92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
-		554B55A5069F0111005E1C92 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F55CD03802D65F6201C07EFC /* Localizable.strings */; };
-		554B55AA069F0111005E1C92 /* GPGContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD178D101298E177F000001 /* GPGContext.m */; };
-		554B55AB069F0111005E1C92 /* GPGData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD178D301298E177F000001 /* GPGData.m */; };
-		554B55AC069F0111005E1C92 /* GPGEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD178D601298E177F000001 /* GPGEngine.m */; };
-		554B55AD069F0111005E1C92 /* GPGExceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD178D801298E177F000001 /* GPGExceptions.m */; };
-		554B55AE069F0111005E1C92 /* GPGKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD178DB01298E177F000001 /* GPGKey.m */; };
-		554B55AF069F0111005E1C92 /* GPGObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD178DD01298E177F000001 /* GPGObject.m */; };
-		554B55B0069F0111005E1C92 /* GPGTrustItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD178E101298E177F000001 /* GPGTrustItem.m */; };
-		554B55B1069F0111005E1C92 /* GPGSignature.m in Sources */ = {isa = PBXBuildFile; fileRef = F5F6E05702E18E8B01000002 /* GPGSignature.m */; };
-		554B55B2069F0111005E1C92 /* GPGPrettyInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = F549FD5702BFA3AB0128824A /* GPGPrettyInfo.m */; };
-		554B55B3069F0111005E1C92 /* LocalizableStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F55CD03C02D65F9C01C07EFC /* LocalizableStrings.m */; };
-		554B55B4069F0111005E1C92 /* GPGKeySignature.m in Sources */ = {isa = PBXBuildFile; fileRef = 55627BD303BB4FD000000001 /* GPGKeySignature.m */; };
-		554B55B5069F0111005E1C92 /* GPGUserID.m in Sources */ = {isa = PBXBuildFile; fileRef = 55627BD703BC654000000001 /* GPGUserID.m */; };
-		554B55B6069F0111005E1C92 /* GPGSubkey.m in Sources */ = {isa = PBXBuildFile; fileRef = 551033F204C1912B00000001 /* GPGSubkey.m */; };
-		554B55B8069F0111005E1C92 /* GPGAsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */; };
-		554B55BA069F0111005E1C92 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
-		554B55DC069F0245005E1C92 /* CheckMark.tiff in Resources */ = {isa = PBXBuildFile; fileRef = F550BC500201F2BB01A80016 /* CheckMark.tiff */; };
-		554B55DD069F0245005E1C92 /* GPGTester.nib in Resources */ = {isa = PBXBuildFile; fileRef = F550BC550201F2BB01A80016 /* GPGTester.nib */; };
-		554B55DE069F0245005E1C92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F550BC580201F2BB01A80016 /* InfoPlist.strings */; };
-		554B55E2069F0245005E1C92 /* Controller.m in Sources */ = {isa = PBXBuildFile; fileRef = F550BC4E0201F2BB01A80016 /* Controller.m */; };
-		554B55E3069F0245005E1C92 /* GPGTester_main.m in Sources */ = {isa = PBXBuildFile; fileRef = F550BC680201F49001A80016 /* GPGTester_main.m */; };
-		554B55E6069F0245005E1C92 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
-		554CA68F08F9608F00E135BC /* GPGSignatureNotation.h in Headers */ = {isa = PBXBuildFile; fileRef = 554CA68D08F9608F00E135BC /* GPGSignatureNotation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		554CA69008F9608F00E135BC /* GPGSignatureNotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */; };
-		555E7F7107A311A500B1F725 /* MacGPGME.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554B55C0069F0111005E1C92 /* MacGPGME.framework */; };
-		556012E009BB3C0800B31634 /* libgpg-error.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556012DE09BB3C0800B31634 /* libgpg-error.a */; };
-		556012E109BB3C0800B31634 /* libgpgme-pthread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 556012DF09BB3C0800B31634 /* libgpgme-pthread.a */; };
-		556012E709BB3C6A00B31634 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 556012E609BB3C6A00B31634 /* libiconv.dylib */; };
-		5587C98007A2E96400F17B27 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5587C97F07A2E96400F17B27 /* AddressBook.framework */; };
-		55B5189607AC37A6005C1DB3 /* MacGPGME_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 55B5189507AC37A6005C1DB3 /* MacGPGME_Prefix.pch */; };
-		55B964A607A3BA9A0060059A /* COPYING.LESSER in Resources */ = {isa = PBXBuildFile; fileRef = 55C6D0E20795C2CD007186C6 /* COPYING.LESSER */; };
-		55BDD1CD0D954B3C0083C540 /* GPGOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 55BDD1CB0D954B3C0083C540 /* GPGOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		55BDD1CE0D954B3C0083C540 /* GPGOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 55BDD1CC0D954B3C0083C540 /* GPGOptions.m */; };
-		55C01A6C0DB0FA9D00EA8CD5 /* GPGEngineHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 55C01A6A0DB0FA9D00EA8CD5 /* GPGEngineHelper.h */; };
-		55C01A6D0DB0FA9D00EA8CD5 /* GPGEngineHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 55C01A6B0DB0FA9D00EA8CD5 /* GPGEngineHelper.m */; };
+		D836D4B1162878B700D3B874 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D836D4B0162878B700D3B874 /* Cocoa.framework */; };
+		D836D4DF1628798C00D3B874 /* GPGAsyncHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4C51628798C00D3B874 /* GPGAsyncHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E01628798C00D3B874 /* GPGContext.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4C61628798C00D3B874 /* GPGContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E11628798C00D3B874 /* GPGData.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4C71628798C00D3B874 /* GPGData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E21628798C00D3B874 /* GPGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4C81628798C00D3B874 /* GPGDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E31628798C00D3B874 /* GPGEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4C91628798C00D3B874 /* GPGEngine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E41628798C00D3B874 /* GPGEngineHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4CA1628798C00D3B874 /* GPGEngineHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E51628798C00D3B874 /* GPGExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4CB1628798C00D3B874 /* GPGExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E61628798C00D3B874 /* GPGInternals.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4CC1628798C00D3B874 /* GPGInternals.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E71628798C00D3B874 /* GPGKey.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4CD1628798C00D3B874 /* GPGKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E81628798C00D3B874 /* GPGKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4CE1628798C00D3B874 /* GPGKeyDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4E91628798C00D3B874 /* GPGKeyGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4CF1628798C00D3B874 /* GPGKeyGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4EA1628798C00D3B874 /* GPGKeySignature.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D01628798C00D3B874 /* GPGKeySignature.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4EB1628798C00D3B874 /* GPGObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D11628798C00D3B874 /* GPGObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4EC1628798C00D3B874 /* GPGOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D21628798C00D3B874 /* GPGOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4ED1628798C00D3B874 /* GPGPrettyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D31628798C00D3B874 /* GPGPrettyInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4EE1628798C00D3B874 /* GPGRemoteKey.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D41628798C00D3B874 /* GPGRemoteKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4EF1628798C00D3B874 /* GPGRemoteUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D51628798C00D3B874 /* GPGRemoteUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F01628798C00D3B874 /* GPGSignature.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D61628798C00D3B874 /* GPGSignature.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F11628798C00D3B874 /* GPGSignatureNotation.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D71628798C00D3B874 /* GPGSignatureNotation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F21628798C00D3B874 /* GPGSubkey.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D81628798C00D3B874 /* GPGSubkey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F31628798C00D3B874 /* GPGTrustItem.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4D91628798C00D3B874 /* GPGTrustItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F41628798C00D3B874 /* GPGUserID.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4DA1628798C00D3B874 /* GPGUserID.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F51628798C00D3B874 /* LocalizableStrings.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4DB1628798C00D3B874 /* LocalizableStrings.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F61628798C00D3B874 /* MacGPGME.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4DC1628798C00D3B874 /* MacGPGME.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D836D4F71628798C00D3B874 /* MacGPGMETestCase.h in Headers */ = {isa = PBXBuildFile; fileRef = D836D4DD1628798C00D3B874 /* MacGPGMETestCase.h */; };
+		D836D4F81628798C00D3B874 /* MacGPGME_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = D836D4DE1628798C00D3B874 /* MacGPGME_Prefix.pch */; };
+		D836D50E16287A9200D3B874 /* GPGAsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D4F916287A9200D3B874 /* GPGAsyncHelper.m */; };
+		D836D50F16287A9200D3B874 /* GPGContext.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D4FA16287A9200D3B874 /* GPGContext.m */; };
+		D836D51016287A9200D3B874 /* GPGData.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D4FB16287A9200D3B874 /* GPGData.m */; };
+		D836D51116287A9200D3B874 /* GPGEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D4FC16287A9200D3B874 /* GPGEngine.m */; };
+		D836D51216287A9200D3B874 /* GPGEngineHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D4FD16287A9200D3B874 /* GPGEngineHelper.m */; };
+		D836D51316287A9200D3B874 /* GPGExceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D4FE16287A9200D3B874 /* GPGExceptions.m */; };
+		D836D51416287A9200D3B874 /* GPGKey.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D4FF16287A9200D3B874 /* GPGKey.m */; };
+		D836D51516287A9200D3B874 /* GPGKeyGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50016287A9200D3B874 /* GPGKeyGroup.m */; };
+		D836D51616287A9200D3B874 /* GPGKeySignature.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50116287A9200D3B874 /* GPGKeySignature.m */; };
+		D836D51716287A9200D3B874 /* GPGObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50216287A9200D3B874 /* GPGObject.m */; };
+		D836D51816287A9200D3B874 /* GPGOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50316287A9200D3B874 /* GPGOptions.m */; };
+		D836D51916287A9200D3B874 /* GPGPrettyInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50416287A9200D3B874 /* GPGPrettyInfo.m */; };
+		D836D51A16287A9200D3B874 /* GPGRemoteKey.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50516287A9200D3B874 /* GPGRemoteKey.m */; };
+		D836D51B16287A9200D3B874 /* GPGRemoteUserID.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50616287A9200D3B874 /* GPGRemoteUserID.m */; };
+		D836D51C16287A9200D3B874 /* GPGSignature.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50716287A9200D3B874 /* GPGSignature.m */; };
+		D836D51D16287A9200D3B874 /* GPGSignatureNotation.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50816287A9200D3B874 /* GPGSignatureNotation.m */; };
+		D836D51E16287A9200D3B874 /* GPGSubkey.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50916287A9200D3B874 /* GPGSubkey.m */; };
+		D836D51F16287A9200D3B874 /* GPGTrustItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50A16287A9200D3B874 /* GPGTrustItem.m */; };
+		D836D52016287A9200D3B874 /* GPGUserID.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50B16287A9200D3B874 /* GPGUserID.m */; };
+		D836D52116287A9200D3B874 /* LocalizableStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = D836D50C16287A9200D3B874 /* LocalizableStrings.m */; };
+		D836D52B16287EE000D3B874 /* libassuan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D836D52716287EE000D3B874 /* libassuan.a */; };
+		D836D52C16287EE000D3B874 /* libgpg-error.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D836D52816287EE000D3B874 /* libgpg-error.a */; };
+		D836D52D16287EE000D3B874 /* libgpgme-pthread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D836D52916287EE000D3B874 /* libgpgme-pthread.a */; };
+		D836D52E16287EE000D3B874 /* libintl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D836D52A16287EE000D3B874 /* libintl.a */; };
+		D836D53F1628904400D3B874 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D836D53E1628904000D3B874 /* libiconv.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1B45A58611CCA15E00ED4663 /* PBXContainerItemProxy */ = {
+		3031776E1628A5CE009658CA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			containerPortal = D836D4A3162878B600D3B874 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 1B45A57F11CCA13000ED4663;
-			remoteInfo = "Build gpgme";
-		};
-		551DF4320B2886570061FE17 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 554B558F069F0111005E1C92;
-			remoteInfo = MacGPGME;
-		};
-		554B55ED069F025E005E1C92 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 554B558F069F0111005E1C92;
-			remoteInfo = "MacGPGME (Upgraded)";
+			remoteGlobalIDString = D836D5371628821D00D3B874;
+			remoteInfo = gpgme;
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		554B55DF069F0245005E1C92 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				555E7F7107A311A500B1F725 /* MacGPGME.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		0BD178CF01298E177F000001 /* MacGPGME.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGME.h; sourceTree = "<group>"; };
-		0BD178D001298E177F000001 /* GPGContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGContext.h; sourceTree = "<group>"; };
-		0BD178D101298E177F000001 /* GPGContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGContext.m; sourceTree = "<group>"; };
-		0BD178D201298E177F000001 /* GPGData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGData.h; sourceTree = "<group>"; };
-		0BD178D301298E177F000001 /* GPGData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGData.m; sourceTree = "<group>"; };
-		0BD178D401298E177F000001 /* GPGDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGDefines.h; sourceTree = "<group>"; };
-		0BD178D501298E177F000001 /* GPGEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGEngine.h; sourceTree = "<group>"; };
-		0BD178D601298E177F000001 /* GPGEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGEngine.m; sourceTree = "<group>"; };
-		0BD178D701298E177F000001 /* GPGExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGExceptions.h; sourceTree = "<group>"; };
-		0BD178D801298E177F000001 /* GPGExceptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGExceptions.m; sourceTree = "<group>"; };
-		0BD178D901298E177F000001 /* GPGInternals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGInternals.h; sourceTree = "<group>"; };
-		0BD178DA01298E177F000001 /* GPGKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKey.h; sourceTree = "<group>"; };
-		0BD178DB01298E177F000001 /* GPGKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKey.m; sourceTree = "<group>"; };
-		0BD178DC01298E177F000001 /* GPGObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGObject.h; sourceTree = "<group>"; };
-		0BD178DD01298E177F000001 /* GPGObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGObject.m; sourceTree = "<group>"; };
-		0BD178E001298E177F000001 /* GPGTrustItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGTrustItem.h; sourceTree = "<group>"; };
-		0BD178E101298E177F000001 /* GPGTrustItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGTrustItem.m; sourceTree = "<group>"; };
-		0BD1790F012998187F000001 /* gpgme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpgme.h; path = build/dist/include/gpgme.h; sourceTree = SOURCE_ROOT; };
-		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		1B1944C511CC282D0092B810 /* libassuan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libassuan.a; path = build/dist/lib/libassuan.a; sourceTree = SOURCE_ROOT; };
-		4B685599087F451800859ACB /* GPGRemoteKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteKey.h; sourceTree = "<group>"; };
-		4B68559A087F451800859ACB /* GPGRemoteKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteKey.m; sourceTree = "<group>"; };
-		4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteUserID.h; sourceTree = "<group>"; };
-		4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteUserID.m; sourceTree = "<group>"; };
-		4B6856FC088004DA00859ACB /* GPGKeyDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyDefines.h; sourceTree = "<group>"; };
-		551033EF04C190E500000001 /* gpg-error.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "gpg-error.h"; path = "build/dist/include/gpg-error.h"; sourceTree = "<group>"; };
-		551033F004C1911000000001 /* frameworkEmbedding.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = frameworkEmbedding.sh; sourceTree = "<group>"; };
-		551033F104C1912B00000001 /* GPGSubkey.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GPGSubkey.h; sourceTree = "<group>"; };
-		551033F204C1912B00000001 /* GPGSubkey.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GPGSubkey.m; sourceTree = "<group>"; };
-		551033F504C1915A00000001 /* TODO */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
-		551DF42B0B2886420061FE17 /* MacGPGMETesting.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacGPGMETesting.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MacGPGMETesting-Info.plist"; sourceTree = "<group>"; };
-		551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGMETestCase.h; sourceTree = "<group>"; };
-		551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacGPGMETestCase.m; sourceTree = "<group>"; };
-		552269AB0F053E4400CE3509 /* locale */ = {isa = PBXFileReference; lastKnownFileType = folder; name = locale; path = build/dist/share/locale; sourceTree = SOURCE_ROOT; };
-		55226A9A0F053F7300CE3509 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = build/dist/lib/libintl.a; sourceTree = SOURCE_ROOT; };
-		5543FA91071493C4009979E9 /* GPGKeyGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyGroup.h; sourceTree = "<group>"; };
-		5543FA92071493C4009979E9 /* GPGKeyGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeyGroup.m; sourceTree = "<group>"; };
-		554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-MacGPGME.plist"; sourceTree = "<group>"; };
-		554B55C0069F0111005E1C92 /* MacGPGME.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacGPGME.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		554B55EA069F0245005E1C92 /* Info-GPGTester.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-GPGTester.plist"; sourceTree = "<group>"; };
-		554B55EB069F0245005E1C92 /* GPGTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GPGTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		554CA68D08F9608F00E135BC /* GPGSignatureNotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGSignatureNotation.h; sourceTree = "<group>"; };
-		554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignatureNotation.m; sourceTree = "<group>"; };
-		554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGAsyncHelper.h; sourceTree = "<group>"; };
-		554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGAsyncHelper.m; sourceTree = "<group>"; };
-		556012DE09BB3C0800B31634 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "build/dist/lib/libgpg-error.a"; sourceTree = SOURCE_ROOT; };
-		556012DF09BB3C0800B31634 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "build/dist/lib/libgpgme-pthread.a"; sourceTree = SOURCE_ROOT; };
-		556012E609BB3C6A00B31634 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = /usr/lib/libiconv.dylib; sourceTree = "<absolute>"; };
-		55627BD203BB4FD000000001 /* GPGKeySignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeySignature.h; sourceTree = "<group>"; };
-		55627BD303BB4FD000000001 /* GPGKeySignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeySignature.m; sourceTree = "<group>"; };
-		55627BD603BC654000000001 /* GPGUserID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGUserID.h; sourceTree = "<group>"; };
-		55627BD703BC654000000001 /* GPGUserID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGUserID.m; sourceTree = "<group>"; };
-		5575766D093F9964008EE5CC /* headerDoc2HTML.config */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = headerDoc2HTML.config; sourceTree = "<group>"; };
-		55757BCC094E2E85008EE5CC /* DocExternalReferences.xref */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = DocExternalReferences.xref; sourceTree = "<group>"; };
-		5587C97F07A2E96400F17B27 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
-		55B5189507AC37A6005C1DB3 /* MacGPGME_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGME_Prefix.pch; sourceTree = "<group>"; };
-		55BDD1CB0D954B3C0083C540 /* GPGOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGOptions.h; sourceTree = "<group>"; };
-		55BDD1CC0D954B3C0083C540 /* GPGOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGOptions.m; sourceTree = "<group>"; };
-		55C01A6A0DB0FA9D00EA8CD5 /* GPGEngineHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGEngineHelper.h; sourceTree = "<group>"; };
-		55C01A6B0DB0FA9D00EA8CD5 /* GPGEngineHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGEngineHelper.m; sourceTree = "<group>"; };
-		55C6D0E20795C2CD007186C6 /* COPYING.LESSER */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = text; path = COPYING.LESSER; sourceTree = "<group>"; };
-		55FCC5C0093F9339005A146B /* MacGPGME.hdoc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MacGPGME.hdoc; sourceTree = "<group>"; };
-		7F7B9541042B59C40028F28B /* Danish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Danish; path = Danish.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		7F7B9542042B59C40028F28B /* Danish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Danish; path = Danish.lproj/Localizable.strings; sourceTree = "<group>"; };
-		7FA06EA603E842E1002884EA /* Italian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Italian; path = Italian.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		7FA06EA703E842E1002884EA /* Italian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Italian; path = Italian.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F549FD5602BFA3AB0128824A /* GPGPrettyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGPrettyInfo.h; sourceTree = "<group>"; };
-		F549FD5702BFA3AB0128824A /* GPGPrettyInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGPrettyInfo.m; sourceTree = "<group>"; };
-		F550BC4D0201F2BB01A80016 /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Controller.h; path = GPGTester/Controller.h; sourceTree = "<group>"; };
-		F550BC4E0201F2BB01A80016 /* Controller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Controller.m; path = GPGTester/Controller.m; sourceTree = "<group>"; };
-		F550BC500201F2BB01A80016 /* CheckMark.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = CheckMark.tiff; path = GPGTester/CheckMark.tiff; sourceTree = "<group>"; };
-		F550BC570201F2BB01A80016 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = GPGTester/English.lproj/GPGTester.nib; sourceTree = "<group>"; };
-		F550BC590201F2BB01A80016 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = GPGTester/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F550BC640201F30B01A80016 /* NOTES */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NOTES; path = GPGTester/NOTES; sourceTree = "<group>"; };
-		F550BC680201F49001A80016 /* GPGTester_main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GPGTester_main.m; path = GPGTester/GPGTester_main.m; sourceTree = "<group>"; };
-		F55CD03902D65F6201C07EFC /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F55CD03B02D65F9C01C07EFC /* LocalizableStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableStrings.h; sourceTree = "<group>"; };
-		F55CD03C02D65F9C01C07EFC /* LocalizableStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalizableStrings.m; sourceTree = "<group>"; };
-		F56F791C012E3F8001000001 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		F5A699FB0306A54D01000104 /* French */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = French; path = French.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F5A699FC0306A54D01000104 /* German */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = German; path = German.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F5A699FD0306A54D01000104 /* Swedish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Swedish; path = Swedish.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F5A699FE0306A54D01000104 /* French */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = French; path = French.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F5A699FF0306A54D01000104 /* German */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = German; path = German.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F5A69A000306A54D01000104 /* Swedish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Swedish; path = Swedish.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F5AD059502F2E74B0128824A /* Spanish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Spanish; path = Spanish.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F5AD059602F2E74B0128824A /* Spanish */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Spanish; path = Spanish.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F5F6E05602E18E8B01000002 /* GPGSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGSignature.h; sourceTree = "<group>"; };
-		F5F6E05702E18E8B01000002 /* GPGSignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignature.m; sourceTree = "<group>"; };
+		D836D4AD162878B700D3B874 /* MacGPGME.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MacGPGME.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D836D4B0162878B700D3B874 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		D836D4B3162878B700D3B874 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		D836D4B4162878B700D3B874 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		D836D4B5162878B700D3B874 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D836D4C51628798C00D3B874 /* GPGAsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGAsyncHelper.h; sourceTree = "<group>"; };
+		D836D4C61628798C00D3B874 /* GPGContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGContext.h; sourceTree = "<group>"; };
+		D836D4C71628798C00D3B874 /* GPGData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGData.h; sourceTree = "<group>"; };
+		D836D4C81628798C00D3B874 /* GPGDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGDefines.h; sourceTree = "<group>"; };
+		D836D4C91628798C00D3B874 /* GPGEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGEngine.h; sourceTree = "<group>"; };
+		D836D4CA1628798C00D3B874 /* GPGEngineHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGEngineHelper.h; sourceTree = "<group>"; };
+		D836D4CB1628798C00D3B874 /* GPGExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGExceptions.h; sourceTree = "<group>"; };
+		D836D4CC1628798C00D3B874 /* GPGInternals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGInternals.h; sourceTree = "<group>"; };
+		D836D4CD1628798C00D3B874 /* GPGKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKey.h; sourceTree = "<group>"; };
+		D836D4CE1628798C00D3B874 /* GPGKeyDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyDefines.h; sourceTree = "<group>"; };
+		D836D4CF1628798C00D3B874 /* GPGKeyGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeyGroup.h; sourceTree = "<group>"; };
+		D836D4D01628798C00D3B874 /* GPGKeySignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGKeySignature.h; sourceTree = "<group>"; };
+		D836D4D11628798C00D3B874 /* GPGObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGObject.h; sourceTree = "<group>"; };
+		D836D4D21628798C00D3B874 /* GPGOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGOptions.h; sourceTree = "<group>"; };
+		D836D4D31628798C00D3B874 /* GPGPrettyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGPrettyInfo.h; sourceTree = "<group>"; };
+		D836D4D41628798C00D3B874 /* GPGRemoteKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteKey.h; sourceTree = "<group>"; };
+		D836D4D51628798C00D3B874 /* GPGRemoteUserID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGRemoteUserID.h; sourceTree = "<group>"; };
+		D836D4D61628798C00D3B874 /* GPGSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGSignature.h; sourceTree = "<group>"; };
+		D836D4D71628798C00D3B874 /* GPGSignatureNotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGSignatureNotation.h; sourceTree = "<group>"; };
+		D836D4D81628798C00D3B874 /* GPGSubkey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGSubkey.h; sourceTree = "<group>"; };
+		D836D4D91628798C00D3B874 /* GPGTrustItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGTrustItem.h; sourceTree = "<group>"; };
+		D836D4DA1628798C00D3B874 /* GPGUserID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPGUserID.h; sourceTree = "<group>"; };
+		D836D4DB1628798C00D3B874 /* LocalizableStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableStrings.h; sourceTree = "<group>"; };
+		D836D4DC1628798C00D3B874 /* MacGPGME.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGME.h; sourceTree = "<group>"; };
+		D836D4DD1628798C00D3B874 /* MacGPGMETestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGMETestCase.h; sourceTree = "<group>"; };
+		D836D4DE1628798C00D3B874 /* MacGPGME_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacGPGME_Prefix.pch; sourceTree = "<group>"; };
+		D836D4F916287A9200D3B874 /* GPGAsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGAsyncHelper.m; sourceTree = "<group>"; };
+		D836D4FA16287A9200D3B874 /* GPGContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGContext.m; sourceTree = "<group>"; };
+		D836D4FB16287A9200D3B874 /* GPGData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGData.m; sourceTree = "<group>"; };
+		D836D4FC16287A9200D3B874 /* GPGEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGEngine.m; sourceTree = "<group>"; };
+		D836D4FD16287A9200D3B874 /* GPGEngineHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGEngineHelper.m; sourceTree = "<group>"; };
+		D836D4FE16287A9200D3B874 /* GPGExceptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGExceptions.m; sourceTree = "<group>"; };
+		D836D4FF16287A9200D3B874 /* GPGKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKey.m; sourceTree = "<group>"; };
+		D836D50016287A9200D3B874 /* GPGKeyGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeyGroup.m; sourceTree = "<group>"; };
+		D836D50116287A9200D3B874 /* GPGKeySignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGKeySignature.m; sourceTree = "<group>"; };
+		D836D50216287A9200D3B874 /* GPGObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGObject.m; sourceTree = "<group>"; };
+		D836D50316287A9200D3B874 /* GPGOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGOptions.m; sourceTree = "<group>"; };
+		D836D50416287A9200D3B874 /* GPGPrettyInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGPrettyInfo.m; sourceTree = "<group>"; };
+		D836D50516287A9200D3B874 /* GPGRemoteKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteKey.m; sourceTree = "<group>"; };
+		D836D50616287A9200D3B874 /* GPGRemoteUserID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGRemoteUserID.m; sourceTree = "<group>"; };
+		D836D50716287A9200D3B874 /* GPGSignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignature.m; sourceTree = "<group>"; };
+		D836D50816287A9200D3B874 /* GPGSignatureNotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSignatureNotation.m; sourceTree = "<group>"; };
+		D836D50916287A9200D3B874 /* GPGSubkey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGSubkey.m; sourceTree = "<group>"; };
+		D836D50A16287A9200D3B874 /* GPGTrustItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGTrustItem.m; sourceTree = "<group>"; };
+		D836D50B16287A9200D3B874 /* GPGUserID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPGUserID.m; sourceTree = "<group>"; };
+		D836D50C16287A9200D3B874 /* LocalizableStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalizableStrings.m; sourceTree = "<group>"; };
+		D836D50D16287A9200D3B874 /* MacGPGMETestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacGPGMETestCase.m; sourceTree = "<group>"; };
+		D836D52716287EE000D3B874 /* libassuan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libassuan.a; path = build/dist/lib/libassuan.a; sourceTree = "<group>"; };
+		D836D52816287EE000D3B874 /* libgpg-error.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpg-error.a"; path = "build/dist/lib/libgpg-error.a"; sourceTree = "<group>"; };
+		D836D52916287EE000D3B874 /* libgpgme-pthread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgpgme-pthread.a"; path = "build/dist/lib/libgpgme-pthread.a"; sourceTree = "<group>"; };
+		D836D52A16287EE000D3B874 /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = build/dist/lib/libintl.a; sourceTree = "<group>"; };
+		D836D53D162884ED00D3B874 /* build_gpgme */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = build_gpgme; path = Utilities/build_gpgme; sourceTree = "<group>"; };
+		D836D53E1628904000D3B874 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = /usr/lib/libiconv.dylib; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		551DF4280B2886420061FE17 /* Frameworks */ = {
+		D836D4A9162878B700D3B874 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				551DF47B0B288DBF0061FE17 /* Foundation.framework in Frameworks */,
-				551DF5010B288E5C0061FE17 /* MacGPGME.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55B9069F0111005E1C92 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				554B55BA069F0111005E1C92 /* Foundation.framework in Frameworks */,
-				556012E009BB3C0800B31634 /* libgpg-error.a in Frameworks */,
-				556012E109BB3C0800B31634 /* libgpgme-pthread.a in Frameworks */,
-				556012E709BB3C6A00B31634 /* libiconv.dylib in Frameworks */,
-				55226A9B0F053F7300CE3509 /* libintl.a in Frameworks */,
-				1B1944C611CC282D0092B810 /* libassuan.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55E4069F0245005E1C92 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5543FB080714A339009979E9 /* MacGPGME.framework in Frameworks */,
-				554B55E6069F0245005E1C92 /* Cocoa.framework in Frameworks */,
-				5587C98007A2E96400F17B27 /* AddressBook.framework in Frameworks */,
+				D836D4B1162878B700D3B874 /* Cocoa.framework in Frameworks */,
+				D836D52B16287EE000D3B874 /* libassuan.a in Frameworks */,
+				D836D52C16287EE000D3B874 /* libgpg-error.a in Frameworks */,
+				D836D52D16287EE000D3B874 /* libgpgme-pthread.a in Frameworks */,
+				D836D52E16287EE000D3B874 /* libintl.a in Frameworks */,
+				D836D53F1628904400D3B874 /* libiconv.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		034768DFFF38A50411DB9C8B /* Products */ = {
+		303177701628A81D009658CA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				554B55C0069F0111005E1C92 /* MacGPGME.framework */,
-				554B55EB069F0245005E1C92 /* GPGTester.app */,
-				551DF42B0B2886420061FE17 /* MacGPGMETesting.octest */,
+				D836D4C51628798C00D3B874 /* GPGAsyncHelper.h */,
+				D836D4C61628798C00D3B874 /* GPGContext.h */,
+				D836D4C71628798C00D3B874 /* GPGData.h */,
+				D836D4C81628798C00D3B874 /* GPGDefines.h */,
+				D836D4C91628798C00D3B874 /* GPGEngine.h */,
+				D836D4CA1628798C00D3B874 /* GPGEngineHelper.h */,
+				D836D4CB1628798C00D3B874 /* GPGExceptions.h */,
+				D836D4CC1628798C00D3B874 /* GPGInternals.h */,
+				D836D4CD1628798C00D3B874 /* GPGKey.h */,
+				D836D4CE1628798C00D3B874 /* GPGKeyDefines.h */,
+				D836D4CF1628798C00D3B874 /* GPGKeyGroup.h */,
+				D836D4D01628798C00D3B874 /* GPGKeySignature.h */,
+				D836D4D11628798C00D3B874 /* GPGObject.h */,
+				D836D4D21628798C00D3B874 /* GPGOptions.h */,
+				D836D4D31628798C00D3B874 /* GPGPrettyInfo.h */,
+				D836D4D41628798C00D3B874 /* GPGRemoteKey.h */,
+				D836D4D51628798C00D3B874 /* GPGRemoteUserID.h */,
+				D836D4D61628798C00D3B874 /* GPGSignature.h */,
+				D836D4D71628798C00D3B874 /* GPGSignatureNotation.h */,
+				D836D4D81628798C00D3B874 /* GPGSubkey.h */,
+				D836D4D91628798C00D3B874 /* GPGTrustItem.h */,
+				D836D4DA1628798C00D3B874 /* GPGUserID.h */,
+				D836D4DB1628798C00D3B874 /* LocalizableStrings.h */,
+				D836D4DC1628798C00D3B874 /* MacGPGME.h */,
+				D836D4DD1628798C00D3B874 /* MacGPGMETestCase.h */,
+				D836D4DE1628798C00D3B874 /* MacGPGME_Prefix.pch */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		303177711628A841009658CA /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				D836D4F916287A9200D3B874 /* GPGAsyncHelper.m */,
+				D836D4FA16287A9200D3B874 /* GPGContext.m */,
+				D836D4FB16287A9200D3B874 /* GPGData.m */,
+				D836D4FC16287A9200D3B874 /* GPGEngine.m */,
+				D836D4FD16287A9200D3B874 /* GPGEngineHelper.m */,
+				D836D4FE16287A9200D3B874 /* GPGExceptions.m */,
+				D836D4FF16287A9200D3B874 /* GPGKey.m */,
+				D836D50016287A9200D3B874 /* GPGKeyGroup.m */,
+				D836D50116287A9200D3B874 /* GPGKeySignature.m */,
+				D836D50216287A9200D3B874 /* GPGObject.m */,
+				D836D50316287A9200D3B874 /* GPGOptions.m */,
+				D836D50416287A9200D3B874 /* GPGPrettyInfo.m */,
+				D836D50516287A9200D3B874 /* GPGRemoteKey.m */,
+				D836D50616287A9200D3B874 /* GPGRemoteUserID.m */,
+				D836D50716287A9200D3B874 /* GPGSignature.m */,
+				D836D50816287A9200D3B874 /* GPGSignatureNotation.m */,
+				D836D50916287A9200D3B874 /* GPGSubkey.m */,
+				D836D50A16287A9200D3B874 /* GPGTrustItem.m */,
+				D836D50B16287A9200D3B874 /* GPGUserID.m */,
+				D836D50C16287A9200D3B874 /* LocalizableStrings.m */,
+				D836D50D16287A9200D3B874 /* MacGPGMETestCase.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		D836D4A1162878B600D3B874 = {
+			isa = PBXGroup;
+			children = (
+				303177711628A841009658CA /* Classes */,
+				303177701628A81D009658CA /* Headers */,
+				D836D53D162884ED00D3B874 /* build_gpgme */,
+				D836D4AF162878B700D3B874 /* Frameworks */,
+				D836D4AE162878B700D3B874 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D836D4AE162878B700D3B874 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D836D4AD162878B700D3B874 /* MacGPGME.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0867D691FE84028FC02AAC07 /* GPG */ = {
+		D836D4AF162878B700D3B874 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				55B5189507AC37A6005C1DB3 /* MacGPGME_Prefix.pch */,
-				F550BC4A0201F2BB01A80016 /* GPGTester */,
-				F56F791B012E3F8001000001 /* Documentation */,
-				0BD1790F012998187F000001 /* gpgme.h */,
-				551033EF04C190E500000001 /* gpg-error.h */,
-				08FB77AEFE84172EC02AAC07 /* Classes */,
-				551DF4360B2886A50061FE17 /* Unit Testing */,
-				089C1665FE841158C02AAC07 /* Resources */,
-				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
-				034768DFFF38A50411DB9C8B /* Products */,
-				554B55BF069F0111005E1C92 /* Info-MacGPGME.plist */,
-				554B55EA069F0245005E1C92 /* Info-GPGTester.plist */,
-				551DF42C0B2886420061FE17 /* MacGPGMETesting-Info.plist */,
+				D836D53E1628904000D3B874 /* libiconv.dylib */,
+				D836D52716287EE000D3B874 /* libassuan.a */,
+				D836D52816287EE000D3B874 /* libgpg-error.a */,
+				D836D52916287EE000D3B874 /* libgpgme-pthread.a */,
+				D836D52A16287EE000D3B874 /* libintl.a */,
+				D836D4B0162878B700D3B874 /* Cocoa.framework */,
+				D836D4B2162878B700D3B874 /* Other Frameworks */,
 			);
-			name = GPG;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
+		D836D4B2162878B700D3B874 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1B1944C511CC282D0092B810 /* libassuan.a */,
-				55226A9A0F053F7300CE3509 /* libintl.a */,
-				556012E609BB3C6A00B31634 /* libiconv.dylib */,
-				556012DE09BB3C0800B31634 /* libgpg-error.a */,
-				556012DF09BB3C0800B31634 /* libgpgme-pthread.a */,
-				1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */,
-				1058C7B2FEA5585E11CA2CBB /* Other Frameworks */,
-			);
-			name = "External Frameworks and Libraries";
-			sourceTree = "<group>";
-		};
-		089C1665FE841158C02AAC07 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				552269AB0F053E4400CE3509 /* locale */,
-				089C1666FE841158C02AAC07 /* InfoPlist.strings */,
-				F55CD03802D65F6201C07EFC /* Localizable.strings */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		08FB77AEFE84172EC02AAC07 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				55BDD1CB0D954B3C0083C540 /* GPGOptions.h */,
-				55BDD1CC0D954B3C0083C540 /* GPGOptions.m */,
-				0BD178CF01298E177F000001 /* MacGPGME.h */,
-				0BD178D001298E177F000001 /* GPGContext.h */,
-				0BD178D101298E177F000001 /* GPGContext.m */,
-				0BD178D201298E177F000001 /* GPGData.h */,
-				0BD178D301298E177F000001 /* GPGData.m */,
-				0BD178D401298E177F000001 /* GPGDefines.h */,
-				0BD178D501298E177F000001 /* GPGEngine.h */,
-				0BD178D601298E177F000001 /* GPGEngine.m */,
-				0BD178D701298E177F000001 /* GPGExceptions.h */,
-				0BD178D801298E177F000001 /* GPGExceptions.m */,
-				0BD178D901298E177F000001 /* GPGInternals.h */,
-				0BD178DA01298E177F000001 /* GPGKey.h */,
-				0BD178DB01298E177F000001 /* GPGKey.m */,
-				4B6856FC088004DA00859ACB /* GPGKeyDefines.h */,
-				5543FA91071493C4009979E9 /* GPGKeyGroup.h */,
-				5543FA92071493C4009979E9 /* GPGKeyGroup.m */,
-				55627BD203BB4FD000000001 /* GPGKeySignature.h */,
-				55627BD303BB4FD000000001 /* GPGKeySignature.m */,
-				0BD178DC01298E177F000001 /* GPGObject.h */,
-				0BD178DD01298E177F000001 /* GPGObject.m */,
-				F549FD5602BFA3AB0128824A /* GPGPrettyInfo.h */,
-				F549FD5702BFA3AB0128824A /* GPGPrettyInfo.m */,
-				4B685599087F451800859ACB /* GPGRemoteKey.h */,
-				4B68559A087F451800859ACB /* GPGRemoteKey.m */,
-				4B6855E4087F4A6B00859ACB /* GPGRemoteUserID.h */,
-				4B6855E5087F4A6B00859ACB /* GPGRemoteUserID.m */,
-				F5F6E05602E18E8B01000002 /* GPGSignature.h */,
-				F5F6E05702E18E8B01000002 /* GPGSignature.m */,
-				554CA68D08F9608F00E135BC /* GPGSignatureNotation.h */,
-				554CA68E08F9608F00E135BC /* GPGSignatureNotation.m */,
-				551033F104C1912B00000001 /* GPGSubkey.h */,
-				551033F204C1912B00000001 /* GPGSubkey.m */,
-				0BD178E001298E177F000001 /* GPGTrustItem.h */,
-				0BD178E101298E177F000001 /* GPGTrustItem.m */,
-				55627BD603BC654000000001 /* GPGUserID.h */,
-				55627BD703BC654000000001 /* GPGUserID.m */,
-				F55CD03B02D65F9C01C07EFC /* LocalizableStrings.h */,
-				F55CD03C02D65F9C01C07EFC /* LocalizableStrings.m */,
-				554F654A062ADCB000BF2446 /* GPGAsyncHelper.h */,
-				554F654B062ADCB000BF2446 /* GPGAsyncHelper.m */,
-				55C01A6A0DB0FA9D00EA8CD5 /* GPGEngineHelper.h */,
-				55C01A6B0DB0FA9D00EA8CD5 /* GPGEngineHelper.m */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
-		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				5587C97F07A2E96400F17B27 /* AddressBook.framework */,
-				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
-			);
-			name = "Linked Frameworks";
-			sourceTree = "<group>";
-		};
-		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
-				0867D6A5FE840307C02AAC07 /* AppKit.framework */,
+				D836D4B3162878B700D3B874 /* AppKit.framework */,
+				D836D4B4162878B700D3B874 /* CoreData.framework */,
+				D836D4B5162878B700D3B874 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		551DF4360B2886A50061FE17 /* Unit Testing */ = {
-			isa = PBXGroup;
-			children = (
-				551DF4370B2886CF0061FE17 /* MacGPGMETestCase.h */,
-				551DF4380B2886CF0061FE17 /* MacGPGMETestCase.m */,
-			);
-			name = "Unit Testing";
-			sourceTree = "<group>";
-		};
-		F550BC4A0201F2BB01A80016 /* GPGTester */ = {
-			isa = PBXGroup;
-			children = (
-				F550BC630201F30B01A80016 /* Documentation */,
-				F550BC4B0201F2BB01A80016 /* Other Sources */,
-				F550BC4C0201F2BB01A80016 /* Classes */,
-				F550BC4F0201F2BB01A80016 /* Resources */,
-			);
-			name = GPGTester;
-			sourceTree = "<group>";
-		};
-		F550BC4B0201F2BB01A80016 /* Other Sources */ = {
-			isa = PBXGroup;
-			children = (
-				F550BC680201F49001A80016 /* GPGTester_main.m */,
-			);
-			name = "Other Sources";
-			sourceTree = "<group>";
-		};
-		F550BC4C0201F2BB01A80016 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				F550BC4D0201F2BB01A80016 /* Controller.h */,
-				F550BC4E0201F2BB01A80016 /* Controller.m */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
-		F550BC4F0201F2BB01A80016 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				F550BC500201F2BB01A80016 /* CheckMark.tiff */,
-				F550BC550201F2BB01A80016 /* GPGTester.nib */,
-				F550BC580201F2BB01A80016 /* InfoPlist.strings */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		F550BC630201F30B01A80016 /* Documentation */ = {
-			isa = PBXGroup;
-			children = (
-				F550BC640201F30B01A80016 /* NOTES */,
-			);
-			name = Documentation;
-			sourceTree = "<group>";
-		};
-		F56F791B012E3F8001000001 /* Documentation */ = {
-			isa = PBXGroup;
-			children = (
-				55C6D0E20795C2CD007186C6 /* COPYING.LESSER */,
-				F56F791C012E3F8001000001 /* README */,
-				551033F004C1911000000001 /* frameworkEmbedding.sh */,
-				551033F504C1915A00000001 /* TODO */,
-				55FCC5C0093F9339005A146B /* MacGPGME.hdoc */,
-				5575766D093F9964008EE5CC /* headerDoc2HTML.config */,
-				55757BCC094E2E85008EE5CC /* DocExternalReferences.xref */,
-			);
-			name = Documentation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		554B5590069F0111005E1C92 /* Headers */ = {
+		D836D4AA162878B700D3B874 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				554B5591069F0111005E1C92 /* MacGPGME.h in Headers */,
-				554B5592069F0111005E1C92 /* GPGContext.h in Headers */,
-				554B5593069F0111005E1C92 /* GPGData.h in Headers */,
-				554B5594069F0111005E1C92 /* GPGDefines.h in Headers */,
-				554B5595069F0111005E1C92 /* GPGEngine.h in Headers */,
-				554B5596069F0111005E1C92 /* GPGExceptions.h in Headers */,
-				554B5597069F0111005E1C92 /* GPGInternals.h in Headers */,
-				554B5598069F0111005E1C92 /* GPGKey.h in Headers */,
-				554B5599069F0111005E1C92 /* GPGObject.h in Headers */,
-				554B559A069F0111005E1C92 /* GPGTrustItem.h in Headers */,
-				554B559B069F0111005E1C92 /* GPGSignature.h in Headers */,
-				554B559C069F0111005E1C92 /* GPGPrettyInfo.h in Headers */,
-				554B559D069F0111005E1C92 /* LocalizableStrings.h in Headers */,
-				554B559E069F0111005E1C92 /* GPGKeySignature.h in Headers */,
-				554B559F069F0111005E1C92 /* GPGUserID.h in Headers */,
-				554B55A0069F0111005E1C92 /* GPGSubkey.h in Headers */,
-				554B55A2069F0111005E1C92 /* GPGAsyncHelper.h in Headers */,
-				5543FA93071493C4009979E9 /* GPGKeyGroup.h in Headers */,
-				55B5189607AC37A6005C1DB3 /* MacGPGME_Prefix.pch in Headers */,
-				4B68559B087F451800859ACB /* GPGRemoteKey.h in Headers */,
-				4B6855E6087F4A6B00859ACB /* GPGRemoteUserID.h in Headers */,
-				4B6856FD088004DA00859ACB /* GPGKeyDefines.h in Headers */,
-				554CA68F08F9608F00E135BC /* GPGSignatureNotation.h in Headers */,
-				55BDD1CD0D954B3C0083C540 /* GPGOptions.h in Headers */,
-				55C01A6C0DB0FA9D00EA8CD5 /* GPGEngineHelper.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55D9069F0245005E1C92 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				D836D4DF1628798C00D3B874 /* GPGAsyncHelper.h in Headers */,
+				D836D4E01628798C00D3B874 /* GPGContext.h in Headers */,
+				D836D4E11628798C00D3B874 /* GPGData.h in Headers */,
+				D836D4E21628798C00D3B874 /* GPGDefines.h in Headers */,
+				D836D4E31628798C00D3B874 /* GPGEngine.h in Headers */,
+				D836D4E41628798C00D3B874 /* GPGEngineHelper.h in Headers */,
+				D836D4E51628798C00D3B874 /* GPGExceptions.h in Headers */,
+				D836D4E61628798C00D3B874 /* GPGInternals.h in Headers */,
+				D836D4E71628798C00D3B874 /* GPGKey.h in Headers */,
+				D836D4E81628798C00D3B874 /* GPGKeyDefines.h in Headers */,
+				D836D4E91628798C00D3B874 /* GPGKeyGroup.h in Headers */,
+				D836D4EA1628798C00D3B874 /* GPGKeySignature.h in Headers */,
+				D836D4EB1628798C00D3B874 /* GPGObject.h in Headers */,
+				D836D4EC1628798C00D3B874 /* GPGOptions.h in Headers */,
+				D836D4ED1628798C00D3B874 /* GPGPrettyInfo.h in Headers */,
+				D836D4EE1628798C00D3B874 /* GPGRemoteKey.h in Headers */,
+				D836D4EF1628798C00D3B874 /* GPGRemoteUserID.h in Headers */,
+				D836D4F01628798C00D3B874 /* GPGSignature.h in Headers */,
+				D836D4F11628798C00D3B874 /* GPGSignatureNotation.h in Headers */,
+				D836D4F21628798C00D3B874 /* GPGSubkey.h in Headers */,
+				D836D4F31628798C00D3B874 /* GPGTrustItem.h in Headers */,
+				D836D4F41628798C00D3B874 /* GPGUserID.h in Headers */,
+				D836D4F51628798C00D3B874 /* LocalizableStrings.h in Headers */,
+				D836D4F61628798C00D3B874 /* MacGPGME.h in Headers */,
+				D836D4F71628798C00D3B874 /* MacGPGMETestCase.h in Headers */,
+				D836D4F81628798C00D3B874 /* MacGPGME_Prefix.pch in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		551DF42A0B2886420061FE17 /* MacGPGMETesting */ = {
+		D836D4AC162878B700D3B874 /* MacGPGME */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 551DF42D0B2886450061FE17 /* Build configuration list for PBXNativeTarget "MacGPGMETesting" */;
+			buildConfigurationList = D836D4C2162878B700D3B874 /* Build configuration list for PBXNativeTarget "MacGPGME" */;
 			buildPhases = (
-				551DF4260B2886420061FE17 /* Resources */,
-				551DF4270B2886420061FE17 /* Sources */,
-				551DF4280B2886420061FE17 /* Frameworks */,
-				551DF4290B2886420061FE17 /* ShellScript */,
+				D836D4A8162878B700D3B874 /* Sources */,
+				D836D4A9162878B700D3B874 /* Frameworks */,
+				D836D4AA162878B700D3B874 /* Headers */,
+				D836D4AB162878B700D3B874 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				551DF4330B2886570061FE17 /* PBXTargetDependency */,
-			);
-			name = MacGPGMETesting;
-			productName = MacGPGMETesting;
-			productReference = 551DF42B0B2886420061FE17 /* MacGPGMETesting.octest */;
-			productType = "com.apple.product-type.bundle";
-		};
-		554B558F069F0111005E1C92 /* MacGPGME */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 55541F6D085AE6E100548474 /* Build configuration list for PBXNativeTarget "MacGPGME" */;
-			buildPhases = (
-				554B5590069F0111005E1C92 /* Headers */,
-				554B55A3069F0111005E1C92 /* Resources */,
-				554B55A9069F0111005E1C92 /* Sources */,
-				554B55B9069F0111005E1C92 /* Frameworks */,
-				554B55BD069F0111005E1C92 /* Rez */,
-				554B55BE069F0111005E1C92 /* Generate Documentation */,
-				55226A960F053E5F00CE3509 /* Filter C locales */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1B45A58711CCA15E00ED4663 /* PBXTargetDependency */,
+				3031776F1628A5CE009658CA /* PBXTargetDependency */,
 			);
 			name = MacGPGME;
-			productInstallPath = Library/Frameworks;
-			productName = GPG;
-			productReference = 554B55C0069F0111005E1C92 /* MacGPGME.framework */;
+			productName = MacGPGME;
+			productReference = D836D4AD162878B700D3B874 /* MacGPGME.framework */;
 			productType = "com.apple.product-type.framework";
-		};
-		554B55D7069F0245005E1C92 /* GPGTester */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 55541F74085AE6E100548474 /* Build configuration list for PBXNativeTarget "GPGTester" */;
-			buildPhases = (
-				554B55D9069F0245005E1C92 /* Headers */,
-				554B55DB069F0245005E1C92 /* Resources */,
-				554B55DF069F0245005E1C92 /* CopyFiles */,
-				554B55E1069F0245005E1C92 /* Sources */,
-				554B55E4069F0245005E1C92 /* Frameworks */,
-				554B55E9069F0245005E1C92 /* Rez */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				554B55EE069F025E005E1C92 /* PBXTargetDependency */,
-			);
-			name = GPGTester;
-			productInstallPath = "$(USER_APPS_DIR)";
-			productName = GPGTester;
-			productReference = 554B55EB069F0245005E1C92 /* GPGTester.app */;
-			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		0867D690FE84028FC02AAC07 /* Project object */ = {
+		D836D4A3162878B600D3B874 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 55541F7B085AE6E100548474 /* Build configuration list for PBXProject "MacGPGME" */;
-			compatibilityVersion = "Xcode 2.4";
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = D836D4A6162878B600D3B874 /* Build configuration list for PBXProject "MacGPGME" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
-			hasScannedForEncodings = 1;
+			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
-				Spanish,
-				Swedish,
-				Italian,
-				Danish,
+				en,
 			);
-			mainGroup = 0867D691FE84028FC02AAC07 /* GPG */;
-			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			mainGroup = D836D4A1162878B600D3B874;
+			productRefGroup = D836D4AE162878B700D3B874 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				554B558F069F0111005E1C92 /* MacGPGME */,
-				554B55D7069F0245005E1C92 /* GPGTester */,
-				551DF42A0B2886420061FE17 /* MacGPGMETesting */,
-				1B45A57F11CCA13000ED4663 /* Build gpgme */,
+				D836D4AC162878B700D3B874 /* MacGPGME */,
+				D836D5371628821D00D3B874 /* gpgme */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		551DF4260B2886420061FE17 /* Resources */ = {
+		D836D4AB162878B700D3B874 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55A3069F0111005E1C92 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				554B55A4069F0111005E1C92 /* InfoPlist.strings in Resources */,
-				554B55A5069F0111005E1C92 /* Localizable.strings in Resources */,
-				55B964A607A3BA9A0060059A /* COPYING.LESSER in Resources */,
-				55226A940F053E4500CE3509 /* locale in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55DB069F0245005E1C92 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				554B55DC069F0245005E1C92 /* CheckMark.tiff in Resources */,
-				554B55DD069F0245005E1C92 /* GPGTester.nib in Resources */,
-				554B55DE069F0245005E1C92 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXRezBuildPhase section */
-		554B55BD069F0111005E1C92 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55E9069F0245005E1C92 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXRezBuildPhase section */
-
 /* Begin PBXShellScriptBuildPhase section */
-		1B45A57E11CCA13000ED4663 /* ShellScript */ = {
+		D836D53B1628822500D3B874 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -652,675 +373,192 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Building gettext for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gettext 0.18.1.1\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\necho \"Building libgpg-error for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libgpg-error 1.8\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\necho \"Building libassuan for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libassuan 2.0.0\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\necho \"Building gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gpgme 1.3.0\nif [ $? -ne 0 ]; then\n\texit 1;\nfi\nexit 0";
-		};
-		551DF4290B2886420061FE17 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-		55226A960F053E5F00CE3509 /* Filter C locales */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				build/dist/share/locale,
-			);
-			name = "Filter C locales";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Remove all localizations not in libgpg-error nor gettext-runtime domains\nfind \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/locale\" -type f \\( -name \\*.mo -a -not -name gettext-runtime.mo -a -not -name libgpg-error.mo \\) -delete\nexit 0\n";
-		};
-		554B55BE069F0111005E1C92 /* Generate Documentation */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
-			files = (
-			);
-			name = "Generate Documentation";
-			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/sh;
-			shellScript = "HeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nexternalXRefFile=\"${TEMP_FILES_DIR}/HeaderDoc.xref\"\ndocumentationDir=\"${TARGET_BUILD_DIR}/${DOCUMENTATION_FOLDER_PATH}\"\n\nif [ ! -x \"${HeaderDoc2HTML}\" -a ! -L \"${HeaderDoc2HTML}\" ]; then \\\n\tHeaderDoc2HTML=\"/usr/bin/headerdoc2html\"\nfi\n\nif [ ! -x \"${GatherHeaderDoc}\" -a ! -L \"${GatherHeaderDoc}\" ]; then \\\n\tGatherHeaderDoc=\"/usr/bin/gatherheaderdoc\"\nfi\n\nrm -rf \"${documentationDir}\"\nmkdir -p \"${documentationDir}\"\n\necho \"Extracting documentation...\"\n\"${HeaderDoc2HTML}\" -o \"${documentationDir}\" \"${PROJECT_DIR}\"\n\necho \"Resolving links...\"\nrm -rf \"${externalXRefFile}\"\ntr '$' '\\1' < DocExternalReferences.xref > \"${externalXRefFile}\"\n\"${GatherHeaderDoc}\" -x \"${externalXRefFile}\" \"${documentationDir}\"\n";
+			shellScript = "echo \"Building gettext for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gettext 0.18.1.1\nif [ $? -ne 0 ]; then\nexit 1;\nfi\necho \"Building libgpg-error for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libgpg-error 1.8\nif [ $? -ne 0 ]; then\nexit 1;\nfi\necho \"Building libassuan for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libassuan 2.0.0\nif [ $? -ne 0 ]; then\nexit 1;\nfi\necho \"Building gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gpgme 1.3.0\nif [ $? -ne 0 ]; then\nexit 1;\nfi\nexit 0 ";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		551DF4270B2886420061FE17 /* Sources */ = {
+		D836D4A8162878B700D3B874 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				551DF4390B2886CF0061FE17 /* MacGPGMETestCase.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55A9069F0111005E1C92 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				554B55AA069F0111005E1C92 /* GPGContext.m in Sources */,
-				554B55AB069F0111005E1C92 /* GPGData.m in Sources */,
-				554B55AC069F0111005E1C92 /* GPGEngine.m in Sources */,
-				554B55AD069F0111005E1C92 /* GPGExceptions.m in Sources */,
-				554B55AE069F0111005E1C92 /* GPGKey.m in Sources */,
-				554B55AF069F0111005E1C92 /* GPGObject.m in Sources */,
-				554B55B0069F0111005E1C92 /* GPGTrustItem.m in Sources */,
-				554B55B1069F0111005E1C92 /* GPGSignature.m in Sources */,
-				554B55B2069F0111005E1C92 /* GPGPrettyInfo.m in Sources */,
-				554B55B3069F0111005E1C92 /* LocalizableStrings.m in Sources */,
-				554B55B4069F0111005E1C92 /* GPGKeySignature.m in Sources */,
-				554B55B5069F0111005E1C92 /* GPGUserID.m in Sources */,
-				554B55B6069F0111005E1C92 /* GPGSubkey.m in Sources */,
-				554B55B8069F0111005E1C92 /* GPGAsyncHelper.m in Sources */,
-				5543FA94071493C4009979E9 /* GPGKeyGroup.m in Sources */,
-				4B68559C087F451800859ACB /* GPGRemoteKey.m in Sources */,
-				4B6855E7087F4A6B00859ACB /* GPGRemoteUserID.m in Sources */,
-				554CA69008F9608F00E135BC /* GPGSignatureNotation.m in Sources */,
-				55BDD1CE0D954B3C0083C540 /* GPGOptions.m in Sources */,
-				55C01A6D0DB0FA9D00EA8CD5 /* GPGEngineHelper.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		554B55E1069F0245005E1C92 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				554B55E2069F0245005E1C92 /* Controller.m in Sources */,
-				554B55E3069F0245005E1C92 /* GPGTester_main.m in Sources */,
+				D836D50E16287A9200D3B874 /* GPGAsyncHelper.m in Sources */,
+				D836D50F16287A9200D3B874 /* GPGContext.m in Sources */,
+				D836D51016287A9200D3B874 /* GPGData.m in Sources */,
+				D836D51116287A9200D3B874 /* GPGEngine.m in Sources */,
+				D836D51216287A9200D3B874 /* GPGEngineHelper.m in Sources */,
+				D836D51316287A9200D3B874 /* GPGExceptions.m in Sources */,
+				D836D51416287A9200D3B874 /* GPGKey.m in Sources */,
+				D836D51516287A9200D3B874 /* GPGKeyGroup.m in Sources */,
+				D836D51616287A9200D3B874 /* GPGKeySignature.m in Sources */,
+				D836D51716287A9200D3B874 /* GPGObject.m in Sources */,
+				D836D51816287A9200D3B874 /* GPGOptions.m in Sources */,
+				D836D51916287A9200D3B874 /* GPGPrettyInfo.m in Sources */,
+				D836D51A16287A9200D3B874 /* GPGRemoteKey.m in Sources */,
+				D836D51B16287A9200D3B874 /* GPGRemoteUserID.m in Sources */,
+				D836D51C16287A9200D3B874 /* GPGSignature.m in Sources */,
+				D836D51D16287A9200D3B874 /* GPGSignatureNotation.m in Sources */,
+				D836D51E16287A9200D3B874 /* GPGSubkey.m in Sources */,
+				D836D51F16287A9200D3B874 /* GPGTrustItem.m in Sources */,
+				D836D52016287A9200D3B874 /* GPGUserID.m in Sources */,
+				D836D52116287A9200D3B874 /* LocalizableStrings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B45A58711CCA15E00ED4663 /* PBXTargetDependency */ = {
+		3031776F1628A5CE009658CA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B45A57F11CCA13000ED4663 /* Build gpgme */;
-			targetProxy = 1B45A58611CCA15E00ED4663 /* PBXContainerItemProxy */;
-		};
-		551DF4330B2886570061FE17 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 554B558F069F0111005E1C92 /* MacGPGME */;
-			targetProxy = 551DF4320B2886570061FE17 /* PBXContainerItemProxy */;
-		};
-		554B55EE069F025E005E1C92 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 554B558F069F0111005E1C92 /* MacGPGME */;
-			targetProxy = 554B55ED069F025E005E1C92 /* PBXContainerItemProxy */;
+			target = D836D5371628821D00D3B874 /* gpgme */;
+			targetProxy = 3031776E1628A5CE009658CA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				089C1667FE841158C02AAC07 /* English */,
-				F5AD059502F2E74B0128824A /* Spanish */,
-				F5A699FB0306A54D01000104 /* French */,
-				F5A699FC0306A54D01000104 /* German */,
-				F5A699FD0306A54D01000104 /* Swedish */,
-				7FA06EA603E842E1002884EA /* Italian */,
-				7F7B9541042B59C40028F28B /* Danish */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		F550BC550201F2BB01A80016 /* GPGTester.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F550BC570201F2BB01A80016 /* English */,
-			);
-			name = GPGTester.nib;
-			sourceTree = "<group>";
-		};
-		F550BC580201F2BB01A80016 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F550BC590201F2BB01A80016 /* English */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		F55CD03802D65F6201C07EFC /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F55CD03902D65F6201C07EFC /* English */,
-				F5AD059602F2E74B0128824A /* Spanish */,
-				F5A699FE0306A54D01000104 /* French */,
-				F5A699FF0306A54D01000104 /* German */,
-				F5A69A000306A54D01000104 /* Swedish */,
-				7FA06EA703E842E1002884EA /* Italian */,
-				7F7B9542042B59C40028F28B /* Danish */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
-		1B45A58111CCA13000ED4663 /* Debug */ = {
+		D836D4C0162878B700D3B874 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = "Build gpgme";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
-		1B45A58211CCA13000ED4663 /* Release */ = {
+		D836D4C1162878B700D3B874 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = "Build gpgme";
-				ZERO_LINK = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
-		1B45A58311CCA13000ED4663 /* Debug (standalone) */ = {
+		D836D4C3162878B700D3B874 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "Build gpgme";
-			};
-			name = "Debug (standalone)";
-		};
-		1B45A58411CCA13000ED4663 /* Release (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "Build gpgme";
-			};
-			name = "Release (standalone)";
-		};
-		551DF42E0B2886450061FE17 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(value)",
-					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
-				);
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = MacGPGMETesting;
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
-		551DF42F0B2886450061FE17 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(value)",
-					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
-				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = MacGPGMETesting;
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		551DF4300B2886450061FE17 /* Debug (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(value)",
-					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
-				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = MacGPGMETesting;
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = "Debug (standalone)";
-		};
-		551DF4310B2886450061FE17 /* Release (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(value)",
-					"$(DEVELOPER_FRAMEWORKS_DIR_QUOTED)",
-				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
-				INFOPLIST_FILE = "MacGPGMETesting-Info.plist";
-				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-					"-framework",
-					SenTestingKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = MacGPGMETesting;
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = "Release (standalone)";
-		};
-		55541F6E085AE6E100548474 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 16;
-				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 16;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks,
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
-				FRAMEWORK_VERSION = 1.1.4;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = build/dist/lib;
-				MACH_O_TYPE = mh_dylib;
-				OTHER_LDFLAGS = (
-					"-Z",
-					"-headerpad_max_install_names",
+				LIBRARY_SEARCH_PATHS = (
+					build/dist/lib,
+					/usr/lib,
 				);
-				PRODUCT_NAME = MacGPGME;
-				SECTORDER_FLAGS = "";
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = "-Wmost";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
-				ZERO_LINK = YES;
 			};
 			name = Debug;
 		};
-		55541F6F085AE6E100548474 /* Release */ = {
+		D836D4C4162878B700D3B874 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 16;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 16;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks,
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
-				FRAMEWORK_VERSION = 1.1.4;
+				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = build/dist/include;
 				INFOPLIST_FILE = "Info-MacGPGME.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = build/dist/lib;
-				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_LDFLAGS = (
-					"-Z",
-					"-headerpad_max_install_names",
+				LIBRARY_SEARCH_PATHS = (
+					build/dist/lib,
+					/usr/lib,
 				);
-				PRODUCT_NAME = MacGPGME;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = "-Wmost";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
 		};
-		55541F70085AE6E100548474 /* Debug (standalone) */ = {
+		D836D5391628821D00D3B874 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 16;
-				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 16;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
-				FRAMEWORK_VERSION = 1.1.4;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = build/dist/include;
-				INFOPLIST_FILE = "Info-MacGPGME.plist";
-				INSTALL_PATH = /Library/Frameworks;
-				LIBRARY_SEARCH_PATHS = build/dist/lib;
-				MACH_O_TYPE = mh_dylib;
-				OTHER_LDFLAGS = (
-					"-seg1addr",
-					0x686E0000,
-					"-headerpad_max_install_names",
-				);
-				PRODUCT_NAME = MacGPGME;
-				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = "-Wmost";
-				WRAPPER_EXTENSION = framework;
-				ZERO_LINK = YES;
-			};
-			name = "Debug (standalone)";
-		};
-		55541F71085AE6E100548474 /* Release (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				CURRENT_PROJECT_VERSION = 16;
-				DYLIB_COMPATIBILITY_VERSION = 15;
-				DYLIB_CURRENT_VERSION = 16;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Frameworks\"";
-				FRAMEWORK_VERSION = 1.1.4;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MacGPGME_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILDING_MAC_GPGME;
-				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = build/dist/include;
-				INFOPLIST_FILE = "Info-MacGPGME.plist";
-				INSTALL_PATH = /Library/Frameworks;
-				LIBRARY_SEARCH_PATHS = build/dist/lib;
-				MACH_O_TYPE = mh_dylib;
-				OTHER_LDFLAGS = (
-					"-seg1addr",
-					0x686E0000,
-					"-headerpad_max_install_names",
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = MacGPGME;
-				VERSIONING_SYSTEM = "apple-generic";
-				WARNING_CFLAGS = "-Wmost";
-				WRAPPER_EXTENSION = framework;
-				ZERO_LINK = NO;
-			};
-			name = "Release (standalone)";
-		};
-		55541F75085AE6E100548474 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				INFOPLIST_FILE = "Info-GPGTester.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = build/dist/lib;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = GPGTester;
-				SECTORDER_FLAGS = "";
-				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		55541F76085AE6E100548474 /* Release */ = {
+		D836D53A1628821D00D3B874 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUGGING_SYMBOLS = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				INFOPLIST_FILE = "Info-GPGTester.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = GPGTester;
-				SECTORDER_FLAGS = "";
-				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
-		};
-		55541F77085AE6E100548474 /* Debug (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				INFOPLIST_FILE = "Info-GPGTester.plist";
-				INSTALL_PATH = "$(USER_APPS_DIR)";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = GPGTester;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = YES;
-			};
-			name = "Debug (standalone)";
-		};
-		55541F78085AE6E100548474 /* Release (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUGGING_SYMBOLS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				INFOPLIST_FILE = "Info-GPGTester.plist";
-				INSTALL_PATH = "$(USER_APPS_DIR)";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = GPGTester;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
-			};
-			name = "Release (standalone)";
-		};
-		55541F7C085AE6E100548474 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				GCC_ENABLE_OBJC_GC = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-				VALID_ARCHS = "x86_64 i386";
-			};
-			name = Debug;
-		};
-		55541F7D085AE6E100548474 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				GCC_ENABLE_OBJC_GC = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-				VALID_ARCHS = "x86_64 i386";
-			};
-			name = Release;
-		};
-		55541F7E085AE6E100548474 /* Debug (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				GCC_ENABLE_OBJC_GC = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-				VALID_ARCHS = "x86_64 i386";
-			};
-			name = "Debug (standalone)";
-		};
-		55541F7F085AE6E100548474 /* Release (standalone) */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				GCC_ENABLE_OBJC_GC = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-				VALID_ARCHS = "x86_64 i386";
-			};
-			name = "Release (standalone)";
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1B45A59611CCA18000ED4663 /* Build configuration list for PBXAggregateTarget "Build gpgme" */ = {
+		D836D4A6162878B600D3B874 /* Build configuration list for PBXProject "MacGPGME" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1B45A58111CCA13000ED4663 /* Debug */,
-				1B45A58211CCA13000ED4663 /* Release */,
-				1B45A58311CCA13000ED4663 /* Debug (standalone) */,
-				1B45A58411CCA13000ED4663 /* Release (standalone) */,
+				D836D4C0162878B700D3B874 /* Debug */,
+				D836D4C1162878B700D3B874 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
-		551DF42D0B2886450061FE17 /* Build configuration list for PBXNativeTarget "MacGPGMETesting" */ = {
+		D836D4C2162878B700D3B874 /* Build configuration list for PBXNativeTarget "MacGPGME" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				551DF42E0B2886450061FE17 /* Debug */,
-				551DF42F0B2886450061FE17 /* Release */,
-				551DF4300B2886450061FE17 /* Debug (standalone) */,
-				551DF4310B2886450061FE17 /* Release (standalone) */,
+				D836D4C3162878B700D3B874 /* Debug */,
+				D836D4C4162878B700D3B874 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
-		55541F6D085AE6E100548474 /* Build configuration list for PBXNativeTarget "MacGPGME" */ = {
+		D836D5381628821D00D3B874 /* Build configuration list for PBXAggregateTarget "gpgme" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				55541F6E085AE6E100548474 /* Debug */,
-				55541F6F085AE6E100548474 /* Release */,
-				55541F70085AE6E100548474 /* Debug (standalone) */,
-				55541F71085AE6E100548474 /* Release (standalone) */,
+				D836D5391628821D00D3B874 /* Debug */,
+				D836D53A1628821D00D3B874 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		55541F74085AE6E100548474 /* Build configuration list for PBXNativeTarget "GPGTester" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				55541F75085AE6E100548474 /* Debug */,
-				55541F76085AE6E100548474 /* Release */,
-				55541F77085AE6E100548474 /* Debug (standalone) */,
-				55541F78085AE6E100548474 /* Release (standalone) */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		55541F7B085AE6E100548474 /* Build configuration list for PBXProject "MacGPGME" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				55541F7C085AE6E100548474 /* Debug */,
-				55541F7D085AE6E100548474 /* Release */,
-				55541F7E085AE6E100548474 /* Debug (standalone) */,
-				55541F7F085AE6E100548474 /* Release (standalone) */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+	rootObject = D836D4A3162878B600D3B874 /* Project object */;
 }
