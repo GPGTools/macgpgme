@@ -1,7 +1,0 @@
---- stpncpy.c
-+++ stpncpy.c
-@@ -27,3 +27,3 @@
- #ifndef weak_alias
--# define __stpncpy stpncpy
-+//# define __stpncpy stpncpy
- #endif

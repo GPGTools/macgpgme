@@ -1,13 +1,10 @@
 #!/bin/bash
 
-if [ "${TARGET_BUILD_DIR}" == "" ]; then
-    BASE=`pwd`
-else
-    BASE="${TARGET_BUILD_DIR}/.."
-fi
+[[ -z "$BUILD_DIR" ]] && BUILD_DIR=$PWD
 
-PREFIX="${BASE}/dist"
-SOURCES="${BASE}/sources"
+
+PREFIX="$BUILD_DIR/dist"
+SOURCES="$BUILD_DIR/sources"
 
 GETTEXT_VERSION="0.18.1.1"
 LIBGPG_ERROR_VERSION="1.8"
@@ -20,18 +17,18 @@ devNull=/dev/null
 # Download the source code and unpack it.
 function fetch {
 	url=$1
-	file=$(basename $url)
+	file=${url##*/} #basename
 	dir=$2
 	
-	if [ ! -f "$file" ]; then
-		curl -O $url
-		
-		if [ $? -ne 0 ]; then
-			bailout "Failed to download source at $url";
-		fi
+	if [[ -f "$file" ]] ;then
+		echo "$file already exists"
+	else
+		echo "Download $url"
+		curl -O "$url" > $devNull ||
+			bailout "Failed to download source at $url"
 	fi
 	
-	extract "$file" "$2"
+	extract "$file" "$dir"
 }
 
 # Extract the source code.
@@ -39,214 +36,170 @@ function extract {
     file=$1
     dir=$2
     
-    if [ -d "$dir" ]; then
-        return;
-    fi
-    
-    ext=$(echo $file | awk -F . '{print $NF}')
-    
-    if [ "$ext" == "gz" ]; then
-        tar xzf $file
-        ret=$?
-    else
-        tar xjf $file
-        ret=$?
-    fi
-    
-    if [ $ret -ne 0 ]; then
-        bailout "Failed to extract: $file"
-    fi
+	[[ -d "$dir" ]] &&
+		return
+
+	tar -xf "$file" ||
+		bailout "Failed to extract: $file"
 }
 
+# Display an error message and exit.
 function bailout {
     msg=$1
     
-    echo "build_gpgme error: $msg"
-    exit 1;
+    echo "build_gpgme error: $msg" >&2
+    exit 1
 }
 
-# Build the library.
-function build_gettext {
+
+function build_library {
+	url=$1					 # The full URL
+	configureOptions=$2		 # e.g. "--disable-java --disable-csharp"
+	testBin=$3				 # e.g. "gpgme-config"
+	patch=$4				 # e.g. "gettext.patch"
+	archive=${url##*/}		 # e.g. "gpgme-1.3.0.tar.bz2)
+	dirname=${archive%.tar*} # e.g. "gpgme-1.3.0"
+	library=${dirname%-*}	 # e.g. "gpgme"
+	version=${dirname##*-}	 # e.g. "1.3.0"
+
     # Only build if the binary doesn't exist already.
-    if [ -f "$PREFIX/bin/gettext" ]; then
-        return;
-    fi
-    
-    version=$1-$2
-    fetch "http://ftp.gnu.org/gnu/gettext/${version}.tar.gz" $1
-	
-	# Check if the package was successfully extracted
-	if [ ! -d "$version" ]; then
-	    bailout "$version directory doesn't exist."
+	if [[ -f "$PREFIX/bin/$testBin" ]] ;then
+		echo "$dirname already installed"
+        return
 	fi
-	
-	pushd "$version" > $devNull
-	
-	patch -N gettext-tools/gnulib-lib/stpncpy.c < "$SRCROOT/Utilities/stpncpy.c.patch"
-	patch -N gettext-tools/gnulib-lib/libxml/xmlversion.in.h < "$SRCROOT/Utilities/xmlversion.in.h.patch"
-	patch -N gettext-runtime/intl/loadmsgcat.c < "$SRCROOT/Utilities/loadmsgcat.c.patch"
 
+	echo "Build $dirname"
 
+	# Download and extract the package.
+    fetch "$url" "$archive"
+
+	# Check if the package was successfully extracted.
+	[[ -d "$dirname" ]] ||
+	    bailout "$dirname directory doesn't exist."
+
+	pushd "$dirname" > $devNull
+
+	# Apply patch if needed.
+	[[ -n "$patch" ]] &&
+		patch -Np0 < "$SRCROOT/Utilities/gettext.patch"
+
+	# Configure.
 	CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
-        ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
-        --disable-java --disable-native-java --disable-csharp \
-        --with-included-gettext --with-included-glib \
-        --with-included-libcroco --with-included-libxml --disable-libasprintf \
-        > $devNull
-    
-    ret=$?
-    
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to configure"
-    fi
-    
-    make install > $devNull
-    
-    ret=$?
-    
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to build and install"
-    fi
-    
+        eval ./configure --prefix='"$PREFIX"' $configureOptions > $devNull ||
+			 bailout "$dirname - failed to configure"
+
+	# Compile and install.
+    make install > $devNull ||
+		bailout "$dirname - failed to build and install"
+	
     popd > $devNull
 
+	echo "Building $dirname successfully"
+}
+
+
+function build_gettext {
+	version=$1
+
+	url="http://ftp.gnu.org/gnu/gettext/gettext-$version.tar.gz"
+	options="--disable-shared --disable-dependency-tracking \
+		--disable-java --disable-native-java --disable-csharp \
+        --with-included-gettext --with-included-glib \
+        --with-included-libcroco --with-included-libxml --disable-libasprintf"
+	testBin="gettext"
+	patch="gettext.patch"
+
+	build_library "$url" "$options" "$testBin" "$patch"
 }
 
 function build_libgpg_error {
-    # Only build if the binary doesn't exist already.
-    if [ -f "$PREFIX/bin/gpg-error-config" ]; then
-        return;
-    fi
-    
-    version=$1-$2
-    fetch "ftp://ftp.gnupg.org/gcrypt/libgpg-error/$version.tar.bz2" $1
+ 	version=$1
 
-    # Check if the package was successfully extracted
-    if [ ! -d "$version" ]; then
-        bailout "$version directory doesn't exist."
-    fi
-    
-    pushd "$version" > $devNull
+	url="ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-$version.tar.bz2"
+	options="--disable-shared --disable-dependency-tracking \
+		--with-libintl-prefix=\"$PREFIX\""
+	testBin="gpg-error-config"
 
-    CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
-    LDFLAGS="-framework CoreFoundation" \
-    ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
-    --with-libintl-prefix="$PREFIX" > $devNull
-    
-    ret=$?
-    
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to configure"
-    fi
-
-    make install > $devNull
-    
-    ret=$?
-    
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to build and install"
-    fi
-
-    popd > $devNull
-
+	export LDFLAGS="-framework CoreFoundation"
+	build_library "$url" "$options" "$testBin"
 }
 
 function build_libassuan {
-    # Only build if the binary doesn't exist already.
-    
-    if [ -f "$PREFIX/bin/libassuan-config" ]; then
-        return;
-    fi
-    
-    version=$1-$2
-    fetch "ftp://ftp.gnupg.org/gcrypt/libassuan/$version.tar.bz2" $1
+	version=$1
 
-    # Check if the package was successfully extracted
-	if [ ! -d "$version" ]; then
-	    bailout "$version directory doesn't exist."
-	fi
+	url="ftp://ftp.gnupg.org/gcrypt/libassuan/libassuan-$version.tar.bz2"
+	options="--disable-shared --disable-dependency-tracking \
+		--with-gpg-error-prefix=\"$PREFIX\""
+	testBin="libassuan-config"
 
-    pushd "$version" > $devNull
-
-    CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
-    ./configure --prefix="$PREFIX" --disable-shared --disable-dependency-tracking \
-    --with-gpg-error-prefix="$PREFIX" > $devNull
-    
-    ret=$?
-
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to configure"
-    fi
-
-    make install > $devNull
-    
-    ret=$?
-    
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to build and install"
-    fi
-    
-    popd > $devNull
-
+	build_library "$url" "$options" "$testBin"
 }
 
 function build_gpgme {
-    # Only build if the binary doesn't exist already.
-    if [ -f "$PREFIX/bin/gpgme-config" ]; then
-        return;
-    fi
-    
-    version=$1-$2
-    fetch "ftp://ftp.gnupg.org/gcrypt/gpgme/$version.tar.bz2" $1
+	version=$1
 
-    # Check if the package was successfully extracted
-	if [ ! -d "$version" ]; then
-	    bailout "$version directory doesn't exist."
-	fi
+	url="ftp://ftp.gnupg.org/gcrypt/gpgme/gpgme-$version.tar.bz2"
+	options="--enable-static --disable-shared \
+		--disable-dependency-tracking --with-gpg-error-prefix=\"$PREFIX\" \
+		--with-gpg=\"$PREFIX/bin/gpg\" --with-libassuan-prefix=\"$PREFIX\" \
+		--without-pth --disable-glibtest"
+	testBin="gpgme-config"
 
-    pushd "$version" > $devNull
-
-    CFLAGS="-mmacosx-version-min=10.6 -arch x86_64 -arch i386" \
-    ./configure --prefix="$PREFIX" --enable-static --disable-shared \
-    --disable-dependency-tracking --with-gpg-error-prefix="$PREFIX" \
-    --with-gpg="$PREFIX/bin/gpg" --with-libassuan-prefix="$PREFIX" \
-    --without-pth --disable-glibtest > $devNull
-    
-    ret=$?
-    
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to configure"
-    fi
-
-    make install > $devNull
-    
-    ret=$?
-    
-    if [ $ret -ne 0 ]; then
-        bailout "$version - failed to build and install"
-    fi
-    
-    popd > $devNull
+	build_library "$url" "$options" "$testBin"
 }
 
-function build {
-    build_gettext "gettext" "${GETTEXT_VERSION}"
-    build_libgpg_error "libgpg-error" "${LIBGPG_ERROR_VERSION}"
-    build_libassuan "libassuan" "${LIBASSUAN_VERSION}"
-    build_gpgme "gpgme" "${GPGME_VERSION}"
+function build_all {
+    build_gettext "${GETTEXT_VERSION}"
+    build_libgpg_error "${LIBGPG_ERROR_VERSION}"
+    build_libassuan "${LIBASSUAN_VERSION}"
+    build_gpgme "${GPGME_VERSION}"
 }
 
 function clean {
-    dir=$1-$2
-    pushd "$SOURCES/$dir"
+	library=$1
+	version=$2
+    dir=$library-$version
+
+	if [[ -n "$library" ]] ;then
+		pushd "$SOURCES/$dir"
     
-    make clean
-    make uninstall
+		make uninstall
     
-    popd
+		popd
     
-    rm -rf "$SOURCES/$dir"
+		rm -rf "$SOURCES/$dir"
+	else
+		pushd "$SOURCES" ||
+			bailout "Can't change into $SOURCES"
+
+		[[ "$SOURCES" =~ /build/ && "$PREFIX" =~ /build/ ]] ||
+			bailout "\"clean\" only works in a build directory"
+
+		find . -depth 1 -type d -print0 | xargs -0 rm -rf
+		rm -rf "$PREFIX"
+
+		popd
+	fi
 }
+
+function versionForLibrary {
+	library=$1
+
+    case "$library" in
+        gettext)
+            echo "$GETTEXT_VERSION";;
+        libgpg-error) 
+            echo "$LIBGPG_ERROR_VERSION";;
+        libassuan)
+            echo "$LIBASSUAN_VERSION";;
+        gpgme)
+            echo "$GPGME_VERSION";;
+        *)
+			bailout "Unknown library";;
+    esac
+}
+
+
 
 action=$1
 library=$2
@@ -255,25 +208,27 @@ version=$3
 mkdir -p "$SOURCES"
 pushd "$SOURCES" > $devNull
 
+[[ -n "$library" && -z "$version" ]] &&
+	version=$(versionForLibrary "$library")
+
+
 if [ "$action" == "clean" ]; then
     clean $library $version;
 else
     case "$library" in
         gettext)
-            build_gettext $library $version;;
-    
+            build_gettext "$version";;
         libgpg-error) 
-            build_libgpg_error $library $version;;
-    
+            build_libgpg_error "$version";;
         libassuan)
-            build_libassuan $library $version;;
-    
+            build_libassuan "$version";;
         gpgme)
-            build_gpgme $library $version;;
-    
-        *) build;;
+            build_gpgme "$version";;
+        "")
+            build_all;;		
+        *)
+			bailout "Unknown library";;
     esac
-
 fi
 
 popd > $devNull

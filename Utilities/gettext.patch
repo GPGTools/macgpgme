@@ -1,0 +1,57 @@
+--- gettext-runtime/intl/loadmsgcat.c
++++ gettext-runtime/intl/loadmsgcat.c
+@@ -780,6 +780,7 @@
+ _nl_load_domain (struct loaded_l10nfile *domain_file,
+ 		 struct binding *domainbinding)
+ {
++return;
+   __libc_lock_define_initialized_recursive (static, lock)
+   int fd = -1;
+   size_t size;
+--- gettext-tools/gnulib-lib/libxml/xmlversion.in.h
++++ gettext-tools/gnulib-lib/libxml/xmlversion.in.h
+@@ -263,7 +263,7 @@
+  *
+  * Whether iconv support is available
+  */
+-#if 1
++#if 0
+ #define LIBXML_ICONV_ENABLED
+ #endif
+ 
+--- gettext-tools/gnulib-lib/stpncpy.c
++++ gettext-tools/gnulib-lib/stpncpy.c
+@@ -24,14 +24,11 @@
+ /* Specification.  */
+ #include <string.h>
+ 
+-#ifndef weak_alias
+-# define __stpncpy stpncpy
+-#endif
+ 
+ /* Copy no more than N bytes of SRC to DST, returning a pointer past the
+    last non-NUL byte written into DST.  */
+ char *
+-__stpncpy (char *dest, const char *src, size_t n)
++my_stpncpy (char *dest, const char *src, size_t n)
+ {
+   char c;
+   char *s = dest;
+@@ -87,6 +84,3 @@
+ 
+   return dest - 1;
+ }
+-#ifdef weak_alias
+-weak_alias (__stpncpy, stpncpy)
+-#endif
+--- gettext-tools/src/msgmerge.c
++++ gettext-tools/src/msgmerge.c
+@@ -1196,7 +1196,7 @@
+ 
+ #define IF_FILLED(idx)                                                        \
+       if (header_fields[idx].string)                                          \
+-        newp = stpncpy (stpcpy (newp, known_fields[idx].name),                \
++        newp = my_stpncpy (stpcpy (newp, known_fields[idx].name),                \
+                         header_fields[idx].string, header_fields[idx].len)
+ 
+       IF_FILLED (PROJECT_ID);

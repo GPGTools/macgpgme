@@ -373,7 +373,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Building gettext for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gettext 0.18.1.1\nif [ $? -ne 0 ]; then\nexit 1;\nfi\necho \"Building libgpg-error for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libgpg-error 1.8\nif [ $? -ne 0 ]; then\nexit 1;\nfi\necho \"Building libassuan for gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} libassuan 2.0.0\nif [ $? -ne 0 ]; then\nexit 1;\nfi\necho \"Building gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} gpgme 1.3.0\nif [ $? -ne 0 ]; then\nexit 1;\nfi\nexit 0 ";
+			shellScript = "echo \"Building gpgme...\"\n\"${SRCROOT}/Utilities/build_gpgme\" ${ACTION} || exit 1\n\nexit 0";
 		};
 /* End PBXShellScriptBuildPhase section */
 
