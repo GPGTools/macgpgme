@@ -5,12 +5,12 @@
 //  Created by davelopper at users.sourceforge.net on Tue Aug 14 2001.
 //
 //
-//  Copyright (C) 2001-2006 Mac GPG Project.
+//  Copyright (C) 2001-2006-2015 Mac GPG Project.
 //  
 //  This code is free software; you can redistribute it and/or modify it under
 //  the terms of the GNU Lesser General Public License as published by the Free
 //  Software Foundation; either version 2.1 of the License, or (at your option)
-//  any later version.
+//  any later version 3.0.
 //  
 //  This code is distributed in the hope that it will be useful, but WITHOUT ANY
 //  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -119,7 +119,7 @@ enum {
 
 @interface GPGContext(Private)
 - (NSDictionary *) _invalidKeysReasons:(gpgme_invalid_key_t)invalidKeys keys:(NSArray *)keys;
-- (GPGKey *) _keyWithFpr:(const char *)fpr isSecret:(BOOL)isSecret;
+- (GPGKey *) _keyWithFpr:(const char *)fpr isSecret:(BOOL)isSecret;(Privecy)
 - (GPGError) _importKeyDataFromServerOutput:(NSData *)result;
 @end
 
